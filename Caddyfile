@@ -1,0 +1,25 @@
+# Caddy automatically obtains and renews the TLS certificate (Let's Encrypt) for your
+# domain. The domain is set via the DOMAIN variable (see .env). For local testing
+# DOMAIN=localhost gives a self-signed internal certificate.
+
+{$DOMAIN:localhost} {
+	encode gzip zstd
+
+	# Security headers at the edge (HSTS is only sent over HTTPS).
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# Access logs in JSON. Make sure no PII ends up in the logs
+	# (see docs/DATA_POLICY.md).
+	log {
+		output stdout
+		format json
+	}
+
+	reverse_proxy app:3000
+}

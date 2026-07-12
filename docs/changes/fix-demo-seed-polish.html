@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase &middot; demo seed polish</title>
+    <style>
+      body {
+        font:
+          15px/1.6 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 820px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.4px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-top: 32px;
+        border-bottom: 1px solid #e8e1d9;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e8e1d9;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 14px 0;
+      }
+      .was {
+        color: #9a3b35;
+      }
+      .now {
+        color: #1f7a4d;
+      }
+      ol li {
+        margin: 6px 0;
+      }
+      code {
+        background: #f1ebe4;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+      .muted {
+        color: #9a9ea8;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Demo seed polish: a realistic win-rate + a non-empty add-on request list</h1>
+      <p class="muted">
+        Branch <code>fix/demo-seed-polish</code> &middot; demo data (seed) only, business logic
+        untouched.
+      </p>
+
+      <h2>What changed</h2>
+      <div class="card">
+        <strong>1. A manager's win-rate is no longer 100%.</strong>
+        <p>
+          Manager Daniel Owens had only won completed deals in the demo data, so "Funnel conversion"
+          showed an unrealistic 100%. Added one completed lost deal.
+        </p>
+        <p><span class="was">Before → </span> win-rate 100% (2 won / 0 lost)</p>
+        <p><span class="now">After → </span> win-rate ≈ 67% (2 won / 1 lost)</p>
+      </div>
+      <div class="card">
+        <strong>2. The "Add-on requests today" list is no longer empty.</strong>
+        <p>
+          On the add-on requests screen (<code>/shipments/additional</code>), the list of today's
+          entries was always empty — there was no demo data for add-on requests. Added 2 add-on
+          requests with a <em>dynamic</em> shipment date (computed at seed time) so they always fall
+          into the "today" filter.
+        </p>
+        <p><span class="was">Before → </span> "No add-on requests for today."</p>
+        <p>
+          <span class="now">After → </span> 2 add-on requests (Union Grocery Wholesale / Sweet World
+          Bakery), tied to request REQ-2026-0006.
+        </p>
+      </div>
+
+      <h2>Repro steps</h2>
+      <ol>
+        <li>Sign in as a <strong>manager</strong> (quick login at <code>/login</code>).</li>
+        <li>
+          Open <strong>Analytics</strong> (<code>/analytics</code>) → the funnel block: "Funnel
+          conversion" shows ~67%, not 100%.
+        </li>
+        <li>
+          Open <strong>Add-on requests</strong> (<code>/shipments/additional</code>) → the "Add-on
+          requests today" block at the bottom shows 2 rows (not "none").
+        </li>
+        <li>The "add-on requests today" counter in the header shows 2.</li>
+      </ol>
+
+      <h2>Technical notes</h2>
+      <ul>
+        <li>
+          Data is seeded both in-memory (<code>composition-root.ts</code>) and in Postgres
+          (<code>prisma/seed.ts</code>) — parity between modes.
+        </li>
+        <li>
+          The add-on request date is <code>new Date()</code> at seed time: on the demo stand the
+          "today" list refills on reseed (container restart/redeploy).
+        </li>
+        <li>
+          The DB schema didn't change — the <code>additional_orders</code> table already existed.
+        </li>
+        <li><code>npm run verify</code> — green (typecheck + lint + format + 900 tests).</li>
+      </ul>
+    </div>
+  </body>
+</html>

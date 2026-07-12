@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>"Order → accounting" handoff memo — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        align-items: center;
+        margin: 0.4rem 0 0;
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #fafcfe;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+      .pill--now {
+        border-color: var(--accent);
+        background: #e8f5fd;
+        color: var(--accent-strong);
+        font-weight: 600;
+      }
+      .arrow {
+        color: var(--muted);
+      }
+      table.demo {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+        font-size: 0.9rem;
+      }
+      table.demo th,
+      table.demo td {
+        text-align: left;
+        padding: 0.5rem 0.6rem;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      table.demo th {
+        background: #fafcfe;
+      }
+      .badge {
+        display: inline-block;
+        background: #eef3f8;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.05rem 0.4rem;
+        margin: 0.1rem 0.15rem 0.1rem 0;
+        font-size: 0.78rem;
+      }
+      .note {
+        background: #fafcfe;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin-top: 0.8rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>"Order → accounting" handoff memo</h1>
+      <p>
+        The missing link in the #128 end-to-end chain: the system automatically assembles the
+        package accounting needs to process for the order — before it's handed off to the warehouse.
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done</h2>
+        <ul>
+          <li>
+            On the <b>Shipments &amp; delivery</b> page (<span class="kbd">/shipments</span>) the
+            first document in the flow was added — the <b>"Accounting handoff memo"</b>: what to
+            process for the order <b>before</b> it's handed to the warehouse.
+          </li>
+          <li>
+            The document <b>assembles itself from the order</b> (passive capture): client details
+            (<b>EIN</b>), order number, line items, weight, ship date, and the
+            <b>standard ERP document package</b> to issue (Invoice · Packing slip · Tax invoice).
+            The accountant doesn't need to retype the order by hand — that was the main pain point
+            from the call transcripts.
+          </li>
+          <li>
+            Only orders in the <b>"Placed" / "In accounting"</b> stages make it into the memo — the
+            ones that haven't gone to the warehouse yet. At the top — a counter of "orders to
+            process" and the package's total weight.
+          </li>
+          <li>
+            Everything is <b>deterministic</b> from the data (not from AI). A pure domain function
+            <span class="kbd">buildAccountingHandoff</span> (<span class="kbd"
+              >domain/shipment/accounting.ts</span
+            >), wired into the existing use case <span class="kbd">getDispatchPlan</span>
+            alongside the warehouse memo and the summary report.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Where it sits in the #128 chain</h2></div>
+        <div class="card__body">
+          <div class="flow">
+            <span class="pill">Order (Manager)</span>
+            <span class="arrow">→</span>
+            <span class="pill pill--now">Accounting · handoff memo</span>
+            <span class="arrow">→</span>
+            <span class="pill">Warehouse memo</span>
+            <span class="arrow">→</span>
+            <span class="pill">Summary report</span>
+            <span class="arrow">→</span>
+            <span class="pill">Delivery schedule</span>
+          </div>
+          <div class="note">
+            The warehouse memo, summary report, and delivery schedule already existed; the first
+            link — the handoff to accounting — was missing. Now the whole "order → accounting →
+            warehouse → delivery" chain is assembled by the system as derived documents. The
+            shipment stage <span class="kbd">in_accounting</span>
+            ("In accounting") already existed in the model for this — the handoff memo gives it
+            meaning.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>What it looks like (on demo data)</h2></div>
+        <div class="card__body">
+          <table class="demo">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Client</th>
+                <th>EIN</th>
+                <th>Line items</th>
+                <th>Weight</th>
+                <th>Ship date</th>
+                <th>Documents</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SO-2026-0006</td>
+                <td>Union Grocery Wholesale</td>
+                <td>39-0511223</td>
+                <td>…</td>
+                <td>—</td>
+                <td>2026-06-25</td>
+                <td>
+                  <span class="badge">Invoice</span>
+                  <span class="badge">Packing slip</span>
+                  <span class="badge">Tax invoice</span>
+                </td>
+              </tr>
+              <tr>
+                <td>SO-2026-0012</td>
+                <td>Cascade Mill Co.</td>
+                <td>39-2033445</td>
+                <td>Improver S500 — 300 kg</td>
+                <td>300 kg</td>
+                <td>2026-06-26</td>
+                <td>
+                  <span class="badge">Invoice</span>
+                  <span class="badge">Packing slip</span>
+                  <span class="badge">Tax invoice</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>What's left behind the port (not in this PR)</h2></div>
+        <div class="card__body">
+          Actually issuing the documents in the ERP (invoice/packing slip/tax invoice) and a return
+          waybill for claims — behind the <span class="kbd">ErpGateway</span>
+          port and dependent on connecting the real ERP (<b>#15</b>, blocker — an anonymized copy of
+          the database is needed, #1). The order write contract is already in place (ADR-0006). The
+          handoff memo is the system-assembled source package for that issuance.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Open <b>Shipments &amp; delivery</b> (<span class="kbd">/shipments</span>) under an
+              operational role (head of sales / procurement).
+            </li>
+            <li>
+              The first section — the <b>"Accounting handoff memo"</b> with an "orders to process"
+              counter and a table: order, client, EIN, line items, weight, ship date, document
+              package.
+            </li>
+            <li>
+              The rows show only orders in the <b>"Placed" / "In accounting"</b> stages; orders that
+              have gone to the warehouse/delivery/been delivered are not shown in the memo (they've
+              already gone through accounting).
+            </li>
+            <li>
+              Move the order past "In accounting" with the "Next stage →" button (in the warehouse
+              memo) — the row disappears from the handoff memo. This shows that the document
+              reflects the <b>current</b> state of the flow.
+            </li>
+          </ol>
+          <div class="note">
+            TDD: +6 domain tests (filter by stage, details+EIN, null EIN, document package, sort by
+            date/number, total weight). verify — 434 tests (86 files) green, tsc clean, production
+            build green, the section was verified on demo data in the browser.
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · "order → accounting" handoff memo (#128)</footer>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+# Demo composition: CRM + Postgres (CRM data) + a live mock ERP + a DB viewer.
+# Data is synthetic (no PII/trade secrets), so it can be hosted anywhere.
+# Portable: runs the same way on a self-hosted server or in a partner's cloud.
+#
+#   docker compose -f docker-compose.demo.yml up -d --build
+#
+# Exposed ports (for a tunnel/proxy in front), overridable:
+#   ${APP_PORT:-3001}     → CRM   (login: owens|grant|mills · demo1234)
+#   ${MOCK_ERP_PORT:-8108}  → the "ERP" window
+#   ${ADMINER_PORT:-8081} → DB viewer (Adminer): system PostgreSQL, server db, user/password crmpro
+# CRM <-> ERP — over the docker network (http://mock-erp:8108); CRM <-> DB — postgres://db:5432.
+#
+# Where things show up: deals/activities/events/clients → in the DB (Adminer) + on the
+# site; orders/reservations → in the ERP window + on the site. The migration to Postgres
+# is complete (21/21 entities are persistent and survive a restart); only derived
+# entities without seed data (acts/audits/samples/descriptions) start empty on a fresh
+# DB — their seed is added in a separate PR.
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: crmpro
+      POSTGRES_PASSWORD: crmpro
+      POSTGRES_DB: crmpro
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crmpro"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+
+  # One-off schema sync + seed (image from the builder stage: prisma CLI + schema).
+  # Stopgap for #332: db push instead of migrate deploy — self-syncs with schema.prisma
+  # and adds missing columns to the existing demo DB. Some changes were appended
+  # directly to the baseline migration 0_init instead of additive migrations, so
+  # migrate deploy won't re-apply them (see #332). Demo data is synthetic, so db push
+  # is safe here. The proper fix is tracked in #332.
+  migrator:
+    build:
+      context: .
+      target: builder
+    image: crm-pro-migrator:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://crmpro:crmpro@db:5432/crmpro?schema=public"
+    command: sh -c "npx prisma db push && npm run db:seed"
+    restart: "no"
+
+  mock-erp:
+    build: ./tools/mock-erp
+    image: crm-pro-mock-erp:latest
+    restart: unless-stopped
+    environment:
+      MOCK_ERP_PORT: 8108
+      MOCK_ERP_STORE: /data/state.json
+    volumes:
+      - mock-erp_data:/data
+    expose:
+      - "8108"
+    ports:
+      - "127.0.0.1:${MOCK_ERP_PORT:-8108}:8108"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  app:
+    build: .
+    image: crm-pro:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+      mock-erp:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      # CRM data (deals/activities/events/clients...) lives in Postgres.
+      PERSISTENCE_MODE: postgres
+      DATABASE_URL: "postgresql://crmpro:crmpro@db:5432/crmpro?schema=public"
+      # The CRM really talks to "ERP" over the network — only the address changes
+      # (here, the mock-erp container).
+      ERP_MODE: odata
+      ERP_BASE_URL: http://mock-erp:8108
+      ERP_USERNAME: demo
+      ERP_PASSWORD: demo
+      # The "ERP" button in the CRM header points at the ERP window (its public address).
+      ERP_UI_URL: ${ERP_UI_URL:-}
+      # AI: stub by default (no keys needed). To enable a real provider (voice-to-act
+      # via a real LLM/STT) set these in a .env next to this compose file
+      # (see docs/LLM_SETUP.md): AI_MODE=live AI_PROVIDER=anthropic AI_API_KEY=...
+      AI_MODE: ${AI_MODE:-stub}
+      AI_PROVIDER: ${AI_PROVIDER:-anthropic}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-}
+      # Assistant web search: stub by default. To enable it, set in .env:
+      #   WEB_SEARCH_MODE=live WEB_SEARCH_PROVIDER=brave WEB_SEARCH_API_KEY=...
+      WEB_SEARCH_MODE: ${WEB_SEARCH_MODE:-stub}
+      WEB_SEARCH_PROVIDER: ${WEB_SEARCH_PROVIDER:-brave}
+      WEB_SEARCH_API_KEY: ${WEB_SEARCH_API_KEY:-}
+    expose:
+      - "3000"
+    ports:
+      - "${APP_PORT:-3001}:3000"
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # DB viewer — a visual way to watch rows appear in the tables.
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-8081}:8080"
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  mock-erp_data:
+  pg_data:

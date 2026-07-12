@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — Clients RBAC + dead controls (#369)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+      .sec {
+        background: #fbf1d6;
+        border-left: 4px solid #9a6a00;
+        padding: 0.6rem 0.9rem;
+        margin: 0.8rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Clients RBAC + revived controls (clients / notifications / onboarding / analytics)</h1>
+    <p>
+      <span class="tag">fix</span> &middot; PR for issue <code>#369</code> &middot; refs
+      <code>#317</code> &middot; branch <code>fix/clients-deadcontrols</code>
+    </p>
+    <p>
+      A batch of findings from a demo QA pass: operational roles could see the commercial client
+      base, and several controls on various screens were "drawn" but did nothing. Fixed six items.
+    </p>
+
+    <h2>What changed</h2>
+    <ol>
+      <li>
+        <strong>Clients RBAC (main fix).</strong> The client base section (AR, credit limit, prices)
+        is now available only to commercial roles —
+        <em>Head of sales, Manager, category manager</em>. Accounting, Logistics, and Technologist
+        get a <code>redirect</code> to the home page on <code>/clients</code>, and the "Clients"
+        item is removed from their menu. A new predicate <code>canSeeClientBase(role)</code> is the
+        single source of truth (page + sidebar).
+      </li>
+      <li>
+        <strong>Working client search.</strong> The "Search clients" field was a decorative
+        <code>&lt;div&gt;</code>. It's now a GET form → <code>?q=</code> (SSR, like the filters):
+        case-insensitive name search, the active segment filter and the query persist together.
+      </li>
+      <li>
+        <strong>"Create task" on the client card.</strong> The button led to <code>/deals</code>,
+        where the create form only opens for Manager/Head of sales — everyone else hit a silent dead
+        end. Hid the button for roles without deal-creation rights (<code>canCreateDeal</code>).
+      </li>
+      <li>
+        <strong>Notifications — filter chips.</strong> "All / New / Read / By task" were dead
+        <code>&lt;button&gt;</code> elements. Switched to the shared <code>OpsFilters</code> →
+        <code>?filter=</code> (like the ops screens): the list actually narrows by status/task-link.
+      </li>
+      <li>
+        <strong>Onboarding — "Export" and chips.</strong> These were stubs. "Export" is now the
+        shared <code>ExportButton</code> (CSV of the current selection), the "All / Gathering
+        documents / Under negotiation / Approved" chips are the shared <code>OpsFilters</code> with
+        <code>?filter=</code>.
+      </li>
+      <li>
+        <strong>Analytics — "AI insight" card.</strong> The "Ask the assistant" button had no
+        handler — it's now a <code>&lt;Link href="/assistant"&gt;</code> (shown only to those who
+        can actually open the assistant — Head of sales). The insight text is honestly labeled as an
+        <em>example</em> ("AI insight · example" + caption). Charts/breakdown/period/export were
+        untouched.
+      </li>
+    </ol>
+
+    <div class="sec">
+      <strong>Why the RBAC is like this:</strong> the client list with financials is a trade secret
+      (see <code>docs/DATA_POLICY.md</code>), not operational data. Accounting/Logistics work within
+      their own scope (orders/shipments), the Technologist works with the test queue; none of them
+      need the commercial client base.
+    </div>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td><code>/clients</code> for Accounting/Logistics/Technologist</td>
+        <td class="was">See all clients; Accounting/Logistics — with AR/limit/prices</td>
+        <td class="now">Redirect to home; "Clients" item hidden from the menu</td>
+      </tr>
+      <tr>
+        <td>Client search</td>
+        <td class="was">A decorative div — does nothing</td>
+        <td class="now">GET form <code>?q=</code>, name filter (SSR)</td>
+      </tr>
+      <tr>
+        <td>"Create task" on the card (a role without the right)</td>
+        <td class="was">Leads to <code>/deals</code>, form doesn't open — dead end</td>
+        <td class="now">Button hidden</td>
+      </tr>
+      <tr>
+        <td>Notification chips</td>
+        <td class="was">Dead buttons</td>
+        <td class="now">Working <code>?filter=</code> (All/New/Read/By task)</td>
+      </tr>
+      <tr>
+        <td>Onboarding: "Export" + chips</td>
+        <td class="was">Stubs</td>
+        <td class="now">CSV export of the selection + working status chips</td>
+      </tr>
+      <tr>
+        <td>Analytics: "Ask the assistant"</td>
+        <td class="was">Button with no onClick</td>
+        <td class="now">Link to <code>/assistant</code> (for Head of sales)</td>
+      </tr>
+      <tr>
+        <td>Analytics: "AI insight" card</td>
+        <td class="was">Hardcoded text with no label</td>
+        <td class="now">Labeled as an example</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li><code>npm run dev</code>.</li>
+      <li>
+        Log in as an <strong>accountant</strong> (or logistics) → the "Clients" menu item is absent;
+        navigating directly to <code>/clients</code> redirects to the home page.
+      </li>
+      <li>
+        Log in as a <strong>Manager</strong> or <strong>Head of sales</strong> → "Clients" is there;
+        type part of a name (e.g. "Barry") into the "Search clients" field + Enter → the list
+        narrows; switching a segment chip preserves the query.
+      </li>
+      <li>
+        Log in as a <strong>category manager</strong> → "Clients" is accessible (procurement), but
+        the client card has no "Create task" button; a Manager/Head of sales has one and it leads to
+        the form.
+      </li>
+      <li>
+        <strong>Notifications</strong> → click the "New / Read / By task" chips — the list actually
+        filters (the URL changes to <code>?filter=…</code>).
+      </li>
+      <li>
+        <strong>Onboarding</strong> → the status chips filter the list; "Export" downloads a CSV of
+        the current selection.
+      </li>
+      <li>
+        <strong>Analytics</strong> (Head of sales) → the "AI insight · example" card, the "Ask the
+        assistant" button leads to <code>/assistant</code>. A Manager has no button (head-only
+        section).
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        TDD on the logic: role predicates
+        (<code>canSeeClientBase</code>/<code>canCreateDeal</code>), client search, notification and
+        onboarding filters — dedicated tests.
+      </li>
+      <li><code>npm run verify</code> <span class="ok">green</span> — 742 tests.</li>
+      <li>
+        <code>next build</code> (production) <span class="ok">green</span> — all routes built.
+      </li>
+      <li>The warm theme and working controls (filters/export/charts) aren't broken.</li>
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inline editing of deal fields — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      table.ba {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.3rem;
+      }
+      table.ba th,
+      table.ba td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      table.ba th {
+        background: #fafcfe;
+        width: 7rem;
+      }
+      .was {
+        color: #b04141;
+      }
+      .now {
+        color: #1f8a4c;
+      }
+      .note {
+        background: #fafcfe;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin-top: 0.8rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Inline editing of deal fields</h1>
+      <p>Click a value in the "Overview" → edit it in place → Enter saves. No "Edit" form.</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            Three "Overview" fields in the deal header can be edited <b>in place</b>:
+            <b>Name</b> (text), <b>Deal goal</b> (select), <b>Owner</b> (manager select).
+          </li>
+          <li>
+            Clicking a value turns it into an input/select.
+            <span class="kbd">↵ Enter</span> saves, <span class="kbd">esc</span> cancels and
+            restores the original value. No separate "Edit" mode is needed for this.
+          </li>
+          <li>
+            <b>Optimistic:</b> the new value shows immediately, without waiting for the server. If
+            the server rejects the edit (no permission, empty value) — the value <b>rolls back</b>
+            to the original and an error message is shown.
+          </li>
+          <li>
+            Respects the <b>owner boundary (RBAC)</b>: a sales rep edits only their own deals; on
+            someone else's deal the fields render as static text (the same check as deal editing).
+          </li>
+          <li>
+            Under the hood — reusable <b>InlineEditField</b> / <b>InlineEditSelect</b> components,
+            ready to be embedded in the side drawer too. No domain logic is duplicated — the edit
+            goes through the existing deal-update use-case.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after (changing a deal's goal)</h2></div>
+        <div class="card__body">
+          <table class="ba">
+            <tr>
+              <th>Before</th>
+              <td class="was">
+                A separate "Deal goal" form with a dropdown and a <b>"Save"</b> button under the
+                header; a full edit went through the "Edit" modal with a multi-field form.
+                <b>An extra "Save" click for every single field.</b>
+              </td>
+            </tr>
+            <tr>
+              <th>After</th>
+              <td class="now">
+                Click the goal value → pick from the list → <span class="kbd">Enter</span>. The
+                value is saved. <b>No "Save" button, no separate edit mode.</b>
+              </td>
+            </tr>
+          </table>
+          <div class="note">
+            The deal domain has no "priority" field (as in the original task description) — it
+            doesn't exist in the model. Instead, <b>Owner</b> is edited inline (a real, meaningfully
+            editable field that actually exists). "Next step" is a task/activity (set via the
+            quick-action from TASK-5), not a deal field, so the inline set covers three deal fields:
+            Name, Goal, Owner.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Why (vs legacy CRMs)</h2></div>
+        <div class="card__body">
+          Legacy CRMs still open a separate edit form for any small field change — a marker of a
+          legacy interface. Click-to-edit inline (as in Attio / Linear / Notion) is a 2024+ pattern:
+          fewer clicks, no switching into an "edit mode", the edit feels instant thanks to the
+          optimistic update.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open <b>Deals</b> (<span class="kbd">/deals</span>) and open any deal.</li>
+            <li>
+              In the header below the buttons — a block of fields <b>Name / Deal goal / Owner</b>.
+              Values get underlined on hover (a marker that they're clickable).
+            </li>
+            <li>
+              Click the <b>Deal goal</b> value → a dropdown appears → pick another goal →
+              <span class="kbd">Enter</span>. The value changes immediately; after reloading the
+              page it's still saved.
+            </li>
+            <li>
+              Click <b>Name</b> → the field becomes an input → change the text →
+              <span class="kbd">Enter</span> saves it.
+            </li>
+            <li>
+              Check cancellation: enter edit mode on any field, change the value, and press
+              <span class="kbd">esc</span> — the edit is canceled, the original value stays, nothing
+              is saved.
+            </li>
+            <li>
+              Edge case: clear <b>Name</b> completely and press <span class="kbd">Enter</span> — the
+              server rejects it (the name cannot be empty), the value rolls back to the original, an
+              error message shows next to it.
+            </li>
+            <li>
+              RBAC: as a sales rep, open someone else's deal — the fields render as plain text, they
+              don't enter edit mode (your own deals — still editable).
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · inline editing of deal fields (#158)</footer>
+  </body>
+</html>

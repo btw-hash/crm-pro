@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI product descriptions — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ai: #8250df;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--ai);
+        background: #f3eefb;
+        border-radius: 999px;
+        padding: 0.1rem 0.5rem;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>AI product descriptions in the catalog</h1>
+      <p>AI drafts descriptions ahead of time, tagged "AI-generated" with a source link</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (closes #213)</h2>
+        <ul>
+          <li>
+            AI generates reference product descriptions
+            <b>ahead of time (in a batch, not in real time)</b> and stores them separately.
+          </li>
+          <li>
+            In the catalog, the description shows a <span class="badge">🤖 AI-generated</span> tag
+            and a "source →" link — a human reviews/edits it.
+          </li>
+          <li>
+            The data isn't sensitive (name/category/benefits) → a general-purpose AI provider is
+            allowed; the PII guardrail (#179) lets it through. The source link is a search by name
+            (not a made-up AI URL).
+          </li>
+          <li>
+            The "Generate" button is available to the category manager/head of sales; re-running it
+            leaves already-generated descriptions untouched.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Catalog</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Product description</td>
+                <td class="was">Only benefits/shelf life/price from the reference table</td>
+                <td>+ AI description with a tag and source</td>
+              </tr>
+              <tr>
+                <td>How it's prepared</td>
+                <td class="was">—</td>
+                <td>Batched ahead of time into separate storage, not on every view</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Sign in as <b>Alan Peterson (Head of Sales)</b> or <b>Buyer</b>, open "Catalog".
+            </li>
+            <li>Click <b>"🤖 Generate AI descriptions"</b>.</li>
+            <li>
+              Cards get a description with a <span class="badge">🤖 AI-generated</span> tag and a
+              "source →" link (e.g. "Belcolade — premium Belgian chocolate…").
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · AI product descriptions (#213)</footer>
+  </body>
+</html>

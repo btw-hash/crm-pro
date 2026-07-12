@@ -1,0 +1,2051 @@
+/* ============================================================================
+   CRM Pro — globals.css · WARM PALETTE (design system "CRM Pro UI")
+   Drop-in replacement for src/app/globals.css in the crm-pro repo.
+   All class selectors are kept 1:1 with the original globals.css — the markup
+   (.tsx) does not need to change. Only the visual layer changes:
+     - cream background with warm radial "blobs"
+     - frosted-glass cards
+     - dark rounded floating sidebar
+     - brick-red + ochre accents, Arial font
+   Apply as a "hot" file in its own separate PR (see CLAUDE.md -> "Hot files").
+   Full instructions and the visual reference are in this package's README.md.
+
+   Checked against src/app/globals.css @ main: the selector set is complete,
+   the `.kanban__card .stage-controls` scope is preserved (the rule hides stage
+   buttons only on the kanban card, without touching the deal card/assistant/modal).
+   ========================================================================== */
+
+:root {
+  /* ── Warm palette ─────────────────────────────────────── */
+  --bg: #f8f3ef; /* cream page background */
+  --surface: #ffffff;
+  --fg: #16181d; /* main text (near-black) */
+  --muted: #6e6a66; /* warm gray — secondary text */
+  --accent: #bf322b; /* brick red — primary accent */
+  --accent-strong: #a82820; /* hover / pressed */
+  --accent-bright: #ce443c;
+  --ochre: #e3b32b; /* ochre — secondary accent */
+  --ochre-deep: #c9991c;
+  --ai-glow: rgba(231, 186, 60, 0.4); /* warm golden glow for AI tiles/buttons (not indigo) */
+  --border: #e8e1d9; /* warm hairline */
+  --track: #ede7e0; /* bar/progress tracks */
+  --badge-bg: #f6e7e2; /* soft red tint (default badges/chips) */
+  --sidebar-bg: #1c1f27; /* dark charcoal rail shell */
+  --sidebar-fg: #9aa0ad;
+
+  /* Charcoal neutral ramp (structure: bars, avatars, active nav) */
+  --ink-900: #16181d;
+  --ink-800: #1c1f27;
+  --ink-700: #2b303c;
+  --ink-600: #363c49;
+  --ink-500: #565e6e;
+
+  /* Status semantics */
+  --success: #1f9e6c;
+  --success-soft: #e7f5ee;
+  --warning: #c9991c;
+  --warning-soft: #fbf1d6;
+  --danger: #bf322b;
+  --danger-soft: #f7e4e2;
+
+  /* Shadows (low opacity + inner top highlight for glass) */
+  --card-shadow: 0 10px 30px rgba(45, 38, 32, 0.1);
+  --shadow-pill: 0 4px 12px rgba(45, 38, 32, 0.12), 0 1px 2px rgba(45, 38, 32, 0.06);
+  --shadow-pop: 0 18px 50px rgba(40, 30, 25, 0.22);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+  /* Glass */
+  --glass-card-bg: rgba(255, 255, 255, 0.62);
+  --glass-card-border: 1px solid rgba(255, 255, 255, 0.7);
+  --glass-blur: blur(22px) saturate(1.3);
+  --glass-soft-bg: rgba(255, 255, 255, 0.5);
+  --glass-soft-blur: blur(14px) saturate(1.4);
+
+  /* Radii */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* Dark "AI" surface with a warm glow */
+  --ai-gradient:
+    radial-gradient(135% 122% at 100% -4%, rgba(231, 186, 60, 0.4) 0%, transparent 56%),
+    radial-gradient(135% 135% at -5% 106%, rgba(206, 68, 60, 0.46) 0%, transparent 56%),
+    linear-gradient(150deg, #2a2f3b 0%, #181b22 52%, #0c0e13 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, "Helvetica Neue", Helvetica, "Segoe UI", sans-serif;
+  color: var(--fg);
+  background-color: var(--bg);
+  /* Warm field made of three radial blobs — this is what the glass refracts. */
+  background-image:
+    radial-gradient(820px 560px at 96% -6%, rgba(191, 50, 43, 0.16), transparent 60%),
+    radial-gradient(620px 560px at 38% 14%, rgba(227, 179, 43, 0.18), transparent 62%),
+    radial-gradient(760px 620px at 78% 112%, rgba(150, 120, 90, 0.1), transparent 60%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Shell: left sidebar + content ───────────────────────── */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Floating rounded charcoal rail. */
+.app-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-fg);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 14px;
+  height: calc(100vh - 28px);
+  margin: 14px 0 14px 14px;
+  border-radius: 26px;
+  padding: 6px 0 10px;
+  overflow: hidden;
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.1rem 1.25rem 0.9rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.3px;
+  color: #fff;
+}
+
+/* "⬢" in markup → red square monogram. */
+.app-sidebar__brand span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.app-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0.6rem;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.app-sidebar__nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  color: var(--sidebar-fg);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  border-radius: 12px;
+  border-left: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.app-sidebar__nav a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+/* Active item — a filled charcoal "pill" (no left stripe). */
+.app-sidebar__nav a.active {
+  background: var(--ink-700);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Emoji icons are muted; full color on active/hover keeps the rail clean. */
+.app-sidebar__icon {
+  width: 1.2rem;
+  text-align: center;
+  filter: grayscale(0.45) opacity(0.8);
+  transition: filter 0.2s ease;
+}
+.app-sidebar__nav a:hover .app-sidebar__icon,
+.app-sidebar__nav a.active .app-sidebar__icon {
+  filter: none;
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar — a frosted-glass strip. */
+.app-topbar {
+  height: 60px;
+  background: var(--glass-soft-bg);
+  backdrop-filter: var(--glass-soft-blur);
+  -webkit-backdrop-filter: var(--glass-soft-blur);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.6rem;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.app-topbar strong {
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.app-topbar__spacer {
+  flex: 1;
+}
+
+/* ── Notification bell ────────────────────────────────────── */
+.bell {
+  position: relative;
+  text-decoration: none;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0.2rem 0.3rem;
+}
+
+.bell__count {
+  position: absolute;
+  top: -3px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  /* Ochre = novelty (design §5.1): the unread counter is ochre, not red. */
+  background: #9a6a00;
+  color: #fff;
+  font-size: 0.68rem;
+  line-height: 16px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.timeline__item--unread {
+  background: var(--badge-bg);
+}
+
+.app-main {
+  padding: 1.7rem 1.8rem;
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+h1 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0.2rem 0 0.4rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  margin-top: 1.6rem;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+/* ── 360 card tabs ───────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.1rem;
+}
+
+.tab {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.95rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--fg);
+}
+
+.tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+
+/* ── Lists/tables ────────────────────────────────────────── */
+.card-list {
+  list-style: none;
+  padding: 0;
+}
+
+.card-list li {
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--card-shadow), var(--glass-inset);
+  padding: 0.75rem 0.95rem;
+  margin-bottom: 0.55rem;
+}
+
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-card-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--card-shadow), var(--glass-inset);
+}
+
+.grid th,
+.grid td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid rgba(60, 50, 40, 0.08);
+  vertical-align: top;
+}
+
+.grid th {
+  background: rgba(243, 236, 228, 0.6);
+  font-weight: 600;
+  color: #5a5048;
+  font-size: 0.85rem;
+}
+
+.grid tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Badges (+ color by stage) ─────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Stages — keep the semantic colors, harmonized for the warm field. */
+.badge[data-stage="qualification"] {
+  background: #efe9e2;
+  color: #6a5f54;
+}
+.badge[data-stage="audit"] {
+  background: #eae6f3;
+  color: #5b4b9a;
+}
+.badge[data-stage="test_requested"] {
+  background: var(--warning-soft);
+  color: #9a6a00;
+}
+.badge[data-stage="testing"] {
+  background: #e4f1f4;
+  color: #2a7d92;
+}
+.badge[data-stage="quote"] {
+  background: #efeafb;
+  color: #6b46c1;
+}
+.badge[data-stage="won"] {
+  background: var(--success-soft);
+  color: #197a48;
+}
+.badge[data-stage="lost"] {
+  background: var(--danger-soft);
+  color: var(--accent-strong);
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.stage-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.btn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.42rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    filter 0.18s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--ink-500);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Primary action (submit) — charcoal fill (we save accent-red for data). */
+button[type="submit"].btn,
+.btn--primary {
+  background: var(--ink-800);
+  border-color: var(--ink-800);
+  color: #fff;
+}
+
+button[type="submit"].btn:hover:not(:disabled),
+.btn--primary:hover:not(:disabled) {
+  background: var(--ink-700);
+  border-color: var(--ink-700);
+  filter: none;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
+/* ── Forms ─────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 460px;
+  margin-bottom: 1.2rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.form input,
+.form textarea,
+.form select {
+  font: inherit;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--fg);
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(191, 50, 43, 0.15);
+}
+
+.form .btn {
+  align-self: flex-start;
+}
+
+/* ── Cards ──────────────────────────────────────────────── */
+.card {
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-card-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--card-shadow), var(--glass-inset);
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.2rem;
+  max-width: 460px;
+}
+
+.card p {
+  margin: 0.3rem 0;
+}
+
+.balance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  align-items: baseline;
+  max-width: none;
+}
+
+.balance--alert {
+  border-color: #e6b3ae;
+  background: rgba(247, 228, 226, 0.75);
+}
+
+.balance__flag {
+  flex-basis: 100%;
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+.proposal__savings {
+  flex-basis: 100%;
+  color: var(--success);
+  font-size: 1.05rem;
+}
+
+/* ── Activity feed ─────────────────────────────────────── */
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.2rem;
+  max-width: 600px;
+}
+
+.timeline__item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline__item--event {
+  background: rgba(243, 236, 228, 0.5);
+  border-left: 2px solid var(--accent);
+  padding-left: 0.5rem;
+}
+
+.timeline__body {
+  flex: 1;
+}
+
+.timeline__body p {
+  margin: 0 0 0.2rem;
+}
+
+/* ── Deal kanban funnel ─────────────────────────────────────── */
+.kanban {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  padding-bottom: 0.6rem;
+}
+
+.kanban__col {
+  flex: 0 0 234px;
+  background: rgba(235, 227, 219, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--r-md);
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.kanban__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.kanban__count {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.kanban__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 14px rgba(45, 38, 32, 0.08),
+    var(--glass-inset);
+  padding: 0.6rem 0.7rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: grab;
+}
+
+.kanban__card:hover {
+  border-color: var(--accent);
+}
+
+.kanban__card--dragging {
+  opacity: 0.45;
+}
+
+.kanban__card--pending {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.kanban__col--over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+  background: rgba(247, 231, 226, 0.7);
+}
+
+.kanban__col--nodrop {
+  opacity: 0.55;
+}
+
+.kanban__card-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+/* Score Pill — deal health at a glance. */
+.health-dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  flex: none;
+}
+.health-dot--healthy {
+  background: var(--success);
+}
+.health-dot--attention {
+  background: var(--ochre);
+}
+.health-dot--critical {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px rgba(191, 50, 43, 0.16);
+}
+
+.kanban__empty {
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding: 0.2rem 0.1rem;
+}
+
+/* ── Deal goal and client priority ───────────────────────── */
+.goal-editor,
+.kanban-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Saved Views — quick-filter tabs above the funnel. */
+.saved-views {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px solid var(--border);
+}
+.saved-view {
+  font: inherit;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+.saved-view:hover {
+  color: var(--fg);
+}
+.saved-view--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.saved-view__count {
+  font-size: 0.74rem;
+  color: var(--muted);
+  background: var(--badge-bg);
+  border-radius: 10px;
+  padding: 0.02rem 0.4rem;
+}
+.saved-view--active .saved-view__count {
+  color: var(--accent-strong);
+}
+
+.goal-editor {
+  margin: 0.4rem 0 1rem;
+}
+
+.kanban-toolbar {
+  margin-bottom: 0.8rem;
+}
+
+.goal-editor select,
+.kanban-toolbar select {
+  font: inherit;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--fg);
+}
+
+.goal-badge {
+  align-self: flex-start;
+  background: #efe9e2;
+  color: #6a5f54;
+  font-size: 0.72rem;
+}
+
+/* A deal without a next step — a "stuck" signal. */
+.kanban__card--attention {
+  border-left: 3px solid var(--accent);
+}
+
+.attention-badge {
+  align-self: flex-start;
+  background: var(--danger-soft);
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+}
+
+.priority-badge--high {
+  background: var(--danger-soft);
+  color: var(--accent-strong);
+}
+.priority-badge--medium {
+  background: var(--warning-soft);
+  color: #9a6a00;
+}
+.priority-badge--low {
+  background: #efe9e2;
+  color: #6a5f54;
+}
+
+/* ── Funnel analytics ─────────────────────────────────────── */
+.metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1rem 0 1.6rem;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 120px;
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.metric__value {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--fg);
+}
+
+/* The first "hero" metric in the row — red. */
+.metric-row .metric:first-child .metric__value {
+  color: var(--accent);
+}
+
+.funnel {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.6rem;
+  max-width: 640px;
+}
+
+.funnel__row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.35rem 0;
+}
+
+.funnel__label {
+  flex: 0 0 160px;
+}
+
+.funnel__bar-track {
+  flex: 1;
+  background: var(--track);
+  border-radius: 6px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.funnel__bar {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 6px;
+  min-width: 2px;
+}
+
+/* Alternation: 2nd, 3rd bars — charcoal/ochre, so the row doesn't read as "all red". */
+.funnel__row:nth-child(2) .funnel__bar {
+  background: var(--ink-700);
+}
+.funnel__row:nth-child(3) .funnel__bar {
+  background: var(--ochre);
+}
+.funnel__row:nth-child(n + 4) .funnel__bar {
+  background: var(--ink-500);
+}
+
+.funnel__count {
+  flex: 0 0 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.funnel--goals .funnel__label {
+  flex: 1;
+}
+
+/* ── Login / session ─────────────────────────────────────────── */
+.app-auth {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.login {
+  width: 100%;
+  max-width: 360px;
+}
+
+.login__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-card-border);
+  border-radius: var(--r-lg);
+  padding: 1.9rem;
+  box-shadow: var(--card-shadow), var(--glass-inset);
+}
+
+.login__title {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: -0.4px;
+}
+
+.login__card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.login__card input {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font: inherit;
+  background: var(--surface);
+}
+
+.login__hint {
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--fg);
+}
+.btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: transparent;
+}
+
+.btn--revert {
+  color: var(--muted);
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.btn--revert:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--warning-soft);
+  border-color: var(--ochre);
+}
+
+.app-topbar__user {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-right: 0.6rem;
+}
+
+.login__demo {
+  max-width: 360px;
+  margin: 0.8rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login__demo p {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.login__demo-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login__demo-row .btn {
+  width: 100%;
+}
+
+/* ── Command palette (Ctrl+K) ──────────────────────────────── */
+.cmdk-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 1rem;
+  padding: 0.4rem 0.8rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: var(--glass-soft-bg);
+  backdrop-filter: var(--glass-soft-blur);
+  -webkit-backdrop-filter: var(--glass-soft-blur);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+.cmdk-trigger:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+.cmdk-trigger__kbd {
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.02rem 0.35rem;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 18, 14, 0.42);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12vh;
+  z-index: 100;
+}
+.cmdk {
+  width: 100%;
+  max-width: 560px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+.cmdk__input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.2rem;
+  font: inherit;
+  font-size: 1.05rem;
+  outline: none;
+  background: transparent;
+}
+.cmdk__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.cmdk__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.cmdk__item--active {
+  background: var(--badge-bg);
+}
+.cmdk__kind {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  background: rgba(243, 236, 228, 0.8);
+  border-radius: 5px;
+  padding: 0.1rem 0.4rem;
+  flex: none;
+  min-width: 4.2rem;
+  text-align: center;
+}
+.cmdk__kind--client {
+  color: var(--ink-600);
+}
+.cmdk__kind--deal {
+  color: var(--success);
+}
+.cmdk__kind--product {
+  color: var(--ochre-deep);
+}
+.cmdk__label {
+  font-weight: 600;
+}
+.cmdk__sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.cmdk__empty {
+  padding: 1rem 0.7rem;
+  color: var(--muted);
+  text-align: center;
+}
+.cmdk__hint {
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 1.2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ── Quick-actions on the funnel card + activity mini-popover ── */
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.quick-actions__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    opacity 0.12s ease,
+    max-height 0.12s ease;
+}
+.kanban__card:hover .quick-actions__bar,
+.kanban__card:focus-within .quick-actions__bar {
+  opacity: 1;
+  max-height: 6rem;
+}
+.quick-action {
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+}
+.quick-action:hover:not(:disabled) {
+  background: var(--badge-bg);
+}
+.quick-action--on {
+  background: var(--badge-bg);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+.quick-action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.quick-actions__saved {
+  font-size: 0.75rem;
+  color: var(--success);
+}
+.activity-popover {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--card-shadow);
+}
+.activity-popover__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.activity-pill {
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 0.18rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.activity-pill--active {
+  background: var(--ink-700);
+  border-color: var(--ink-700);
+  color: #fff;
+}
+.activity-popover__text {
+  font: inherit;
+  font-size: 0.8rem;
+  width: 100%;
+  resize: vertical;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+.activity-popover__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+.activity-popover__date {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+.activity-popover__error {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--danger);
+}
+
+/* Stage-change buttons ON THE KANBAN CARD are hidden by default; shown on
+   hover/focus and via "Change stage". The scope is strictly .kanban__card —
+   otherwise the rule would hide ALL .stage-controls (the deal card, assistant,
+   modals, and forms reuse the same class as a plain button row). 1:1 with the
+   original globals.css scope — do NOT remove .kanban__card from the selectors. */
+.kanban__card .stage-controls {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    opacity 0.12s ease,
+    max-height 0.12s ease;
+}
+.kanban__card:hover .stage-controls,
+.kanban__card:focus-within .stage-controls,
+.kanban__card .stage-controls--open {
+  opacity: 1;
+  max-height: 12rem;
+}
+
+button.kanban__card-title {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg);
+  font-family: inherit;
+}
+button.kanban__card-title:hover {
+  text-decoration: underline;
+}
+
+/* ── Drawer / modal ──────────────────────────────────────── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 18, 14, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 18, 14, 0.48);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  /* Above the mobile drawer (z-index 1200) so the modal isn't hidden behind it. */
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.modal-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--r-lg);
+  padding: 1.5rem 1.7rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-pop);
+}
+.drawer {
+  width: min(440px, 100%);
+  height: 100%;
+  background: rgba(248, 243, 239, 0.96);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: -12px 0 40px rgba(40, 30, 25, 0.2);
+  overflow-y: auto;
+  padding: 1.2rem 1.5rem 2rem;
+  animation: drawer-in 0.18s ease-out;
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.drawer__head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+.drawer__close {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0.25rem 0.45rem;
+  border-radius: var(--r-sm);
+}
+.drawer__close:hover {
+  background: var(--badge-bg);
+  color: var(--fg);
+}
+.drawer__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.drawer__pill--healthy {
+  color: var(--success);
+}
+.drawer__pill--attention {
+  color: var(--ochre-deep);
+}
+.drawer__pill--critical {
+  color: var(--danger);
+}
+.drawer__status {
+  padding: 1rem 0;
+}
+.drawer__title {
+  margin: 0.2rem 0 1rem;
+  font-size: 1.3rem;
+  letter-spacing: -0.4px;
+}
+.drawer__fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+.drawer__field {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+  margin: 0;
+}
+.drawer__field dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.drawer__field dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+.drawer__next-step {
+  margin: 0 0 1rem;
+}
+.drawer__subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.6rem;
+}
+.drawer__timeline {
+  margin-bottom: 1.2rem;
+}
+.drawer__full-link {
+  display: inline-block;
+}
+
+/* ── Inline editing of deal fields ────────────────────── */
+.inline-edit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.6rem 0 1rem;
+}
+.inline-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+}
+.inline-edit__label {
+  color: var(--muted);
+  min-width: 8rem;
+}
+.inline-edit__value {
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 1px dashed transparent;
+  border-radius: var(--r-sm);
+  padding: 0.2rem 0.45rem;
+  cursor: pointer;
+  color: inherit;
+}
+.inline-edit__value:hover:not(:disabled) {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.55);
+}
+.inline-edit__value:disabled {
+  cursor: default;
+}
+.inline-edit__input {
+  font: inherit;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  min-width: 12rem;
+  background: var(--surface);
+}
+.inline-edit__error {
+  font-size: 0.78rem;
+  color: var(--danger);
+}
+
+/* ── Home: role-based bento dashboard ────────────────────────── */
+.home__hero {
+  margin: 0 0 1.4rem;
+}
+.home__greeting {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 0.2rem;
+}
+.home__subtitle {
+  color: var(--muted);
+  margin: 0;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.tile {
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-card-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--card-shadow), var(--glass-inset);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.tile--wide {
+  grid-column: span 2;
+}
+@media (max-width: 720px) {
+  .tile--wide {
+    grid-column: span 1;
+  }
+}
+
+.tile__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.tile__title {
+  font-weight: 600;
+  font-size: 0.96rem;
+}
+.tile__icon {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.tile__metric {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+}
+.tile__metric--alert {
+  color: var(--danger);
+}
+.tile__metric--warn {
+  color: var(--ochre-deep);
+}
+.tile__metric--ok {
+  color: var(--success);
+}
+.tile__metric small {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.tile__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1.3rem;
+}
+.tile__metric-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 64px;
+}
+.tile__metric-mini b {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--fg);
+}
+.tile__metric-mini span {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.tile__hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.tile__list {
+  list-style: none;
+  margin: 0.1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.tile__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.86rem;
+  padding: 0.22rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.tile__row:last-child {
+  border-bottom: none;
+}
+.tile__row a {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile__row-meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+  flex: none;
+}
+
+.tile__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  color: var(--accent-strong);
+}
+.chip--alert {
+  background: var(--danger-soft);
+  color: #b5392f;
+}
+.chip--warn {
+  background: var(--warning-soft);
+  color: #9a6a00;
+}
+.chip--ok {
+  background: var(--success-soft);
+  color: #1f7a44;
+}
+.chip--muted {
+  background: #efe9e2;
+  color: var(--muted);
+}
+
+.tile__cta {
+  margin-top: auto;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding-top: 0.2rem;
+  color: var(--accent);
+}
+.tile__empty {
+  color: var(--success);
+  font-size: 0.86rem;
+}
+
+/* Optional dark AI tile (see TSX_PATCHES.md): add the `tile--ai` class on
+   <article className="tile tile--ai"> to render the AI block on the design
+   system's dark gradient (one intentionally dark element per screen). */
+.tile--ai {
+  background: var(--ai-gradient);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-pop);
+  color: #fff;
+}
+.tile--ai .tile__title {
+  color: #fff;
+}
+.tile--ai .tile__hint {
+  color: rgba(255, 255, 255, 0.72);
+}
+.tile--ai .tile__icon {
+  color: #fff;
+  opacity: 0.92;
+}
+.tile--ai .tile__cta {
+  color: var(--accent-bright);
+}
+
+/* ── Notification bell: dropdown preview ─────────────────── */
+.bell-menu {
+  position: relative;
+  display: inline-flex;
+}
+.bell-menu__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.bell-menu__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 41;
+  width: 320px;
+  max-width: 90vw;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--fg);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+.bell-menu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(243, 236, 228, 0.5);
+}
+.bell-menu__readall {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.bell-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.bell-menu__item {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+.bell-menu__item--unread {
+  /* Ochre background + "new" marker (design §5.1); red is reserved for "important". */
+  background: #fbf1d6;
+  border-left: 3px solid #9a6a00;
+}
+.bell-menu__msg {
+  margin: 0 0 0.2rem;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+.bell-menu__meta {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.bell-menu__empty {
+  margin: 0;
+  padding: 1rem 0.85rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.bell-menu__all {
+  display: block;
+  text-align: center;
+  padding: 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-top: 1px solid var(--border);
+  background: rgba(243, 236, 228, 0.5);
+  color: var(--accent);
+}
+
+/* ── AI product description in the catalog ─────────────────────────── */
+.ai-desc {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+}
+.ai-desc__badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ink-800);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+}
+.ai-desc__text {
+  margin: 0.35rem 0 0.2rem;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+.ai-desc__src {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* ── Patch 5 (TSX_PATCHES.md): a "live" round glass bell in the topbar ──
+   The theme already makes .app-topbar and .cmdk-trigger frosted-glass; the
+   bell was flat — bring it to a round glass control like in the reference. */
+.bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--r-pill);
+  box-shadow: var(--glass-inset);
+  cursor: pointer;
+}
+.bell:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── Reference "CRM Pro UI" animations (reference/CRM-PRO.dc.html) ─────────────────── */
+@keyframes scrIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.scr {
+  animation: scrIn 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* The expanded sidebar's content fades in AFTER the width transition (no text "jump"). */
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.navrow:hover {
+  filter: brightness(1.25);
+}
+.railrow:hover {
+  filter: brightness(1.4);
+}
+.tab {
+  transition: color 0.18s ease;
+}
+
+/* ── Home bento dashboard: tile entrance + hover-lift (#300) ───────────── */
+@keyframes bentoIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.bento-tile {
+  /* stagger via --i (the tile's index), both — no flash before start */
+  animation: bentoIn 0.42s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bento-tile:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 18px 44px rgba(31, 45, 80, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+/* 360 process card (PR6 6a): 2-column bento, collapses on narrow screens. */
+.deal360-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.deal360-main,
+.deal360-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .deal360-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Interactive chart segments — a soft fade when hovering a neighbor. */
+.chart-seg {
+  transition:
+    opacity 0.18s ease,
+    stroke-width 0.18s ease;
+  cursor: default;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bento-tile {
+    animation: none;
+  }
+  .bento-tile:hover {
+    transform: none;
+  }
+  .chart-seg {
+    transition: none;
+  }
+}
+
+/* ── Thin themed scrollbars (instead of the system ones with arrows) ────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 38, 32, 0.25) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(45, 38, 32, 0.22);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* Dark sidebar panel — light thumb */
+.sidebar-scroll {
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+}
+
+/* ── Deal stage track in the card ─────────────────────────── */
+.stage-track {
+  margin: 0.4rem 0 1rem;
+}
+.stage-track__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+}
+.stage-track__step {
+  font-size: 0.76rem;
+  color: var(--muted);
+  background: #efe9e2;
+  border-radius: 999px;
+  padding: 0.16rem 0.6rem;
+}
+.stage-track__step.is-done {
+  color: #1f7a44;
+  background: var(--success-soft);
+}
+.stage-track__step.is-current {
+  color: #fff;
+  background: var(--accent);
+  font-weight: 700;
+}
+.stage-track__todo {
+  margin: 0 0 0.55rem;
+  color: #9a6a00;
+  background: var(--warning-soft);
+  border: 1px solid #f0e0b0;
+  border-radius: var(--r-sm);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.86rem;
+}
+.stage-track__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* ── Head of sales chat assistant ────────────────────────────── */
+.assistant__thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.assistant__q {
+  background: var(--badge-bg);
+  border-radius: var(--r-md);
+  padding: 0.55rem 0.8rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+}
+.assistant__who {
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+.assistant__a {
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-card-border);
+  border-radius: var(--r-md);
+  padding: 0.65rem 0.85rem;
+  box-shadow: var(--card-shadow), var(--glass-inset);
+}
+.assistant__answer {
+  margin: 0 0 0.4rem;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.assistant__meta {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.assistant__total {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ai-gradient);
+  border-radius: var(--r-sm);
+  padding: 0.5rem 0.75rem;
+  margin: 0 0 1rem;
+}
+
+/* ── Burger button (mobile only) ────────────────────────────────────────────── */
+.mobile-burger {
+  display: none;
+}
+
+/* ── Mobile overlay backdrop ────────────────────────────────────────────────── */
+.mobile-overlay {
+  display: none;
+}
+
+/* ── Responsive overrides (phone ≤640px, tablet ≤768px) ────────────────────── */
+/* Mobile drawer applies to narrow screens (phones, tablet portrait) AND short
+   wide screens (phone in landscape: low height, but not tablet/desktop landscape). */
+@media (max-width: 768px), (max-height: 520px) and (max-width: 950px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Burger: fixed top-left, visible only on mobile */
+  .mobile-burger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1100;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #1c1f27;
+    border: none;
+    color: #cfd3db;
+    cursor: pointer;
+  }
+
+  /* Sidebar: off-canvas by default, slides in as overlay */
+  .app-sidebar {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100vh !important;
+    z-index: 1200 !important;
+    transform: translateX(-110%) !important;
+    transition: transform 0.3s ease !important;
+    padding: 12px !important;
+    width: auto !important;
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(0) !important;
+  }
+
+  /* Overlay backdrop behind the drawer */
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1150;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  /* Content area: full width (sidebar is out of flow) + tighter padding */
+  .app-content {
+    padding: 12px !important;
+  }
+
+  /* SKU+quantity+unit row stacks vertically on phone */
+  .additional-line-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

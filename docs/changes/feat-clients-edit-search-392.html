@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Showcase: Clients — search, editing, priorities (#392)</title>
+    <style>
+      body {
+        font:
+          14px/1.6 Arial,
+          sans-serif;
+        margin: 32px;
+        color: #16181d;
+        max-width: 860px;
+      }
+      h1 {
+        font-size: 22px;
+        margin-bottom: 4px;
+      }
+      h2 {
+        font-size: 16px;
+        margin-top: 28px;
+        border-bottom: 1px solid #eef0f2;
+        padding-bottom: 6px;
+      }
+      h3 {
+        font-size: 14px;
+        margin-top: 18px;
+        color: #6b6f78;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 12px;
+      }
+      td,
+      th {
+        border: 1px solid #eef0f2;
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #f7f8fa;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      code {
+        background: #f0f1f3;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .badge-new {
+        background: #e7f5ee;
+        color: #197a48;
+      }
+      .badge-changed {
+        background: #f7e4e2;
+        color: #c0392b;
+      }
+      .note {
+        background: #fbf1d6;
+        border-left: 3px solid #9a6a00;
+        padding: 10px 14px;
+        border-radius: 4px;
+        margin-top: 12px;
+        font-size: 13px;
+      }
+      pre {
+        background: #f0f1f3;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Clients: search, editing, priorities</h1>
+    <p>
+      Issue #392 · PR <a href="https://github.com/millbrookfoods/crm-pro/pull/410">#410</a> · branch
+      <code>feat/clients-edit-search-392</code>
+    </p>
+
+    <h2>[5] Live client search</h2>
+    <table>
+      <tr>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>A GET form: typing and pressing Enter fully reloads the page</td>
+        <td>
+          Client component <code>ClientsSearchBar</code>: character-by-character input with a
+          250&nbsp;ms debounce calls <code>router.replace()</code> — the page does NOT reload, the
+          list updates via SSR navigation
+        </td>
+      </tr>
+    </table>
+    <h3>Repro steps</h3>
+    <ol>
+      <li>Open <code>/clients</code></li>
+      <li>Start typing a client name in the search field</li>
+      <li>Confirm the list filters as you type with no page reload</li>
+      <li>Switch the filter (Key / Debtors / New) — the search query is preserved</li>
+    </ol>
+    <h3>Changed files</h3>
+    <ul>
+      <li>
+        <code>src/app/clients/_components/clients-search-bar.tsx</code>
+        <span class="badge badge-new">new</span> — client component
+      </li>
+      <li>
+        <code>src/app/clients/page.tsx</code> — the GET form was replaced with
+        <code>&lt;ClientsSearchBar&gt;</code>
+      </li>
+    </ul>
+
+    <h2>[6] Client editing + all fields on creation</h2>
+    <table>
+      <tr>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>
+          The creation form: only <code>name</code>, <code>city</code>, <code>ein</code>. No editing
+          at all.
+        </td>
+        <td>
+          A unified <code>ClientFormModal</code> in two modes:<br />
+          — <strong>create</strong>: all fields (<code>name</code>, type, priority/category, city,
+          EIN)<br />
+          — <strong>edit</strong>: the same fields, prefilled with the client's data<br />
+          An "Edit" button in the client card header.
+        </td>
+      </tr>
+    </table>
+    <h3>What about legalEntities</h3>
+    <p class="note">
+      The <code>legalEntities</code> field (an array of legal entities) was NOT added to the form —
+      it requires a UI for dynamically adding/removing rows (a separate task). Only what's supported
+      by single fields was kept in the form.
+    </p>
+    <h3>Repro steps (editing)</h3>
+    <ol>
+      <li>Open the client card <code>/clients/:id</code></li>
+      <li>Click "Edit" (button in the header, next to "Open in ERP")</li>
+      <li>Change the name, type, priority, city, or EIN</li>
+      <li>Click "Save" — the client list and the card revalidate</li>
+    </ol>
+    <h3>Repro steps (creation with full fields)</h3>
+    <ol>
+      <li>Open <code>/clients</code> (role head or mop)</li>
+      <li>Click "New client"</li>
+      <li>Fill in: name, client type, priority, city, EIN</li>
+      <li>Click "Create client"</li>
+    </ol>
+    <h3>Changed files</h3>
+    <ul>
+      <li>
+        <code>src/application/ports/client-repository.ts</code> — added the
+        <code>update(client)</code> method
+      </li>
+      <li>
+        <code>src/application/use-cases/update-client.ts</code>
+        <span class="badge badge-new">new</span> — update use case
+      </li>
+      <li>
+        <code>src/application/use-cases/update-client.test.ts</code>
+        <span class="badge badge-new">new</span> — 7 tests
+      </li>
+      <li>
+        <code>src/infrastructure/persistence/in-memory-client-repository.ts</code> —
+        <code>update()</code> implementation
+      </li>
+      <li>
+        <code>src/infrastructure/persistence/prisma-client-repository.ts</code> —
+        <code>update()</code> implementation
+      </li>
+      <li>
+        <code>src/infrastructure/composition-root.ts</code> — registered
+        <code>updateClient</code>
+      </li>
+      <li><code>src/app/clients/actions.ts</code> — added <code>updateClientAction</code></li>
+      <li>
+        <code>src/app/clients/_components/client-form-modal.tsx</code>
+        <span class="badge badge-new">new</span> — unified create/edit modal
+      </li>
+      <li>
+        <code>src/app/clients/_components/edit-client-button.tsx</code>
+        <span class="badge badge-new">new</span> — button with a modal
+      </li>
+      <li>
+        <code>src/app/clients/_components/new-client-button.tsx</code> — switched to
+        <code>ClientFormModal</code>
+      </li>
+      <li>
+        <code>src/app/clients/[id]/page.tsx</code> — added import and render of
+        <code>EditClientButton</code>
+      </li>
+      <li>
+        <code>src/domain/client/client-category.ts</code> — added the type guard
+        <code>isClientCategory()</code>
+      </li>
+      <li>
+        <code>src/domain/client/client-type.ts</code> — added the type guard
+        <code>isClientType()</code>
+      </li>
+    </ul>
+
+    <h2>[9] "Segment" → "Priorities"</h2>
+    <table>
+      <tr>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Column header in the client list: <strong>SEGMENT</strong></td>
+        <td>Column header: <strong>PRIORITIES</strong></td>
+      </tr>
+      <tr>
+        <td>The creation form: type/category fields were absent</td>
+        <td>
+          The creation and editing form: a "Priority" select with options "High (A)," "Medium (B),"
+          "Low (C)"
+        </td>
+      </tr>
+    </table>
+    <div class="note">
+      The internal field <code>category: ClientCategory</code> (A/B/C) and the DB column name are
+      unchanged. Only the visible table header was renamed.
+    </div>
+    <h3>Changed files</h3>
+    <ul>
+      <li>
+        <code>src/app/clients/page.tsx</code> — line 301: <code>SEGMENT</code> →
+        <code>PRIORITIES</code>
+      </li>
+    </ul>
+
+    <h2>The "Segment" field — what it is</h2>
+    <p>
+      The "Segment" column in the client list displayed
+      <strong><code>client.category</code></strong> (ABC classification: A/B/C), converted into a
+      priority via <code>clientPriority()</code> (A→high, B→medium, C→low). On the client card it
+      shows as "Category: Large · C" — that's category C with the "Large" label.
+    </p>
+
+    <h2>Verify results</h2>
+    <pre>
+> npm run verify
+
+typecheck  — ✓ no errors
+lint       — ✓ no errors
+format:check — ✓ All matched files use Prettier code style!
+test       — ✓ Test Files 138 passed (138) · Tests 849 passed (849)
+    </pre>
+  </body>
+</html>

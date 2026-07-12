@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — removed the dead "Filter" button (#279)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Removed the dead "Filter" button from all lists</h1>
+    <p>
+      <span class="tag">fix(ui)</span> &middot; PR <code>#279</code> &middot; closes
+      <code>#278</code> &middot; branch <code>fix/remove-dead-filter-button</code>
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The "Filter" button (funnel icon) was copy-pasted across 14 screens as an identical block
+        <strong>without <code>onClick</code></strong> — clicking it did nothing. In the demo this is
+        noticeable and misleading.
+      </li>
+      <li>
+        All of these screens already have working filter pills (All/Mine/In transit/To
+        process/Growth…), so the dead button was redundant. Removed it from: accounting, analytics,
+        assortment, deals, defects, logist, my-shipments, notifications, onboarding, packing,
+        procurement, shipments (+ additional), tech-queue.
+      </li>
+      <li>
+        In the <strong>Catalog</strong>, "Filter" is a set of working category chips — those were
+        left alone.
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>"Filter" button in the toolbar of 14 lists</td>
+        <td class="was">Present, but without a handler — clicking does nothing</td>
+        <td class="now">Removed (dead UI cleaned up)</td>
+      </tr>
+      <tr>
+        <td>Working filter pills (All/Mine/In transit/…)</td>
+        <td>Present and working</td>
+        <td class="now">Left in place — the only way to filter</td>
+      </tr>
+      <tr>
+        <td>The rest of the toolbar (Export/New deal, etc.)</td>
+        <td>Present</td>
+        <td class="now">Unaffected, still in place</td>
+      </tr>
+      <tr>
+        <td>"Filter" in Catalog (category chips)</td>
+        <td>Working chips</td>
+        <td class="now">Untouched</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li><code>npm run dev</code>, sign in as Head of Sales.</li>
+      <li>
+        Open, for example, <strong>Deals</strong> and <strong>My shipments</strong> — the toolbar no
+        longer has the non-working "Filter" button (funnel icon).
+      </li>
+      <li>
+        Confirm the working filter pills (All/Mine/In transit/To process/…) and the Export/New deal
+        buttons are in place and working.
+      </li>
+      <li>
+        Open <strong>Catalog</strong> — "Filter" (category chips) is still there and still filters.
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>Grepped — no dead "Filter" buttons remain on the lists.</li>
+      <li>
+        Toolbars didn't shift (screenshot of <code>/deals</code>, <code>/my-shipments</code>).
+      </li>
+      <li><code>npm run verify</code> <span class="ok">green</span> (109 files, 584 tests).</li>
+    </ul>
+
+    <p><strong>Follow-up:</strong> an expanded filter panel is a separate feature, if needed.</p>
+  </body>
+</html>

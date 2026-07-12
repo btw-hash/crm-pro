@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Architecture decisions — three ADRs — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__head .sub {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      .was {
+        color: var(--no);
+      }
+      .now {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Architecture decisions — three ADRs</h1>
+      <p>
+        docs-only · status semantics for "what counts as fact" · ERP sync direction · Postgres
+        persistence
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was decided</h2>
+        <ul>
+          <li>
+            <b>ADR-0003</b> — status semantics: what counts as a "fact", each fact has a single
+            owner (CRM or ERP). <span class="tag">#136</span>
+          </li>
+          <li>
+            <b>ADR-0004</b> — how the CRM learns about changes in the ERP: cursor-based delta
+            polling, with room to move to events later. <span class="tag">#137</span>
+          </li>
+          <li>
+            <b>ADR-0005</b> — the CRM's target data store: PostgreSQL behind a port, off by default
+            (memory mode). <span class="tag">#134</span>
+          </li>
+          <li>
+            Docs only — code, tests, and app behavior don't change. These extend the previously
+            adopted ADR-0002.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>ADR-0003 · Status semantics for "what counts as fact"</h2>
+          <div class="sub">Closes #136</div>
+        </div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>Question</th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>What "paid" means</td>
+              <td class="was">smeared across the deal stage and the ERP</td>
+              <td class="now">
+                the payment fact is owned by the ERP; the CRM only reads it, never sets it
+              </td>
+            </tr>
+            <tr>
+              <td>The "Won" stage</td>
+              <td class="was">implicitly conflated with "paid / closed"</td>
+              <td class="now">
+                won = the sale was won ≠ payment; payment/shipment live in the ERP
+              </td>
+            </tr>
+            <tr>
+              <td>Financial statuses in the pipeline</td>
+              <td class="was">risk of turning "paid / shipped" into stages</td>
+              <td class="now">not modeled as stages — read from the ERP into the deal feed</td>
+            </tr>
+            <tr>
+              <td>AI-produced data</td>
+              <td class="was">—</td>
+              <td class="now">only becomes a "fact" after a human confirms it</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>ADR-0004 · ERP sync direction</h2>
+          <div class="sub">Closes #137</div>
+        </div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>Question</th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>How the CRM learns about ERP changes</td>
+              <td class="was">it didn't — only read on request, never saw ERP-side changes</td>
+              <td class="now">cursor-based delta polling + idempotency</td>
+            </tr>
+            <tr>
+              <td>Dependency on ERP-side changes</td>
+              <td class="was">assumed "events from the ERP" (work on the ERP side)</td>
+              <td class="now">MVP with no ERP-side changes — CRM-driven polling over OData</td>
+            </tr>
+            <tr>
+              <td>Moving to events (push) later</td>
+              <td class="was">would require a rewrite</td>
+              <td class="now">
+                a transport swap over the same delta model, without breaking the contract
+              </td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>ADR-0005 · PostgreSQL persistence</h2>
+          <div class="sub">Closes #134</div>
+        </div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>Question</th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>Where CRM data lives</td>
+              <td class="was">in memory — a restart loses everything</td>
+              <td class="now">a target PostgreSQL store behind a port (Prisma)</td>
+            </tr>
+            <tr>
+              <td>Enabling the DB</td>
+              <td class="was">—</td>
+              <td class="now">
+                the <span class="kbd">PERSISTENCE_MODE</span> flag, defaulting to
+                <span class="kbd">memory</span> — dev/demo without a DB
+              </td>
+            </tr>
+            <tr>
+              <td>Numbers / prices / stock levels</td>
+              <td class="was">—</td>
+              <td class="now">not stored in the DB — come from the ERP (ErpGateway)</td>
+            </tr>
+          </table>
+          <p class="note">
+            Enabled through a separate rollout (see ADR-0005 §"Rollout"); until staged, the DB stays
+            off and day-to-day work doesn't change.
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to review</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open the <span class="kbd">docs/adr/</span> folder in the repo.</li>
+            <li>
+              Read the three new files:
+              <span class="kbd">0003-status-semantics-definition-of-fact.md</span>,
+              <span class="kbd">0004-erp-sync-direction.md</span>,
+              <span class="kbd">0005-persistence-postgresql.md</span>.
+            </li>
+            <li>
+              Each ADR follows Context → Decision → Consequences → Alternatives; each links back to
+              the previously adopted
+              <span class="kbd">0002-system-of-record-and-idempotency.md</span>.
+            </li>
+            <li>
+              Confirm the app's behavior hasn't changed: start it as usual (<span class="kbd"
+                >npm run dev</span
+              >), the DB is off by default.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · docs only (ADRs), no code changes</footer>
+  </body>
+</html>

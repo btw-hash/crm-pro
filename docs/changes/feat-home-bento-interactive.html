@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#300 · Home page interactivity and animation — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ul,
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Home page: a livelier bento dashboard — tile animation + interactive charts</h1>
+      <p>Issue #300 · branch <code>feat/home-bento-interactive</code></p>
+    </header>
+
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            <b>Tiles appear with a gentle stagger</b> on load (a smooth upward shift + fade-in, each
+            with its own delay <code>--i × 55ms</code>) and <b>lift on hover</b> (hover-lift + a
+            stronger shadow).
+          </li>
+          <li>
+            <b>The "Tasks by stage" donut is interactive</b>: hovering a segment (or its row in the
+            legend) dims its neighbors, thickens the active segment, and shows that segment's count
+            and label in the center instead of the grand total (drill).
+          </li>
+          <li>
+            <b>Team pipeline</b>: hovering a bar highlights it and shows the stage label next to the
+            number.
+          </li>
+          <li>
+            <b>Tooltips</b>: on the conversion gauge (the exact "lead → task" value), on the team
+            workload bars (load %), on the donut and pipeline segments.
+          </li>
+          <li>
+            <b>Respects <code>prefers-reduced-motion</code></b
+            >: with the system's "reduce motion" setting on, the entrance animations and hover-lift
+            are disabled.
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Before → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <ul>
+              <li>Tiles all appeared at once (a single screen-wide <code>.scr</code> fade).</li>
+              <li>Charts were static: the donut/pipeline/gauge didn't react to the cursor.</li>
+              <li>Hovering a tile changed nothing.</li>
+            </ul>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <ul>
+              <li>Tiles cascade in, and lift on hover.</li>
+              <li>The donut drills down, the pipeline shows its stage, tooltips everywhere.</li>
+              <li>Motion turns off with the system's "reduce motion".</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open <code>/</code> as the head of sales role (the default on localhost).</li>
+          <li>On load, the tiles cascade in from bottom to top.</li>
+          <li>Hover any tile → it lifts slightly with a shadow.</li>
+          <li>
+            Hover a segment of the "Tasks by stage" donut → its neighbors dim, the center shows the
+            count and the stage's label.
+          </li>
+          <li>
+            Hover a bar in "Team pipeline" → a highlight + the stage label next to the number.
+          </li>
+          <li>Hover the "Pipeline conversion" gauge arc and the team workload bars → tooltips.</li>
+          <li>
+            (Optional) Turn on "reduce motion" in the OS → reload: entrance and hover-lift
+            animations are off, the data is unchanged.
+          </li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Verification</h2>
+        <ul>
+          <li><code>npm run verify</code> — green (typecheck + lint + format + 689 tests).</li>
+          <li>
+            5 new tests in <code>dashboard.test.tsx</code>: 8 tiles with the animation class, donut
+            drill-down, pipeline label on hover, gauge tooltip, team workload tooltip.
+          </li>
+          <li>
+            Browser/HTTP: <code>/</code> → 200, the markup has 8 tiles with stagger
+            (<code>--i:0..7</code>), <code>chart-seg</code> on segments, "Lead conversion…" and
+            "Load %" tooltips.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

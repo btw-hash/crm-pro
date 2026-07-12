@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>feat: tech-request — Technologist request</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+      }
+      h2 {
+        margin-top: 2rem;
+        color: #374151;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      td,
+      th {
+        border: 1px solid #d1d5db;
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
+      .new {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .changed {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      ol li {
+        margin: 0.5rem 0;
+      }
+      .path {
+        color: #6366f1;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>feat: Manager sends a request to the technologist (Track I, REQ-S6)</h1>
+    <p>
+      Full loop implemented: a manager on a deal card creates a request to the technologist → it
+      lands in the queue → the technologist takes it and closes it.
+    </p>
+
+    <h2>Files changed and added</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Status</th>
+          <th>What was done</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code class="path">src/domain/tech-request/tech-request.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>
+            <code>TechRequest</code> entity, <code>takeInWork</code> /
+            <code>complete</code> transitions, <code>TechRequestError</code> class
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/domain/tech-request/tech-request.test.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>
+            TDD: creation, empty note, status transitions, edge cases (repeated takeInWork,
+            completing from open)
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/application/ports/tech-request-repository.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>
+            Port:
+            <code>save / findById / listOpen / listActive / listForTechnologist / listByDeal</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/application/use-cases/create-tech-request.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>Creates an open request + sends a notification to every technologist</td>
+        </tr>
+        <tr>
+          <td><code class="path">src/application/use-cases/take-tech-request.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>Transition open → in_progress, sets <code>assignedTo</code></td>
+        </tr>
+        <tr>
+          <td><code class="path">src/application/use-cases/complete-tech-request.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>Transition in_progress → done</td>
+        </tr>
+        <tr>
+          <td><code class="path">src/application/use-cases/list-tech-requests.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>Returns the active queue (open + in_progress)</td>
+        </tr>
+        <tr>
+          <td><code class="path">src/application/use-cases/create-tech-request.test.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>TDD: saving, notifications, empty note</td>
+        </tr>
+        <tr>
+          <td>
+            <code class="path">src/application/use-cases/take-complete-tech-request.test.ts</code>
+          </td>
+          <td><span class="badge new">new</span></td>
+          <td>TDD: taking, repeated take, completing, skipping in_progress, not-found</td>
+        </tr>
+        <tr>
+          <td>
+            <code class="path"
+              >src/infrastructure/persistence/in-memory-tech-request-repository.ts</code
+            >
+          </td>
+          <td><span class="badge new">new</span></td>
+          <td>In-memory port implementation</td>
+        </tr>
+        <tr>
+          <td><code class="path">src/infrastructure/persistence/seed.ts</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            Added <code>seedTechRequests</code>: one open request (Warm Bread Bakery / site visit),
+            one in_progress (Sweet World Confections / consultation)
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/infrastructure/composition-root.ts</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            Registered
+            <code
+              >createTechRequest / takeTechRequest / completeTechRequest /
+              listOpenTechRequests</code
+            >
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/_components/sidebar-nav.tsx</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>Added the "Tech queue" 🧪 entry → <code>/tech-queue</code></td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/deals/[id]/actions.ts</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            Server action <code>requestTechAction</code>: creates the request, revalidates the deal
+            + tech-queue
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/deals/[id]/_components/tech-request-form.tsx</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>
+            Client form: type selection (consultation/site visit/test) + a note,
+            <code>useActionState</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/deals/[id]/page.tsx</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>The "Request technologist" block was inserted before the test act</td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/tech-queue/actions.ts</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>
+            Server actions <code>takeTechRequestAction</code> /
+            <code>completeTechRequestAction</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/tech-queue/_components/tech-queue-item.tsx</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>Client component for a single request with "Take" / "Done" buttons</td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/tech-queue/page.tsx</code></td>
+          <td><span class="badge new">new</span></td>
+          <td>Queue page: list of active requests, deal + client + type + note</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Before → after</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Before</th>
+          <th>After</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>No way to send a request to the technologist directly from a deal</td>
+          <td>
+            "Request technologist" block on the deal card: a form (type + note) → "Request
+            technologist" button
+          </td>
+        </tr>
+        <tr>
+          <td>No technologist queue</td>
+          <td>
+            <code>/tech-queue</code> page in the sidebar: all open + in_progress requests with
+            "Take" and "Done" buttons
+          </td>
+        </tr>
+        <tr>
+          <td>The technologist doesn't get notified</td>
+          <td>
+            When a request is created, every technologist in <code>seedTechnologistIds</code>
+            gets a notification (visible in the bell)
+          </td>
+        </tr>
+        <tr>
+          <td>No domain-level request statuses</td>
+          <td>
+            <code>open → in_progress → done</code>: clean transitions, an error on any out-of-order
+            change
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>
+        Log in (<code>owens / demo1234</code>). Open any deal, e.g.
+        <strong>deal-2</strong> ("Belcolade chocolate onboarding").
+      </li>
+      <li>On the <strong>Overview</strong> tab, find the <em>"Request technologist"</em> block.</li>
+      <li>
+        Pick a type — e.g. <em>"Production site visit"</em>, enter a note, click
+        <strong>"Request technologist"</strong>. "Request sent to technologist." appears below the
+        button.
+      </li>
+      <li>
+        Go to <strong>Notifications</strong> (bell) — a notification for the technologists appears
+        there.
+      </li>
+      <li>
+        Go to the <strong>Tech queue</strong> (🧪 in the sidebar, <code>/tech-queue</code>). The new
+        request is visible in the list with status "open".
+      </li>
+      <li>
+        Click <strong>"Take"</strong> — the status changes to "in progress", the button is replaced
+        with "Done".
+      </li>
+      <li>
+        Click <strong>"Done"</strong> — the request disappears from the active queue (status
+        <code>done</code>).
+      </li>
+    </ol>
+
+    <h2>Tests</h2>
+    <p>
+      <code>npm run verify</code>: 204 tests (53 files) — <strong>all green</strong>. New test
+      files: <code>tech-request.test.ts</code>, <code>create-tech-request.test.ts</code>,
+      <code>take-complete-tech-request.test.ts</code> — 18 new tests.
+    </p>
+  </body>
+</html>

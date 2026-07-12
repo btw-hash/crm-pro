@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — New SKU: task trigger (#218)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 820px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 3px solid #f4b400;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .box {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        background: #fafafa;
+      }
+      .box--before {
+        border-color: #f88;
+        background: #fff5f5;
+      }
+      .box--after {
+        border-color: #4c8;
+        background: #f5fff8;
+      }
+      code {
+        background: #f0f0f0;
+        padding: 0.1em 0.4em;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.15em 0.5em;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        margin: 0 0.25em 0.25em 0;
+      }
+      .tag--domain {
+        background: #e8f4ff;
+        color: #1565c0;
+      }
+      .tag--uc {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .tag--ui {
+        background: #f3e5f5;
+        color: #6a1b9a;
+      }
+      .tag--action {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        align-items: center;
+        margin: 0.75rem 0;
+      }
+      .step {
+        border: 1px solid #bbb;
+        border-radius: 6px;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.85rem;
+        background: #fff;
+      }
+      .step--active {
+        border-color: #f4b400;
+        background: #fff8e1;
+        font-weight: 600;
+      }
+      .arrow {
+        color: #999;
+        font-size: 1.1rem;
+      }
+      ul {
+        padding-left: 1.2em;
+      }
+      li {
+        margin: 0.25em 0;
+      }
+      .hot {
+        color: #c62828;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>New SKU / Initial qualification: a task trigger (#218)</h1>
+    <p>
+      <span class="tag tag--domain">domain</span>
+      <span class="tag tag--uc">use-case</span>
+      <span class="tag tag--action">server action</span>
+      <span class="tag tag--ui">UI</span>
+    </p>
+
+    <h2>The problem</h2>
+    <p>
+      When a new product is added to the catalog, a manager has to remember on their own that
+      qualification needs to start. There was no path from "new SKU" to "a deal in qualification" —
+      only manually creating a deal from scratch. On the 2026-06-25 call this question stayed open:
+      "who/what initiates → for which client → what happens next" (1:12:57–1:17:18).
+    </p>
+
+    <h2>Solution: an explicit process path</h2>
+    <div class="flow">
+      <div class="step step--active">
+        Catalog /products<br /><small>the sales rep sees the product</small>
+      </div>
+      <span class="arrow">→</span>
+      <div class="step">"Plan launch for client"<br /><small>picks a client</small></div>
+      <span class="arrow">→</span>
+      <div class="step">
+        Deal: New SKU: &lt;name&gt;<br /><small>goal=new_sku, stage=qualification</small>
+      </div>
+      <span class="arrow">→</span>
+      <div class="step">Production audit</div>
+      <span class="arrow">→</span>
+      <div class="step">Test / trial</div>
+      <span class="arrow">→</span>
+      <div class="step">Proposal calc</div>
+    </div>
+    <p>
+      <strong>Initiated by:</strong> a sales rep or the head of sales, from the product catalog.<br />
+      <strong>Client link:</strong> an explicit choice in the form — the initiator sets the task for
+      a specific client they plan to bring the SKU to.<br />
+      <strong>Owner:</strong> the current user (whoever clicked).<br />
+      <strong>Deal name:</strong> automatically "New SKU: &lt;product name&gt;".
+    </p>
+
+    <h2>Before / After</h2>
+    <div class="grid">
+      <div class="box box--before">
+        <strong>Before</strong>
+        <ul>
+          <li>No trigger — only a manual "Create deal" from scratch</li>
+          <li>You had to manually type the name, pick the new_sku goal, and the client</li>
+          <li>The process was opaque: there was no "SKU → deal" link in the system</li>
+        </ul>
+      </div>
+      <div class="box box--after">
+        <strong>After</strong>
+        <ul>
+          <li>From the product card → "Plan launch for client" → pick a client → done</li>
+          <li>The deal is created automatically: goal new_sku, stage qualification</li>
+          <li>The name includes the SKU's name — searching deals is transparent</li>
+          <li>A link to the new deal appears immediately</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Files touched</h2>
+    <ul>
+      <li>
+        <code>src/application/use-cases/launch-sku-qualification.ts</code> — a new use-case (TDD, 6
+        tests)
+      </li>
+      <li><code>src/application/use-cases/launch-sku-qualification.test.ts</code> — tests</li>
+      <li>
+        <code>src/infrastructure/composition-root.ts</code> — use-case registration
+        <span class="hot">hot</span>
+      </li>
+      <li>
+        <code>src/app/products/actions.ts</code> — the server action
+        <code>launchSkuQualificationAction</code>
+      </li>
+      <li>
+        <code>src/app/products/_components/launch-sku-button.tsx</code> — the button UI component
+      </li>
+      <li><code>src/app/products/page.tsx</code> — wiring the button into the catalog cards</li>
+    </ul>
+
+    <h2>RBAC</h2>
+    <ul>
+      <li>The button is visible to: sales rep, head of sales</li>
+      <li>
+        A technologist and a category manager don't see the button (they only read the catalog)
+      </li>
+      <li>A sales rep creates the deal for themselves — automatically the owner</li>
+      <li>
+        A sales rep's client list is scoped to their own portfolio (<code>listClients</code> with
+        owner-scope)
+      </li>
+    </ul>
+
+    <h2>Tests (TDD)</h2>
+    <ul>
+      <li>
+        Creates a deal at the <code>qualification</code> stage with the <code>new_sku</code> goal
+      </li>
+      <li>Includes the product name in the deal's title</li>
+      <li>Links the deal to the given client</li>
+      <li>Saves the deal in the repository</li>
+      <li>Throws <code>SkuNotFoundError</code> for a nonexistent product</li>
+      <li>Throws <code>ClientNotFoundForSkuError</code> for a nonexistent client</li>
+    </ul>
+
+    <h2>Hot files</h2>
+    <p>
+      <code class="hot">composition-root.ts</code> — additive: added an import for
+      <code>makeLaunchSkuQualification</code>, a <code>launchSkuQualification</code> field in
+      <code>AppContainer</code>, initialization in <code>getContainer()</code>. Parallel branches
+      don't overlap (a new field, not a change to existing ones).
+    </p>
+  </body>
+</html>

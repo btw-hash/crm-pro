@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#313 Export of operational tables — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.92rem;
+      }
+      td,
+      th {
+        border: 1px solid #e3e8ee;
+        padding: 6px 10px;
+        text-align: left;
+      }
+      th {
+        background: #f6f7f9;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#313 · Working CSV export for operational tables</h1>
+      <p>
+        The "Export" button (previously dead) downloads the current table honoring the active
+        filter.
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <p>
+          Added a shared client component <code>ExportButton</code>: on click it builds a CSV
+          (delimiter <code>;</code> + BOM — special characters and columns open correctly in Excel)
+          and downloads the file. The <b>filtered</b> rows are exported (what's currently on screen,
+          honoring <code>?filter=</code> from #312). Empty table — the button is disabled.
+        </p>
+      </div>
+      <div class="card">
+        <h2>Before → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>Clicking "Export" — nothing.</p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              Downloads a CSV of the current table (honors the filter), file name matches the
+              screen.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Screens and files</h2>
+        <table>
+          <tr>
+            <th>Screen</th>
+            <th>File</th>
+            <th>What's exported</th>
+          </tr>
+          <tr>
+            <td>Packing</td>
+            <td>packing.csv</td>
+            <td>requests (product/pack size/qty/client/stage)</td>
+          </tr>
+          <tr>
+            <td>Defect warehouse</td>
+            <td>defect-warehouse.csv</td>
+            <td>items (product/qty/reason/stage/created by)</td>
+          </tr>
+          <tr>
+            <td>Loading &amp; delivery</td>
+            <td>loading-delivery.csv</td>
+            <td>shipments (order/client/address/date/weight/vehicle)</td>
+          </tr>
+          <tr>
+            <td>My shipments</td>
+            <td>my-shipments.csv</td>
+            <td>manager's orders (+stage)</td>
+          </tr>
+          <tr>
+            <td>Accounting</td>
+            <td>accounting.csv</td>
+            <td>orders being processed (+documents)</td>
+          </tr>
+          <tr>
+            <td>Shipments</td>
+            <td>shipments.csv</td>
+            <td>daily summary report (date/order/client/weight/vehicle/stage)</td>
+          </tr>
+          <tr>
+            <td>Add-on requests</td>
+            <td>add-on-requests.csv</td>
+            <td>add-on requests (parent/client/items/date/note)</td>
+          </tr>
+          <tr>
+            <td>Procurement</td>
+            <td>procurement-allocation.csv</td>
+            <td>deficit allocation (requested/allocated/status)</td>
+          </tr>
+          <tr>
+            <td>Assortment</td>
+            <td>assortment.csv</td>
+            <td>main table (product/signal/revenue/margin)</td>
+          </tr>
+          <tr>
+            <td>Analytics</td>
+            <td>analytics-sales.csv</td>
+            <td>revenue by manager (+share)</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open "Packing" → "Export" → downloads <code>packing.csv</code> with all requests.</li>
+          <li>
+            Select the "Done" filter → "Export" → the file has only completed ones (header + 1 row).
+          </li>
+          <li>
+            Open the CSV in Excel — special characters and columns are intact (BOM +
+            <code>;</code>).
+          </li>
+          <li>
+            Verified headless: packing "All" = 1 header + 4 rows; <code>?filter=done</code> = 1
+            header + 1 row.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </body>
+</html>

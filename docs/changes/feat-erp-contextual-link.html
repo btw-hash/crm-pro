@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — contextual "Open in ERP" link (#272)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>The "Open in ERP" link — brought back contextually, on the deal and client cards</h1>
+    <p>
+      <span class="tag">feat(ui)</span> &middot; PR <code>#272</code> &middot; closes
+      <code>#271</code> &middot; branch <code>feat/erp-contextual-link</code>
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The link to the ERP used to live in the global header (present on every screen — irrelevant
+        on Analytics/Assistant) and disappeared entirely during the <code>#263</code> redesign.
+        We're bringing it back <strong>contextually</strong> — only where it makes sense: on the
+        deal and client cards.
+      </li>
+      <li>
+        A new server component
+        <code>ErpLink</code> (<code>src/app/_components/erp-link.tsx</code>) — a link to the ERP
+        window using the address from the <code>ERP_UI_URL</code> env var. If the env var isn't set
+        → it renders <code>null</code> (no button, nothing breaks).
+      </li>
+      <li>
+        <strong>Deal card</strong> <code>/deals/[id]</code> → "Open order in ERP" (gated by
+        <code>showCommercial</code>). <strong>Client card</strong> <code>/clients/[id]</code> →
+        "Open counterparty in ERP" (gated by <code>showPrice</code>), next to the "Create deal"
+        button.
+      </li>
+      <li><code>ERP_UI_URL</code> was added to the env schema (zod, <code>optional</code>).</li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Where</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Header (all screens)</td>
+        <td class="was">
+          An ERP button on every screen, including irrelevant ones; disappeared after #263
+        </td>
+        <td class="now">No button in the header (removed from the global layout)</td>
+      </tr>
+      <tr>
+        <td>Deal / client card</td>
+        <td class="was">No link to the ERP</td>
+        <td class="now">A contextual "Open order/counterparty in ERP" link (role-gated)</td>
+      </tr>
+      <tr>
+        <td>Home / Catalog / Analytics</td>
+        <td>—</td>
+        <td class="now">No link (not relevant — isn't rendered)</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>
+        Set <code>ERP_UI_URL=https://...</code> in <code>.env</code>, run <code>npm run dev</code>,
+        log in as the head of sales.
+      </li>
+      <li>
+        Open <strong>Deals → any deal</strong> (won/in progress) → below the card's header there's
+        an <strong>"Open order in ERP"</strong> link (opens in a new tab).
+      </li>
+      <li>
+        Open <strong>Clients → any client</strong> → next to "Create deal" there's an
+        <strong>"Open counterparty in ERP"</strong> link.
+      </li>
+      <li>
+        Go to <strong>Home / Catalog / Analytics</strong> — the "Open in ERP" link isn't there.
+      </li>
+      <li>
+        Remove <code>ERP_UI_URL</code> from env and restart — the link disappears everywhere
+        (nothing breaks).
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        In the browser (dev, <code>ERP_UI_URL</code> set): the link IS there on the deal and client
+        cards; it's NOT on Home/Catalog/Analytics.
+      </li>
+      <li><code>npm run verify</code> <span class="ok">green</span> (108 files, 582 tests).</li>
+    </ul>
+
+    <p>
+      <strong>Follow-up (not in this PR):</strong> a deep link to the specific entity (order/
+      counterparty id) instead of the generic window — once the ERP's URL pattern is known.
+    </p>
+  </body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase · rail-scoop-first-item</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 820px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 28px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">rail-scoop-first-item</span>
+    </header>
+    <main>
+      <h2>Fix for the "white tongue" around the icon on the collapsed rail</h2>
+      <div class="card">
+        <p>
+          <strong>Before:</strong> on the collapsed sidebar, when the first rail item was active
+          (Home / house icon), the active-section indicator drew a white "tongue" sticking up into
+          the dark logo/hamburger zone. It looked like a broken artifact.
+        </p>
+        <p>
+          <strong>Cause:</strong> the "scoop" indicator is an SVG "hourglass" 140px tall: a waist
+          cut-out around the icon in the middle, and wide cream-colored lobes above and below (the
+          page background color <code>#F8F3EF</code>) that are meant to blend into the background
+          along the rail's right edge. The scoop's offset = <code>activeIdx*60 + 30 − 70</code>. For
+          the first item (<code>activeIdx = 0</code>) the offset = <strong>−40px</strong> → the
+          upper lobe moves 40px above the rail rows, into the dark area — and the cream lobe reads
+          as a white tongue against the dark background. It used to be clipped by the box edge; the
+          animation fixes (#426/#429) left <code>overflow:visible</code> on the settled rail, and
+          the lobe stopped being clipped.
+        </p>
+        <p>
+          <strong>After:</strong> the scoop is wrapped in a container with
+          <code>overflow:hidden</code> sized to the rail rows' height — the upper lobe on the first
+          item and the lower lobe on the last item are now clipped at the rail boundaries, leaving a
+          clean cream crescent around the active icon. The floating disc and glyph are placed
+          outside the wrapper — they still extend to the right past the rail edge. The fix is
+          surgical, touching only <code>app-sidebar.tsx</code>.
+        </p>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <ol>
+          <li>
+            Open any screen as Head of Sales — the sidebar is collapsed to the rail by default.
+          </li>
+          <li>
+            While on <strong>Home</strong> (house icon active, first rail item) — a clean crescent
+            cut-out around the icon, no white tongue above the house icon (near the hamburger).
+          </li>
+          <li>
+            Navigate to other sections (Clients / Catalog / Analytics) — the indicator moves to the
+            item; at the edge positions the lobes also don't extend past the rail.
+          </li>
+        </ol>
+        <p>Verified headed (Chrome headless, screenshot of the collapsed rail on Home).</p>
+      </div>
+    </main>
+  </body>
+</html>

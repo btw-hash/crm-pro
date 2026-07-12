@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo data: next step on active deals — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+        --warn: #c98a18;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      .ba__col {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 1.1rem;
+        background: #fafcfe;
+      }
+      .ba__col h3 {
+        margin: 0 0 0.7rem;
+        font-size: 0.95rem;
+      }
+      .deal {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0;
+        border-bottom: 1px dashed var(--border);
+        font-size: 0.88rem;
+      }
+      .deal:last-child {
+        border-bottom: none;
+      }
+      .dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        flex: none;
+      }
+      .dot--ok {
+        background: var(--ok);
+      }
+      .dot--warn {
+        background: var(--warn);
+      }
+      .dot--no {
+        background: var(--no);
+      }
+      .badge-no {
+        font-size: 0.72rem;
+        color: var(--no);
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .step {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .nums {
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+      }
+      .num {
+        flex: 1 1 140px;
+        text-align: center;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 0.6rem;
+        background: #fafcfe;
+      }
+      .num b {
+        display: block;
+        font-size: 1.7rem;
+        color: var(--accent-strong);
+      }
+      .num span {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Demo data: "next step" on active deals</h1>
+      <p>The /deals board looks like a working sales team, not an abandoned pipeline · #173</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done</h2>
+        <ul>
+          <li>
+            Seeded realistic planned next steps (open task-activities) so that
+            <b>most active deals</b> already have a step set.
+          </li>
+          <li>
+            "Next step" = an open task (<span class="kbd">kind: "task"</span>, not completed) with
+            copy tailored to the client and stage, and a due date (<span class="kbd">dueDate</span
+            >).
+          </li>
+          <li>
+            Due dates are intentionally varied: some are a few days out (healthy), a few are due
+            today and overdue — the Score Pill and "Critical" view stay meaningful.
+          </li>
+          <li>
+            <b>7 active deals were deliberately left without a step</b> — the "No next step" view
+            and red pills keep showing up. Not everything is green.
+          </li>
+          <li>Terminal deals (Won/Lost) were left untouched — they don't need a step.</li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <div class="ba">
+            <div class="ba__col">
+              <h3>Before — almost the entire board is "no step"</h3>
+              <div class="deal">
+                <span class="dot dot--ok"></span>Belcolade rollout to the matrix<span class="step"
+                  >has a step</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--ok"></span>Sapore starter (Warm Bread Bakery)<span
+                  class="step"
+                  >has a step</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--no"></span>Topfil filling switch<span class="badge-no"
+                  >● no next step</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--no"></span>Tegral dessert line<span class="badge-no"
+                  >● no next step</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--no"></span>Switch to S500<span class="badge-no"
+                  >● no next step</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--no"></span>…and ~13 more active deals with no step<span
+                  class="badge-no"
+                  >● no next step</span
+                >
+              </div>
+            </div>
+            <div class="ba__col">
+              <h3>After — most have a step, the remainder makes sense</h3>
+              <div class="deal">
+                <span class="dot dot--ok"></span>Topfil filling switch<span class="step"
+                  >Call about test results · Jun 29</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--ok"></span>Tegral dessert line<span class="step"
+                  >Confirm tasting date · Jul 1</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--ok"></span>Switch to S500<span class="step"
+                  >Send proposal · Jun 30</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--warn"></span>Belcolade menu rollout (Konig)<span class="step"
+                  >Send proposal · today</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--no"></span>Initial qualification (Mitchell)<span
+                  class="badge-no"
+                  >● no next step</span
+                >
+              </div>
+              <div class="deal">
+                <span class="dot dot--no"></span>Mimetic margarine (Croissant & Co)<span
+                  class="badge-no"
+                  >● no next step</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Board numbers (Head of Sales view — all 25 deals)</h2></div>
+        <div class="card__body">
+          <div class="nums">
+            <div class="num"><b>19</b><span>active (non-terminal) deals</span></div>
+            <div class="num"><b>12</b><span>with an open next step</span></div>
+            <div class="num"><b>7</b><span>deliberately without a step</span></div>
+            <div class="num"><b>0.63</b><span>share with a step (threshold ≥ 0.50)</span></div>
+          </div>
+          <p style="margin: 1rem 0 0; color: var(--muted); font-size: 0.88rem">
+            Previously the share was 0.21 (4 of 19). The "● no next step" badge now sits on 7 cards
+            out of 25, not almost all of them. "Critical" — 1 (stuck at a stage a long time, has a
+            step, but the pill is red) — the red signal is preserved.
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to reproduce</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              A fresh dev start (not HMR — the seed loads into the in-memory container on startup):
+              <span class="kbd">PORT=3018 npm run dev</span>.
+            </li>
+            <li>
+              Open <span class="kbd">/deals</span> — most cards show a colored pill (green/yellow)
+              and no "no next step" badge.
+            </li>
+            <li>
+              Click the <b>"No next step"</b> view — a sensible remainder is left (qualifications,
+              audits, a couple of tests), not the whole board.
+            </li>
+            <li>
+              Click <b>"Critical"</b> — the red pill is still shown (a deal stuck at a stage for a
+              long time).
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Why</h2></div>
+        <div class="card__body">
+          The demo board is the first thing a viewer sees. If almost every deal has "no next step",
+          the CRM looks like nobody uses it, and the whole point of the "easy to lose track" signal
+          is lost. A realistic seed shows a working team: most deals are being driven forward, and
+          the ones slipping (red/yellow) stand out immediately — exactly the value the signal exists
+          for. Only demo data (<span class="kbd">seed.ts</span>) changed — logic and screens were
+          left alone.
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · "next step" demo data (#173)</footer>
+  </body>
+</html>

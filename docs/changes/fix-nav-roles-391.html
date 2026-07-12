@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#391 · Navigation and Tab Visibility by Role — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 1.2rem 0 0.5rem;
+        color: #3a4250;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ol,
+      ul {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.94rem;
+        margin-top: 0.6rem;
+      }
+      th {
+        background: #f0f2f6;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #556070;
+      }
+      td {
+        padding: 0.45rem 0.7rem;
+        border-top: 1px solid #e8ecf0;
+        vertical-align: middle;
+      }
+      .yes {
+        color: #1f8a4c;
+        font-weight: 700;
+      }
+      .no {
+        color: #b04141;
+        font-weight: 700;
+      }
+      .deferred {
+        background: #fffbea;
+        border: 1px solid #f0e090;
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        margin-top: 0.6rem;
+      }
+      .deferred-tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #8a6a00;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#391 · Navigation and Tab Visibility by Role</h1>
+      <p>
+        Assistant available to Manager · Deals only for Head of Sales/Manager · Global search Ctrl+K
+        temporarily disabled
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>Summary of changes</h2>
+        <ul>
+          <li>
+            <strong>[3]</strong> The "Assistant" tab is now available to the Manager role
+            (previously Head of Sales only).
+          </li>
+          <li>
+            <strong>[18+26]</strong> The "Deals" tab is now restricted to the Head of Sales +
+            Manager roles. Technologist, category manager, accountant, and logistics no longer see
+            the tab and no longer get a 404 on direct navigation.
+          </li>
+          <li>
+            <strong>[4]</strong> Global search Ctrl+K is temporarily disabled: the
+            <code>CommandPalette</code> component has been unmounted from the layout, and the search
+            button has been removed from the topbar. The component file stays in the repo — it can
+            be turned back on with a single mount.
+          </li>
+          <li>
+            <strong>[2]</strong> The collapse-animation bug — not reproduced at the code level; no
+            fix made (see the "Deferred" section).
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Before → after: visibility of the "Assistant" and "Deals" tabs</h2>
+
+        <h3>Assistant — <code>NAV_ASSISTANT.roles</code></h3>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <code>roles: ["head"]</code>
+            <p>
+              Manager did not see the "Assistant" tab, neither on the rail nor in the expanded
+              panel.
+            </p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <code>roles: ["head", "mop"]</code>
+            <p>Manager sees "Assistant" on par with Head of Sales.</p>
+          </div>
+        </div>
+
+        <h3>Deals — <code>NAV_DEALS.roles</code></h3>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <code>roles: ALL</code>
+            <p>
+              All 6 roles saw the "Deals" tab. Navigating via a direct link, the
+              technologist/accountant/logistics got a 404.
+            </p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <code>roles: ["head", "mop"]</code>
+            <p>
+              The tab is hidden from the technologist, category manager, accountant, and logistics.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Role visibility matrix (after the fix)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Tab</th>
+              <th>Head of Sales</th>
+              <th>Manager</th>
+              <th>Technologist</th>
+              <th>Category Manager</th>
+              <th>Accountant</th>
+              <th>Logistics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Home</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Clients</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td><strong>Deals</strong></td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="no">— <em>(was ✓)</em></td>
+              <td class="no">— <em>(was ✓)</em></td>
+              <td class="no">— <em>(was ✓)</em></td>
+              <td class="no">— <em>(was ✓)</em></td>
+            </tr>
+            <tr>
+              <td>Catalog</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Analytics</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td><strong>Assistant</strong></td>
+              <td class="yes">✓</td>
+              <td class="yes">✓ <em>(was —)</em></td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Before → after: global search Ctrl+K [4]</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>
+              The <code>&lt;CommandPalette /&gt;</code> component was mounted in
+              <code>src/app/layout.tsx</code>. The search button (magnifying-glass icon) was shown
+              in the topbar and dispatched a <code>cmdk:open</code> event. Pressing Ctrl+K opened
+              the palette on any page.
+            </p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              <code>&lt;CommandPalette /&gt;</code> has been removed from the layout. The
+              magnifying-glass button has been removed from <code>AppTopbar</code>. The file
+              <code>src/app/_components/command-palette.tsx</code> stays in the repo unchanged —
+              search can be turned back on with a single mount.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+
+        <h3>Assistant — Manager role</h3>
+        <ol>
+          <li>Sign in as a user with the Manager role.</li>
+          <li>Confirm the "Assistant" icon is visible on the left rail (collapsed sidebar).</li>
+          <li>Expand the sidebar — the "TOOLS" group should include an "Assistant" row.</li>
+          <li>Open the tab — the <code>/assistant</code> page opens.</li>
+        </ol>
+
+        <h3>Deals — technologist/category manager/accountant/logistics role</h3>
+        <ol>
+          <li>Sign in with the technologist role (or category manager/accountant/logistics).</li>
+          <li>
+            Confirm the "Deals" tab is absent from the rail and from the expanded sidebar panel.
+          </li>
+          <li>
+            Direct navigation to <code>/deals</code> should lead to a 403/redirect page, not a 404.
+          </li>
+        </ol>
+
+        <h3>Deals — Head of Sales and Manager role</h3>
+        <ol>
+          <li>Sign in with the head or mop role.</li>
+          <li>
+            Confirm "Deals" is visible in the sidebar and navigating to <code>/deals</code> works.
+          </li>
+        </ol>
+
+        <h3>Search Ctrl+K — disabled</h3>
+        <ol>
+          <li>Sign in under any role.</li>
+          <li>Confirm the magnifying-glass button is absent from the topbar.</li>
+          <li>Press Ctrl+K — the palette does not open.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Deferred</h2>
+        <div class="deferred">
+          <div class="deferred-tag">Item [2] — not reproduced</div>
+          <p>
+            The collapse-animation logic (the <code>animating</code> flag, overflow toggling, the
+            scoop/disc indicator) was checked at the code level. The behavior
+            <code>overflow: collapsed&nbsp;&amp;&amp;&nbsp;!animating ? "visible" : "hidden"</code>
+            looks correct: <code>hidden</code> is held in both animation directions and is only
+            lifted once the collapsed box has settled. No clear code-level defect was found. A
+            headed check (real browser) will be done by the team when reviewing the PR — if the
+            artifact reproduces, the bug will be tracked as a separate issue/commit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

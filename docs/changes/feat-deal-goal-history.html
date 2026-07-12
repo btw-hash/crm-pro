@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Deal goal change → history (goal_set)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --success: #197a48;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 840px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 23px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 26px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+        box-shadow: 0 6px 18px rgba(45, 38, 32, 0.06);
+      }
+      .card h2 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+      code {
+        background: #f0ece5;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      ol,
+      ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .ok {
+        color: var(--success);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Deal goal changes now land in the history</h1>
+      <p class="sub">
+        branch <code>chore/ci-save-minutes</code> · #397 [23] (remainder of the history-audit work)
+      </p>
+
+      <div class="card">
+        <h2>The gap</h2>
+        <p>
+          The 2026-06-28 review: "everything we do should have a history." Most actions were already
+          logged (stage, undo, audit, sample, act, outcome, ERP order, deletion), but
+          <b>a deal goal change wasn't written anywhere</b> — it was invisible in the feed.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>After</h2>
+        <p>
+          A goal change → a <code>goal_set</code> event ("Goal: …") with its author now appears in
+          the deal feed. The history log is now complete end to end.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open any deal.</li>
+          <li>Change the "Goal" (for example, to "Launch new SKU").</li>
+          <li>
+            An entry "Goal: Launch new SKU" with its author and time appears in the deal feed.
+          </li>
+        </ol>
+        <p class="note">
+          <span class="ok">Gate:</span> <code>npm run verify</code> green (900 tests; + a test for
+          the <code>goal_set</code> entry). Verified live in the browser on the demo (goal change →
+          an entry in the feed).
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

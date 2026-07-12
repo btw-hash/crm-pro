@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Quick fixes from client review</title>
+    <style>
+      body {
+        font:
+          15px/1.6 Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.3px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-top: 32px;
+        border-bottom: 2px solid #e6ddd4;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e6ddd4;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 12px 0;
+      }
+      .tag {
+        display: inline-block;
+        font: 600 11px Arial;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: #efe9e2;
+        color: #6a5f54;
+        margin-right: 6px;
+      }
+      .was {
+        color: #9a3b34;
+      }
+      .now {
+        color: #197a48;
+        font-weight: 600;
+      }
+      ol li {
+        margin: 4px 0;
+      }
+      code {
+        background: #f1ece6;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Quick fixes from client review (06/28)</h1>
+      <p>
+        Terminology + two bug fixes. Epics <code>#392</code>, <code>#393</code>, <code>#397</code> —
+        partially. Navigation (#391) and the proposal (#396) were already done in separate PRs
+        #398/#399 — not part of this batch.
+      </p>
+
+      <h2>What changed</h2>
+
+      <div class="card">
+        <span class="tag">#392 · clients · #393 · processes</span>
+        <ul>
+          <li>
+            Removed the <span class="was">"AI extracted → confirmed"</span> note next to the "Task
+            feed" heading (client card and process side panel) (#392, item 7).
+          </li>
+          <li>
+            Field <span class="was">"Visit goal"</span> → <span class="now">"Goal"</span> (process
+            creation, editing, inline) (#393, item 11).
+          </li>
+          <li>
+            Badge/filter <span class="was">"No next step" / "no step"</span> →
+            <span class="now">"No task"</span> (#393, item 13).
+          </li>
+          <li>
+            Button <span class="was">"Visit prep"</span> →
+            <span class="now">"Extra info"</span> (#393, item 14).
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <span class="tag">#393 · #397 · bugs</span>
+        <ul>
+          <li>
+            <b>Process creation freeze (#393, item 12):</b> the form no longer hangs on "Saving…" —
+            on error it shows a message instead of an endless spinner (the server action no longer
+            throws an unwrapped error, which in React 19 wasn't clearing <code>pending</code>).
+          </li>
+          <li>
+            <b>ERP order message (#397, item 24):</b> at the "Completed" stage, the rejection no
+            longer contradicts itself — it now distinguishes the reason (stage ≠ "Completed"
+            <i>vs.</i> deal outcome ≠ "Won").
+          </li>
+          <li>Upper bound on order quantity (guard against absurd totals) (#397).</li>
+        </ul>
+      </div>
+
+      <h2>Before → after</h2>
+      <div class="card">
+        <p>
+          <span class="was">"…while the deal is at 'Completed'"</span> →
+          <span class="now">"…but the deal is completed with the outcome 'Lost/not set'"</span>
+        </p>
+        <p>
+          <span class="was">Create process → endless "Saving…"</span> →
+          <span class="now">a clear error is shown, the form can be retried</span>
+        </p>
+        <p>
+          <span class="was">"Visit goal" · "no step" · "Visit prep"</span> →
+          <span class="now">"Goal" · "No task" · "Extra info"</span>
+        </p>
+      </div>
+
+      <h2>Repro steps</h2>
+      <div class="card">
+        <ol>
+          <li>Open a client card → "Task feed" with no AI note.</li>
+          <li>
+            "Processes" → "New process": the field is called "Goal"; the process card has an "Extra
+            info" button and a "No task" badge.
+          </li>
+          <li>Create a process with valid data → it's created, the modal closes (no hang).</li>
+          <li>
+            A process at "Completed" with the outcome "Lost" → "Create order in ERP": the message
+            explains the reason and doesn't contradict itself.
+          </li>
+        </ol>
+      </div>
+
+      <h2>Not included (root cause found, tracked separately)</h2>
+      <div class="card">
+        <ul>
+          <li>
+            <b>#397 item 25</b> — moving to shipments + status after the order: a new use case +
+            migration (M).
+          </li>
+          <li>
+            <b>#393 item 11</b> — a "Comment" field on the process: a new field + migration (S-M).
+          </li>
+          <li>
+            <b>#395 items 15/16b</b> — editing an audit (S) and a test batch (M). The sample-add bug
+            (item 16a) is already closed in #390.
+          </li>
+          <li><b>#391 item 2</b> — sidebar panel collapse animation bug: tracked separately.</li>
+          <li>
+            Bonus find (not touched): <code>recordQuickActivityAction</code> also has no try/catch —
+            the same hang risk.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

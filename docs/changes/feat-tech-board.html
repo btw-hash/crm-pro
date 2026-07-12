@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Technologist board (#394)</title>
+    <style>
+      body {
+        font:
+          15px/1.6 Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+      }
+      h1 {
+        font: 700 28px Arial;
+        letter-spacing: -0.5px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: #9a9ea8;
+        font-size: 13px;
+        margin-bottom: 32px;
+      }
+      h2 {
+        font: 700 18px Arial;
+        margin: 32px 0 12px;
+        border-bottom: 2px solid #ece6df;
+        padding-bottom: 6px;
+      }
+      h3 {
+        font: 700 14px Arial;
+        margin: 20px 0 8px;
+        color: #363c49;
+      }
+      .pill {
+        display: inline-block;
+        font: 600 11px Arial;
+        padding: 3px 10px;
+        border-radius: 999px;
+        margin: 2px 3px 2px 0;
+      }
+      .pill-fix {
+        background: #f7e4e2;
+        color: #c0392b;
+      }
+      .pill-feat {
+        background: #e7f5ee;
+        color: #197a48;
+      }
+      .pill-ui {
+        background: #fbf1d6;
+        color: #9a6a00;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+      th {
+        text-align: left;
+        padding: 8px 12px;
+        background: #ece6df;
+        color: #6a5f54;
+        font: 600 12px Arial;
+      }
+      td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #f0ebe5;
+        vertical-align: top;
+      }
+      td:first-child {
+        font-weight: 600;
+        white-space: nowrap;
+        color: #363c49;
+      }
+      .was {
+        color: #9a9ea8;
+        text-decoration: line-through;
+      }
+      .now {
+        color: #197a48;
+        font-weight: 600;
+      }
+      ol li {
+        margin-bottom: 6px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+      }
+      .note {
+        background: #fbf1d6;
+        border-left: 3px solid #e8a003;
+        padding: 10px 14px;
+        border-radius: 0 10px 10px 0;
+        font-size: 13px;
+        color: #6a4c00;
+        margin: 12px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Technologist board</h1>
+      <div class="sub">PR: feat/tech-board &nbsp;·&nbsp; Issue: #394 &nbsp;·&nbsp; 2026-06-29</div>
+
+      <h2>What changed</h2>
+
+      <div class="card">
+        <span class="pill pill-fix">Bug item 20</span>
+        <strong>Completed tech requests disappeared from the Manager's card</strong>
+        <p>
+          The <code>listActive()</code> method only filtered <code>open|in_progress</code>, so
+          <code>done</code> requests vanished from the deal card as soon as the technologist
+          finished the work.
+        </p>
+      </div>
+
+      <div class="card">
+        <span class="pill pill-feat">Item 17</span>
+        <strong>Technologist status on the Manager's card at the "Testing" stage</strong>
+        <p>
+          At the testing stage, the Manager's drawer now shows a colored badge with the status of
+          the latest request: "Waiting" / "In progress" / "Done".
+        </p>
+      </div>
+
+      <div class="card">
+        <span class="pill pill-feat">New page</span>
+        <strong>Technologist kanban board <code>/tech-board</code></strong>
+        <p>
+          Three columns: Open / In progress / Done. Each card is a clickable link that opens a side
+          drawer. Only available to the <code>technologist</code> and <code>head</code> roles.
+        </p>
+      </div>
+
+      <div class="card">
+        <span class="pill pill-feat">Drawer</span>
+        <strong>Request side panel with a flow: voice → AI draft → act → Done</strong>
+        <p>
+          At <code>in_progress</code> status, the technologist pastes a voice-note transcript → AI
+          generates a draft test act → a field editor → "Save act" → "Done". Closed with Escape or a
+          click outside the panel.
+        </p>
+      </div>
+
+      <h2>Before → after</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Before</th>
+            <th>After</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Manager's card (deal page)</td>
+            <td class="was">Technologist's done requests disappeared after completion</td>
+            <td class="now">All requests are shown regardless of status</td>
+          </tr>
+          <tr>
+            <td>Manager's drawer (testing stage)</td>
+            <td class="was">No indication of the technologist's status</td>
+            <td class="now">Colored badge "Technologist: Waiting / In progress / Done"</td>
+          </tr>
+          <tr>
+            <td>Navigation (sidebar)</td>
+            <td class="was">No "Technologist board" entry</td>
+            <td class="now">"Technologist board" entry (Flask icon) for technologist/head roles</td>
+          </tr>
+          <tr>
+            <td>/tech-board</td>
+            <td class="was">Page didn't exist</td>
+            <td class="now">3-column kanban with cards and counters</td>
+          </tr>
+          <tr>
+            <td>Technologist drawer</td>
+            <td class="was">Didn't exist</td>
+            <td class="now">Voice→draft→act workflow + "Done" button</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Repro steps</h2>
+
+      <h3>Bug item 20 — request history on the Manager's card</h3>
+      <ol>
+        <li>Log in as a Manager (e.g. <code>owens</code>).</li>
+        <li>Open a deal that has a tech request with status <code>done</code>.</li>
+        <li>
+          Confirm the completed request <strong>is shown</strong> in the "Tech requests" section
+          (previously it disappeared).
+        </li>
+      </ol>
+
+      <h3>Item 17 — technologist status in the Manager's drawer</h3>
+      <ol>
+        <li>Log in as a Manager.</li>
+        <li>On the process board, click a deal at the <strong>Testing</strong> stage.</li>
+        <li>
+          In the side drawer that opens, find the <strong>"Technologist"</strong> row with a colored
+          badge (yellow — waiting, green — in progress, gray — done).
+        </li>
+        <li>For deals at other stages, the "Technologist" row is not shown.</li>
+      </ol>
+
+      <h3>Technologist board /tech-board</h3>
+      <ol>
+        <li>
+          Log in as a technologist (e.g. <code>kent</code>) or head of sales (<code>head</code>).
+        </li>
+        <li>In the side menu, click <strong>"Technologist board"</strong> (flask icon).</li>
+        <li>
+          Confirm 3 columns are shown: <strong>Open / In progress / Done</strong> with request cards
+          and counters.
+        </li>
+        <li>
+          Click any card — <code>?req=&lt;id&gt;</code> is added to the URL, and a side drawer with
+          the request details opens.
+        </li>
+        <li>Close the drawer: press <strong>Escape</strong> or click outside the panel.</li>
+      </ol>
+
+      <h3>Voice → Act flow (for an "In progress" request)</h3>
+      <ol>
+        <li>Log in as a technologist.</li>
+        <li>Open /tech-board, click a card with status <strong>"In progress"</strong>.</li>
+        <li>The panel shows a <strong>"Transcript (voice note)"</strong> field.</li>
+        <li>Paste the transcript text and click <strong>"Generate act draft"</strong>.</li>
+        <li>AI returns filled-in act fields (product, dosage, parameters, result).</li>
+        <li>Edit the fields if needed, click <strong>"Save act"</strong>.</li>
+        <li>
+          After saving, a <strong>"Done"</strong> button appears — click it to move the request to
+          <code>done</code>.
+        </li>
+      </ol>
+
+      <div class="note">
+        <strong>Migration:</strong> Not required. The <code>status</code> field (String) in the
+        <code>tech_requests</code> table already stores <code>open / in_progress / done</code>. The
+        <code>quantity</code>/<code>unit</code> fields were added by a parallel branch.
+      </div>
+    </div>
+  </body>
+</html>

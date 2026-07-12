@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI assistant: conversation history (UI) — change showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #bf322b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+      }
+      .card__body {
+        padding: 1.2rem 1.4rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+      }
+      .ba .was {
+        background: #fbf2f1;
+      }
+      .ba .now {
+        background: #f1f8f3;
+      }
+      .ba h4 {
+        margin: 0 0 0.5rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      ol.steps {
+        margin: 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin-bottom: 0.5rem;
+      }
+      code {
+        background: #f3f5f8;
+        border-radius: 4px;
+        padding: 0.05em 0.35em;
+        font-size: 0.9em;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.78rem;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        padding: 0.1em 0.7em;
+        margin-left: 0.4rem;
+      }
+      footer {
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 1.5rem 2rem 3rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Head of sales AI assistant: conversation history <span class="tag">PR2 of 2</span></h1>
+      <p>
+        History panel · message search · "New conversation" · dialogue context · clickable sources
+      </p>
+    </header>
+
+    <div class="wrap">
+      <section class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            <strong>"History" panel</strong> to the left of the chat: a list of the head of sales's
+            conversations (title + date, newest first), loaded when the page opens. Clicking a
+            conversation opens its messages in the chat.
+          </li>
+          <li>
+            <strong>Search across history</strong>: a search field with a ~250ms debounce searches
+            message text and shows matching conversations with a match snippet.
+          </li>
+          <li>
+            <strong>"New conversation"</strong>: the button clears the chat and starts a new
+            conversation.
+          </li>
+          <li>
+            <strong>Conversation memory</strong>: every exchange (question + answer) is saved on the
+            server; continuing the conversation appends to the same conversation, and previous turns
+            are passed to the assistant as context for follow-ups ("any links?", "any other
+            options?").
+          </li>
+          <li>
+            <strong>Clickable sources</strong>: web results are now actual links (the company name
+            is the link text, opens in a new tab), not just red text.
+          </li>
+        </ul>
+        <p style="margin: 0.8rem 0 0; color: var(--muted)">
+          Access is limited to the head of sales role (head). All history is private — per owner
+          (server-side RBAC), other people's conversations aren't shown. Closes #340 · backend —
+          #339.
+        </p>
+      </section>
+
+      <div class="card">
+        <div class="card__head">Before → after</div>
+        <div class="card__body">
+          <div class="ba">
+            <div class="was">
+              <h4>Before</h4>
+              Every request was isolated — history was lost on page reload.
+            </div>
+            <div class="now">
+              <h4>After</h4>
+              Conversations are saved, visible in the left panel, any of them can be reopened.
+            </div>
+            <div class="was">
+              <h4>Before</h4>
+              Web sources were shown as red text — not clickable.
+            </div>
+            <div class="now">
+              <h4>After</h4>
+              The company name is a clickable link, opens in a new tab.
+            </div>
+            <div class="was">
+              <h4>Before</h4>
+              The follow-up "any links?" was treated as a new, isolated request.
+            </div>
+            <div class="now">
+              <h4>After</h4>
+              Previous turns are passed to the assistant — it understands the conversation context.
+            </div>
+            <div class="was">
+              <h4>Before</h4>
+              There was no way to search past discussions.
+            </div>
+            <div class="now">
+              <h4>After</h4>
+              Search across history with a match snippet (debounced).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">Repro steps</div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Log in as the head of sales (role <code>head</code>) and open the "AI assistant"
+              section.
+            </li>
+            <li>
+              Ask a question (e.g. "Find new ingredient suppliers") → get an answer. A new
+              conversation with a title from the question appears in the "History" panel on the
+              left.
+            </li>
+            <li>
+              If the answer has web sources — click the company name: the source's site opens in a
+              <strong>new tab</strong>.
+            </li>
+            <li>
+              Ask a follow-up question ("any links?") — the assistant answers in the context of the
+              previous exchange, the turn is appended to the same conversation.
+            </li>
+            <li>Click "+ New conversation" — the chat clears, a new conversation starts.</li>
+            <li>
+              In the "Search history" field, type a word from a past question — the list narrows to
+              matching conversations with a snippet; clear the field → the full list returns.
+            </li>
+            <li>
+              Click any conversation in the panel — its messages load into the chat, and any
+              continuation is appended there.
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">Under the hood (for review)</div>
+        <div class="card__body">
+          <ul>
+            <li>
+              <code>src/app/assistant/actions.ts</code> — <code>askAssistantAction</code> now
+              accepts <code>{ question, conversationId, conversation }</code>, passes the context
+              into <code>askManagerAssistant</code> and saves the exchange via
+              <code>recordAssistantExchange</code>, returning <code>conversationId</code>. New
+              actions: <code>listConversationsAction</code>, <code>getConversationAction</code>,
+              <code>searchConversationsAction</code> — serializable DTOs, ISO dates, RBAC by
+              <code>viewer.id</code>.
+            </li>
+            <li>
+              <code>_components/assistant-history-panel.tsx</code> — a new list/search/"new
+              conversation" panel (inline styles in the project's warm theme).
+            </li>
+            <li>
+              <code>_components/assistant-chat.tsx</code> — loading history, debounced search,
+              opening a conversation (assembling message pairs into a Turn), wiring context +
+              <code>conversationId</code>, clickable <code>&lt;a target="_blank"&gt;</code>.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>CRM Pro · change showcase · feat/assistant-history-ui · Issue #340</footer>
+  </body>
+</html>

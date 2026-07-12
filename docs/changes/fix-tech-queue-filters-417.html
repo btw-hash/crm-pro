@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase &middot; fix-tech-queue-filters-417</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 860px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 32px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        margin: 12px 0;
+      }
+      td,
+      th {
+        border: 1px solid #e3e8ee;
+        padding: 7px 10px;
+        text-align: left;
+      }
+      th {
+        background: #f3f6f9;
+      }
+      .was {
+        color: #c0392b;
+        text-decoration: line-through;
+      }
+      .now {
+        color: #1b7f3b;
+        font-weight: 600;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">fix-tech-queue-filters-417</span>
+    </header>
+    <main>
+      <h2>Tech queue: filters and export</h2>
+      <div class="card">
+        <p>
+          On the "Tech queue" page (<code>/tech-queue</code>) the filter chips and the "Export"
+          button were <strong>dead</strong> — plain buttons with no handlers (local
+          <code>FilterRow</code> / <code>OpsHeader</code>). Clicking did nothing.
+        </p>
+        <table>
+          <tr>
+            <th></th>
+            <th>Before</th>
+            <th>After</th>
+          </tr>
+          <tr>
+            <td>Chips (All / Open / In progress / Site visits)</td>
+            <td class="was">decorative, clicking had no effect</td>
+            <td class="now">
+              the shared <code>OpsFilters</code> → <code>?filter=</code>, the list is actually
+              narrowed server-side (like on the other ops screens)
+            </td>
+          </tr>
+          <tr>
+            <td>The "Export" button</td>
+            <td class="was">an empty button</td>
+            <td class="now">
+              the shared <code>ExportButton</code> → a CSV of the filtered requests
+              (<code>;</code>-separated + BOM for Excel compatibility)
+            </td>
+          </tr>
+        </table>
+        <p>
+          The filter logic was extracted into
+          <code>src/app/tech-queue/_lib/tech-queue-filter.ts</code> and covered by tests.
+          open/in_progress — by status, "Site visits" — by the <code>onsite</code> type. The metrics
+          (open/in progress/site visits) are computed across all active requests.
+        </p>
+      </div>
+
+      <h2>Repro steps</h2>
+      <div class="card">
+        <ol>
+          <li>Sign in as a technologist (or head of sales), open "Tech queue".</li>
+          <li>
+            Click the "Open" chip → the list narrows to requests with status "open",
+            <code>?filter=open</code> appears in the URL; "Site visits" → only on-site production
+            visits.
+          </li>
+          <li>
+            Click "Export" → downloads a CSV of exactly the requests visible under the current
+            filter (opens correctly in Excel: client, process, type, note, date, status).
+          </li>
+        </ol>
+      </div>
+    </main>
+  </body>
+</html>

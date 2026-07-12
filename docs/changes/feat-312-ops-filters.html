@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#312 Working filters on operational screens — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ol,
+      ul {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.92rem;
+      }
+      td,
+      th {
+        border: 1px solid #e3e8ee;
+        padding: 6px 10px;
+        text-align: left;
+      }
+      th {
+        background: #f6f7f9;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#312 · Working filters on operational screens</h1>
+      <p>
+        Filter chips (previously dead on 9 screens) now actually narrow the table via ?filter= in
+        the URL.
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <p>
+          On operational screens, filter pills were decorative (no handlers). Added a shared client
+          component <code>OpsFilters</code>: clicking a chip writes
+          <code>?filter=&lt;value&gt;</code> to the URL, the server page reads it and narrows the
+          table, the active chip is highlighted, other query params are preserved. Metrics are
+          calculated over all rows, the table — over the filtered ones.
+        </p>
+      </div>
+      <div class="card">
+        <h2>Before → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>Clicking a chip — nothing. The table doesn't change.</p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              A click narrows the table, URL <code>?filter=</code>, active chip highlighted, the
+              link can be shared.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Chips by screen (tied to real data fields)</h2>
+        <table>
+          <tr>
+            <th>Screen</th>
+            <th>Filters</th>
+            <th>Field</th>
+          </tr>
+          <tr>
+            <td>My shipments</td>
+            <td>All · Preparing · In transit · Delivered</td>
+            <td>status (groups)</td>
+          </tr>
+          <tr>
+            <td>Loading &amp; delivery</td>
+            <td>All · Vehicle assigned · No vehicle</td>
+            <td>driver</td>
+          </tr>
+          <tr>
+            <td>Packing</td>
+            <td>All · In queue · In progress · Done</td>
+            <td>status</td>
+          </tr>
+          <tr>
+            <td>Defect warehouse</td>
+            <td>All · In defect warehouse · Relabeling · Written off</td>
+            <td>status (relabeling = relabel pipeline)</td>
+          </tr>
+          <tr>
+            <td>Assortment</td>
+            <td>All · Grow · Hold · Stop</td>
+            <td>trend (growth/stable/dead)</td>
+          </tr>
+          <tr>
+            <td>Procurement</td>
+            <td>All · On track · Partial · Not allocated</td>
+            <td>allocatedQty vs requestedQty</td>
+          </tr>
+          <tr>
+            <td>Add-on requests</td>
+            <td>All · With a note</td>
+            <td>note ("Today/Urgent" removed — no such field)</td>
+          </tr>
+          <tr>
+            <td>Accounting</td>
+            <td>All</td>
+            <td>no distinguishing field (all in_accounting) — dead chip removed</td>
+          </tr>
+          <tr>
+            <td>Shipments</td>
+            <td>All</td>
+            <td>multi-section delivery schedule, no single row list — dead chips removed</td>
+          </tr>
+        </table>
+        <p style="margin-top: 10px; color: #6a5f54; font-size: 0.9rem">
+          Principle: chips are tied only to real fields. Where the field behind the old chip doesn't
+          exist, the chip was reworked or honestly removed (no data fabrication).
+        </p>
+      </div>
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open "Packing" (role: Procurement/Head of sales).</li>
+          <li>
+            Click "Done" → the table keeps only completed requests; <code>?filter=done</code>
+            appears in the URL; the chip is highlighted.
+          </li>
+          <li>"All" → the table is full again, <code>?filter</code> removed from the URL.</li>
+          <li>
+            Verified headless: on demo data there are only 4 requests total = In queue 2 + In
+            progress 1 + Done 1.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </body>
+</html>

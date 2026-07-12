@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — Fake ERP for the demo (OData)</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px;
+        color: #222;
+        line-height: 1.55;
+      }
+      h1 {
+        border-bottom: 3px solid #ffd200;
+        padding-bottom: 8px;
+      }
+      h2 {
+        margin-top: 28px;
+        color: #6b4e00;
+      }
+      .pill {
+        display: inline-block;
+        background: #ffd200;
+        color: #3a3522;
+        border-radius: 10px;
+        padding: 1px 10px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        border: 1px solid #e0dcc8;
+        padding: 7px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #f5f2e4;
+      }
+      code {
+        background: #f3f1e7;
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+      ol li {
+        margin: 6px 0;
+      }
+      .was {
+        color: #a33;
+      }
+      .now {
+        color: #2e7d32;
+      }
+      img {
+        max-width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin: 12px 0;
+      }
+      .note {
+        background: #fffae6;
+        border-left: 4px solid #ffd200;
+        padding: 10px 14px;
+        margin: 14px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Fake ERP for the demo — OData integration</h1>
+    <p>
+      <span class="pill">feat/mock-erp-odata</span> · Closes #TBD · track "ERP / critical path to
+      the demo" (#1 → #15)
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        <b>Stood up a fake ERP</b> (<code>tools/mock-erp/</code>) — a separate process
+        (<code>node:http</code>, no new dependencies) that answers OData requests the same way a
+        real ERP publication does, and renders a recognizable yellow-gray "ERP" window with
+        auto-refresh.
+      </li>
+      <li>
+        <b>Brought <code>ODataErpGateway</code> to life</b> — previously a stub that threw
+        <code>NotImplementedError</code>, now it makes real <code>fetch</code> calls + Basic auth +
+        parses OData JSON. The same code works against the fake ERP and a real one — only
+        <code>ERP_BASE_URL</code> changes.
+      </li>
+      <li>
+        The demo CRM can now be shown <b>with real network traffic to the "ERP"</b>: prices, stock,
+        AR balance — read over the network; reservations and orders — written to the "ERP" and
+        visible in its window.
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Aspect</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>ERP data source in the demo</td>
+        <td class="was">
+          Only the in-memory <code>StubErpGateway</code> (no "ERP" visible at all)
+        </td>
+        <td class="now">
+          A separate "ERP" process over OData/HTTP + an ERP window where documents land
+        </td>
+      </tr>
+      <tr>
+        <td><code>ODataErpGateway</code></td>
+        <td class="was">All 7 methods threw <code>NotImplementedError</code></td>
+        <td class="now">All 7 methods implemented via <code>fetch</code> (read/write the ERP)</td>
+      </tr>
+      <tr>
+        <td>Customer order</td>
+        <td class="was">A <code>STUB-1-2</code>-style number in the CRM's memory</td>
+        <td class="now">
+          A posted document <code>SO-2026-XXXX</code> in the ERP window, idempotent by key
+        </td>
+      </tr>
+      <tr>
+        <td>An ERP write failure</td>
+        <td class="was">—</td>
+        <td class="now">
+          A loud error (A18): no date → <code>missing_required_field</code>; ERP unreachable →
+          <code>unavailable</code>
+        </td>
+      </tr>
+    </table>
+
+    <h2>The "ERP" window (demo copy) after placing an order and reserving stock from the CRM</h2>
+    <img
+      src="assets/mock-erp-ui.png"
+      alt="The fake ERP window with order SO-2026-0030 and a reservation"
+    />
+    <p>
+      Visible: order <code>SO-2026-0030</code> (Union Grocery Wholesale, line items, "✓ posted");
+      reservation <code>rez-0001</code> on Sapore starter culture; Sapore's stock shows "On hand 35
+      / Reserved 10 / Free 25" (the free balance recalculated by the ERP).
+    </p>
+
+    <h2>Repro steps (VISUAL, in the browser)</h2>
+    <ol>
+      <li>
+        Terminal 1: <code>npm run mock-erp</code> → open <code>http://127.0.0.1:8108/</code>
+        (the ERP window).
+      </li>
+      <li>
+        In the app's <code>.env</code>: <code>ERP_MODE=odata</code>,
+        <code>ERP_BASE_URL=http://127.0.0.1:8108</code>, <code>ERP_USERNAME=demo</code>,
+        <code>ERP_PASSWORD=demo</code>.
+      </li>
+      <li>Terminal 2: <code>npm run dev</code> → open the CRM next to the ERP window.</li>
+      <li>
+        Open a client/deal card → the price/stock/AR balance <b>arrived from the ERP window</b> over
+        the network.
+      </li>
+      <li>Reserve a test batch → the ERP window shows a "Reservation", the free balance ↓.</li>
+      <li>
+        Place an order from a won deal → the ERP window shows a "Customer order"
+        <code>SO-2026-XXXX</code>. Placing it again — the same number (no duplicate).
+      </li>
+      <li>
+        Place an order with no shipment date → the ERP rejects it (a visible error, not a silent
+        failure).
+      </li>
+    </ol>
+
+    <div class="note">
+      <b>Verified:</b> <code>npm run verify</code> green — 471 tests (92 files),
+      typecheck/lint/format clean. Live end to end: the real <code>ODataErpGateway</code> against a
+      running server — reading prices/stock/AR balance, history, a reservation 200→150, an order +
+      idempotency, an error with no date. The ERP window was captured in a browser (screenshot
+      above).
+    </div>
+
+    <div class="note">
+      <b>Out of scope (behind the port, #15):</b> printing real ERP documents (invoice/bill of
+      lading/UPD equivalent), a return note. When a real ERP is connected, entity/field names are
+      checked against its <code>$metadata</code> — only the adapter changes, the use-cases/screens
+      stay untouched.
+    </div>
+  </body>
+</html>

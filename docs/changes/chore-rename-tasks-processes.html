@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#303 · Rename: Tasks → Processes, Activities → Tasks — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.55rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      code {
+        background: #f0f3f7;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.95rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid #eef1f5;
+      }
+      th {
+        color: #6a7480;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .was {
+        color: #b23b32;
+        text-decoration: line-through;
+      }
+      .now {
+        color: #197a48;
+        font-weight: 600;
+      }
+      ol li {
+        margin-bottom: 0.4rem;
+      }
+      .hint {
+        color: #6a7480;
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#303 · Tasks → Processes, Activities → Tasks</h1>
+      <p>
+        Unified UI terminology: the funnel board is now "Processes", and the actions inside a card
+        are "Tasks".
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <p>
+          By decision: what used to be called <b>"Tasks"</b> (the funnel board, a.k.a. "the deal")
+          is now <b>"Processes"</b>; and <b>"Activities"</b> (calls/meetings/notes inside a card) is
+          now <b>"Tasks"</b>. Only <b>visible text and error messages</b> changed: headings, the
+          menu item, buttons, labels, placeholders, error text. The code, routes, and data model
+          were left alone (internally it's still <code>deal</code>) — behavior doesn't change, only
+          the labels.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Glossary — before → after</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Before</th>
+              <th>After</th>
+              <th>Where</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="was">Tasks</td>
+              <td class="now">Processes</td>
+              <td>menu item, section heading, board</td>
+            </tr>
+            <tr>
+              <td class="was">New task</td>
+              <td class="now">New process</td>
+              <td>button and create dialog</td>
+            </tr>
+            <tr>
+              <td class="was">Task name</td>
+              <td class="now">Process name</td>
+              <td>create/edit form</td>
+            </tr>
+            <tr>
+              <td class="was">Task card</td>
+              <td class="now">Process card</td>
+              <td>right-hand panel</td>
+            </tr>
+            <tr>
+              <td class="was">Tasks by stage</td>
+              <td class="now">Processes by stage</td>
+              <td>home page, analytics (donut chart)</td>
+            </tr>
+            <tr>
+              <td class="was">Urgent tasks · My day — tasks</td>
+              <td class="now">Urgent processes · My day — processes</td>
+              <td>home page (tiles)</td>
+            </tr>
+            <tr>
+              <td class="was">Outcome of a completed deal</td>
+              <td class="now">Outcome of a completed process</td>
+              <td>badge on the board card</td>
+            </tr>
+            <tr>
+              <td class="was">Activities</td>
+              <td class="now">Tasks</td>
+              <td>tab/feed in the card</td>
+            </tr>
+            <tr>
+              <td class="was">Activity feed · No activities yet</td>
+              <td class="now">Task feed · No tasks yet</td>
+              <td>card, client, panel</td>
+            </tr>
+            <tr>
+              <td class="was">Dictate an activity (AI)</td>
+              <td class="now">Dictate a task (AI)</td>
+              <td>voice input in the card</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="hint">
+          Wording was adjusted throughout so messages read naturally with the new terms (e.g.
+          "unavailable", "won", "not found", "completed" now refer to a "process" instead of a
+          "task" wherever the meaning changed).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Left as-is (on purpose)</h2>
+        <ul>
+          <li>
+            The activity type in the "Type" dropdown — the value <b>"Task"</b> (this is an activity
+            subtype, not the board).
+          </li>
+          <li>
+            The tech-request placeholder "Describe your question or task for the technologist" —
+            here "task" means an assignment for the technologist, not the board.
+          </li>
+          <li>"Next step" / "No next step" — a separate concept, not renamed.</li>
+          <li>
+            Code, routes (<code>/deals</code>), the <code>Deal</code> model, internal comments —
+            left unchanged.
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>How to verify</h2>
+        <ol>
+          <li>
+            On the left in the menu — the item <b>"Processes"</b> (was "Tasks"). Open it → heading
+            "Processes".
+          </li>
+          <li>The <b>"New process"</b> button → the dialog has a "Process name" field.</li>
+          <li>
+            Open any process (card) → the <b>"Tasks (N)"</b> tab, the "Dictate a task (AI)" block,
+            "Task feed".
+          </li>
+          <li>
+            Home page and Analytics → the <b>"Processes by stage"</b> donut; "Urgent processes", "My
+            day — processes" tiles.
+          </li>
+          <li>Client card → "Task feed".</li>
+        </ol>
+        <p class="hint">
+          Verified: <code>npm run verify</code> is green (789 tests), every screen renders live with
+          the new labels; the old "Tasks" (board)/"Activities" are gone from all visible spots.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

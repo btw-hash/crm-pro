@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase · rail-scoop-symmetric</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 820px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 28px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">rail-scoop-symmetric</span>
+    </header>
+    <main>
+      <h2>Final fix for the rail indicator "tongue"</h2>
+      <div class="card">
+        <p>
+          <strong>Before:</strong> the active item's cream "scoop" was a lens shape, widest at the
+          icon and tapering to zero above/below. For a middle item it was symmetric (fine), but for
+          the <strong>first</strong> item (house icon) the upper lobe was clipped and the lower lobe
+          tapered to a point that spilled into the row below → a white "tongue" downward. It took 4
+          sessions to fix.
+        </p>
+        <p>
+          <strong>After:</strong> the scoop is now made exactly the height of one row
+          (<code>ROW_H=60</code>) with a pinch at the center → it always occupies EXACTLY the active
+          row, symmetric top and bottom, never spilling into neighbors. The first/last item looks
+          like the middle one — the tongue is now geometrically impossible.
+        </p>
+      </div>
+      <h2>Verification</h2>
+      <div class="card">
+        <ol>
+          <li>
+            Collapsed rail, Home active (first item) → the disc sits in a symmetric cream scoop, no
+            tongue above/below.
+          </li>
+          <li>Navigate to a middle section (Analytics) → the same clean look.</li>
+        </ol>
+        <p>
+          Verified headed (Chrome): house icon and analytics — both clean. tsc/lint/tests green.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

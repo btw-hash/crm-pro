@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credit limit in orders — change showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --alert: #b5392f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      .alert {
+        color: var(--alert);
+        font-weight: 600;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Deferred-payment credit limit in orders</h1>
+      <p>You can't sell "on credit" to someone who's already over their limit</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (closes #34)</h2>
+        <ul>
+          <li>
+            On the deal screen, before placing a "Customer order," the client's
+            <b>balance</b> is visible: available deferred-payment limit, current AR (accounts
+            receivable), and credit limit.
+          </li>
+          <li>
+            If the order amount pushes the client <b>over the deferred-payment limit</b> — placing
+            the order "on credit" is <b class="alert">blocked</b> with an exact message (by how much
+            it's exceeded).
+          </li>
+          <li>
+            A <b>manual override</b> is available ("place over limit" at your own responsibility) —
+            it goes through, but is <b>logged loudly</b>.
+          </li>
+          <li>
+            The numbers come from the <b>ERP</b> (balance + individual pricing), the decision is
+            <b>deterministic</b> (AI is not involved). Visible only to sales; the technologist
+            doesn't see the balance/order.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Placing an order</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Debt control</td>
+                <td class="was">The order was created without regard to AR/limit</td>
+                <td>An order over the deferred-payment limit is blocked</td>
+              </tr>
+              <tr>
+                <td>Balance visibility</td>
+                <td class="was">AR/limit — only in the client card</td>
+                <td>Available limit is visible right at the order form</td>
+              </tr>
+              <tr>
+                <td>Exceptions</td>
+                <td class="was">—</td>
+                <td>Manual override is possible, but logged</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Log in as <b>Alan Peterson (Head of sales)</b>, open the won deal
+              <b>deal-6</b> (client "Union Grocery Wholesale").
+            </li>
+            <li>
+              In the "Customer order (ERP)" block you can see:
+              <b>"Deferred-payment limit: $9,000 available · AR $13,000 of $22,000"</b>.
+            </li>
+            <li>
+              Select <b>Belcolade</b>, quantity <b>1500</b>, a date → "Create order." A
+              <b class="alert">block</b> appears: "Order for $11,500 exceeds the available
+              deferred-payment limit of $9,000… Placing the order 'on credit' is blocked."
+            </li>
+            <li>
+              Check <b>"Place over limit"</b> → "Create order anyway" → the order is created (No.
+              STUB-…); the override is logged.
+            </li>
+            <li>
+              An order within the limit (e.g. 500 units) goes through immediately, with no warning.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · credit limit in orders (#34)</footer>
+  </body>
+</html>

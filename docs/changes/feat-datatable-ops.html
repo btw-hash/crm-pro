@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#321 · Unified DataTable for operational screens — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      code {
+        background: #f0f3f7;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fdf0ee;
+        border: 1px solid #f3d5cf;
+      }
+      .now {
+        background: #ecf6ef;
+        border: 1px solid #cce8d6;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+        color: #6a7480;
+      }
+      ol li {
+        margin-bottom: 0.45rem;
+      }
+      ul.scr li {
+        margin-bottom: 0.3rem;
+      }
+      .hint {
+        color: #6a7480;
+        font-size: 0.92rem;
+      }
+      /* demo table */
+      .dt {
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .dt .hd,
+      .dt .rw {
+        display: flex;
+        gap: 12px;
+        padding: 10px 14px;
+        border-bottom: 1px solid #f1f3f6;
+      }
+      .dt .hd {
+        background: #f8fafc;
+      }
+      .dt .hd button {
+        flex: 1;
+        text-align: left;
+        background: none;
+        border: none;
+        font: 600 12px Arial;
+        letter-spacing: 0.4px;
+        color: #8a929c;
+        cursor: pointer;
+        padding: 0;
+      }
+      .dt .hd button.r,
+      .dt .rw span.r {
+        text-align: right;
+      }
+      .dt .hd button.active {
+        color: #16181d;
+      }
+      .dt .rw span {
+        flex: 1;
+        font: 500 13px Arial;
+      }
+      .pill {
+        background: #e7f5ee;
+        color: #197a48;
+        font: 600 11px Arial;
+        padding: 3px 9px;
+        border-radius: 999px;
+      }
+      .pager {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        font: 500 12px Arial;
+        color: #6a5f54;
+      }
+      .pager button {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #dde2e8;
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .pager button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#321 · Unified DataTable for operational screens</h1>
+      <p>
+        One table component: filter + export + column sorting + pagination — consistent across all 9
+        screens.
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <p>
+          9 operational screens repeated the same table block via copy-paste (glass panel, headers,
+          rows, status badges) — each with its own ~150 lines of markup, no sorting or pagination.
+          Introduced <b>one reusable component</b>
+          <code>DataTable</code> (<code>src/app/_components/data-table.tsx</code>) and migrated
+          every screen to it: Procurement, Assortment, Shipments, Add-on requests, My shipments,
+          Accounting, Logistics, Packing, Defects. Added <b>click-to-sort column headers</b> and
+          <b>pagination</b> — where neither existed before. Working filters (<code>?filter=</code>)
+          and exporting the filtered selection to CSV are preserved. Closes #321 (and removes the
+          duplication flagged in #312/#313).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Live demo — sorting and pagination</h2>
+        <p class="hint">
+          Click the column headers (click again to reverse order). Paging controls are at the
+          bottom. This behavior is now identical across all 9 screens.
+        </p>
+        <div class="dt" id="demo"></div>
+      </div>
+
+      <div class="card">
+        <h2>Before → After</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>
+              Every screen had its own copy-pasted table. No sorting anywhere; as demo data grew,
+              long lists had to be scrolled through entirely (no pagination). Filter/export were
+              fixed screen by screen (#312, #313) — 9x the work and a risk of drift.
+            </p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              One <code>DataTable&lt;T&gt;</code>: column config, ready-made cells (text, badges,
+              action buttons), sorting on any column, pagination at 12 rows per page. Filter and
+              export are unchanged. Cells are prepared on the server; sorting happens client-side on
+              numbers/strings.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Reproduction steps</h2>
+        <ol>
+          <li>
+            Log in as head of sales (<code>alexander</code>) or category manager
+            (<code>buyer</code>).
+          </li>
+          <li>
+            Open <code>/procurement</code> (Procurement) → in the "Quotas by manager" table click
+            the <b>"Available"</b> header — rows sort ascending, click again for descending (↑/↓
+            arrow on the active column).
+          </li>
+          <li>
+            Open <code>/assortment</code> (Assortment analytics) → sort by "Gross margin" or
+            "Units"; toggle the filter chip (Grow/Hold/Stop) — sorting and filter work together.
+          </li>
+          <li>
+            Open <code>/packing</code>, <code>/logist</code>, <code>/defects</code>,
+            <code>/accounting</code> → row action buttons ("Next stage", "Truck left", etc.) work as
+            before; sorting/pagination were added.
+          </li>
+          <li>
+            On any screen click <b>"Export"</b> — the CSV contains the current (filtered) selection,
+            as before.
+          </li>
+          <li>
+            If there are more than 12 rows — a "‹ ›" pager appears at the bottom of the table with
+            the range "1–12 of N".
+          </li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Screens affected</h2>
+        <ul class="scr">
+          <li><code>/procurement</code> — Procurement (2 tables: quotas + deficit)</li>
+          <li><code>/assortment</code> — Assortment analytics (3 tables)</li>
+          <li>
+            <code>/shipments</code> — Shipments (memo to accounting + warehouse email; the daily
+            summary and delivery schedule are unchanged — they're not flat lists)
+          </li>
+          <li><code>/shipments/additional</code> — Add-on requests</li>
+          <li><code>/my-shipments</code> — My shipments (with a "Progress" column)</li>
+          <li><code>/accounting</code> — Accounting</li>
+          <li><code>/logist</code> — Loading &amp; delivery</li>
+          <li><code>/packing</code> — Packing requests</li>
+          <li><code>/defects</code> — Defect warehouse</li>
+        </ul>
+        <p class="hint">
+          Verified: <code>npm run verify</code> green (691 tests, +7 for DataTable), production
+          build green, all 9 screens render (200) with working sortable headers.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Mini-copy of the DataTable logic for the live demo (same model: cells + sortValues).
+      const COLS = [
+        { label: "Manager" },
+        { label: "Score", r: true },
+        { label: "Volume, kg", r: true },
+        { label: "Status", sortable: false },
+      ];
+      const ROWS = [
+        { c: ["Sullivan", 82, 1200, pill("on track")], s: ["Sullivan", 82, 1200, null] },
+        { c: ["Reed", 47, 4300, pill("on track")], s: ["Reed", 47, 4300, null] },
+        { c: ["Peters", 95, 800, pill("on track")], s: ["Peters", 95, 800, null] },
+        { c: ["Morgan", 30, 2600, pill("on track")], s: ["Morgan", 30, 2600, null] },
+        { c: ["Kane", 68, 150, pill("on track")], s: ["Kane", 68, 150, null] },
+        { c: ["Wolfe", 12, 5100, pill("on track")], s: ["Wolfe", 12, 5100, null] },
+        { c: ["Hayes", 74, 990, pill("on track")], s: ["Hayes", 74, 990, null] },
+      ];
+      const PAGE = 4;
+      let sortI = null,
+        dir = "asc",
+        page = 0;
+      function pill(t) {
+        return '<span class="pill">' + t + "</span>";
+      }
+      function cmp(a, b) {
+        if (a === null) return 1;
+        if (b === null) return -1;
+        if (typeof a === "number" && typeof b === "number") return a - b;
+        return String(a).localeCompare(String(b), "en", { numeric: true });
+      }
+      function render() {
+        let rows = ROWS.slice();
+        if (sortI !== null)
+          rows.sort((x, y) => (dir === "asc" ? 1 : -1) * cmp(x.s[sortI], y.s[sortI]));
+        const pages = Math.max(1, Math.ceil(rows.length / PAGE));
+        page = Math.min(page, pages - 1);
+        const vis = rows.slice(page * PAGE, page * PAGE + PAGE);
+        let h = '<div class="hd">';
+        COLS.forEach((c, i) => {
+          const sortable = c.sortable !== false;
+          const active = sortI === i;
+          const arrow = active ? (dir === "asc" ? " ↑" : " ↓") : "";
+          h += sortable
+            ? '<button class="' +
+              (c.r ? "r " : "") +
+              (active ? "active" : "") +
+              '" data-i="' +
+              i +
+              '">' +
+              c.label +
+              arrow +
+              "</button>"
+            : '<button class="' +
+              (c.r ? "r " : "") +
+              '" disabled style="cursor:default">' +
+              c.label +
+              "</button>";
+        });
+        h += "</div>";
+        vis.forEach((rw) => {
+          h += '<div class="rw">';
+          rw.c.forEach((cell, i) => {
+            h += '<span class="' + (COLS[i].r ? "r" : "") + '">' + cell + "</span>";
+          });
+          h += "</div>";
+        });
+        if (pages > 1) {
+          h +=
+            '<div class="pager"><span>' +
+            (page * PAGE + 1) +
+            "–" +
+            Math.min(rows.length, (page + 1) * PAGE) +
+            " of " +
+            rows.length +
+            '</span><button data-p="-1"' +
+            (page === 0 ? " disabled" : "") +
+            '>‹</button><button data-p="1"' +
+            (page >= pages - 1 ? " disabled" : "") +
+            ">›</button></div>";
+        }
+        const el = document.getElementById("demo");
+        el.innerHTML = h;
+        el.querySelectorAll(".hd button[data-i]").forEach((b) =>
+          b.addEventListener("click", () => {
+            const i = +b.dataset.i;
+            if (sortI === i) dir = dir === "asc" ? "desc" : "asc";
+            else {
+              sortI = i;
+              dir = "asc";
+            }
+            page = 0;
+            render();
+          }),
+        );
+        el.querySelectorAll(".pager button[data-p]").forEach((b) =>
+          b.addEventListener("click", () => {
+            page += +b.dataset.p;
+            render();
+          }),
+        );
+      }
+      render();
+    </script>
+  </body>
+</html>

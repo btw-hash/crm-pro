@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — fix/sidebar-rail-slim-disc</title>
+    <style>
+      body {
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #1c1f27;
+        max-width: 760px;
+        margin: 32px auto;
+        padding: 0 18px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 17px;
+        margin-top: 28px;
+      }
+      .pill {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 12px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        border: 1px solid #e3ded8;
+        padding: 7px 10px;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background: #f8f3ef;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      code {
+        background: #f8f3ef;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      <span class="pill">fix(ui)</span> Collapsed rail: slim capsule + protruding disc instead of
+      the cream cut-out
+    </h1>
+
+    <h2>What changed</h2>
+    <p>
+      The collapsed rail looked like a wide dark rectangle (150px), where the active item was marked
+      by a cream "scoop" cut-out. The cut-out blended into the page background, and the disc
+      "floated" inside the wide block. Replaced with a slim capsule: a narrow rounded dark strip,
+      with a <b>dark disc protruding</b> from its right edge on the active item (the left half
+      blends into the rail, the right half sticks out). The cream cut-out is removed.
+    </p>
+    <p>
+      Cause of the wide rectangle: the <code>.app-sidebar</code> class (a leftover from the old CSS
+      sidebar) painted the entire 150px column dark on top of the rounded 78px inner capsule — that
+      capsule was invisible (dark on dark). In the collapsed state the outer shell is now
+      transparent (the background/clip from the class are kept for the expanded panel and the mobile
+      off-canvas).
+    </p>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Element</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Rail shape</td>
+        <td>Wide dark rectangle, 150px</td>
+        <td>Slim capsule, 78px, outer shell transparent</td>
+      </tr>
+      <tr>
+        <td>Active-item indicator</td>
+        <td>Cream "scoop" cut-out + disc inside</td>
+        <td>Dark disc protrudes past the capsule's right edge</td>
+      </tr>
+      <tr>
+        <td>Column width (collapsed)</td>
+        <td>150px</td>
+        <td>116px (content sits closer to the rail)</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Sign in as Head of Sales or Manager (in dev, localhost opens as Head of Sales).</li>
+      <li>Collapse the side menu into the rail (hamburger icon at the top of the sidebar).</li>
+      <li>
+        See a <b>narrow dark capsule</b> with centered icons; on the active item ("Home") the dark
+        disc with the house icon <b>protrudes to the right</b> past the capsule's edge — no cream
+        cut-out.
+      </li>
+      <li>
+        Navigate to another section from the rail → the disc smoothly travels to the new item.
+      </li>
+      <li>Expand the menu (hamburger) → the full dark panel is unchanged.</li>
+    </ol>
+  </body>
+</html>

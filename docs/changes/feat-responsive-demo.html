@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase · responsive top screens</title>
+    <style>
+      body {
+        font:
+          15px/1.6 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 820px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.4px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-top: 32px;
+        border-bottom: 1px solid #e8e1d9;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e8e1d9;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 14px 0;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 7px 10px;
+        text-align: left;
+      }
+      .was {
+        color: #9a3b35;
+      }
+      .now {
+        color: #1f7a4d;
+      }
+      code {
+        background: #f1ebe4;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+      .muted {
+        color: #9a9ea8;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Responsive layout for top screens on phone and tablet</h1>
+      <p class="muted">
+        Branch <code>feat/responsive-demo</code> · layout only, business logic and the desktop view
+        were not changed.
+      </p>
+
+      <h2>What changed</h2>
+      <div class="card">
+        <p>
+          On narrow screens (phone, tablet in portrait), content overflowed past the right edge — a
+          horizontal scrollbar appeared, cards and charts got clipped, the sidebar took up too much
+          space. The demo's top screens now stack into a single column, and the side menu collapses
+          into a thin rail.
+        </p>
+        <p>
+          <span class="was">Before → </span> horizontal scroll up to +428px on phone (analytics),
+          +231–319px on the other screens.
+        </p>
+        <p><span class="now">After → </span> 0px of overflow at 390px, 768px, and 1440px.</p>
+      </div>
+
+      <h2>Horizontal overflow measurements</h2>
+      <table>
+        <tr>
+          <th>Screen</th>
+          <th>Phone 390px</th>
+          <th>Tablet 768px</th>
+          <th>Desktop 1440px</th>
+        </tr>
+        <tr>
+          <td>Home / Board</td>
+          <td><span class="was">+231</span> → <span class="now">0</span></td>
+          <td>0 → 0</td>
+          <td>0 → 0</td>
+        </tr>
+        <tr>
+          <td>Analytics</td>
+          <td><span class="was">+428</span> → <span class="now">0</span></td>
+          <td><span class="was">+50/64</span> → <span class="now">0</span></td>
+          <td>0 → 0</td>
+        </tr>
+        <tr>
+          <td>Add-on requests</td>
+          <td><span class="was">+251</span> → <span class="now">0</span></td>
+          <td>0 → 0</td>
+          <td>0 → 0</td>
+        </tr>
+        <tr>
+          <td>Assistant</td>
+          <td><span class="was">+319</span> → <span class="now">0</span></td>
+          <td>0 → 0</td>
+          <td>0 → 0</td>
+        </tr>
+      </table>
+
+      <h2>How it's built</h2>
+      <ul>
+        <li>
+          Fixed multi-column grids → <code>repeat(auto-fit, minmax(Npx, 1fr))</code>: columns
+          collapse into one on narrow screens on their own, the column count on desktop is
+          preserved.
+        </li>
+        <li>Control rows (Slice/View/Export, form fields) — <code>flex-wrap</code>.</li>
+        <li>Fixed widths (the assistant history panel, 264px) → <code>max-width: 100%</code>.</li>
+        <li>
+          <code>@media (max-width: 768px)</code> in <code>globals.css</code>: the sidebar → a thin
+          icon rail (64px), reduced content padding, an <code>overflow-x: hidden</code> guard.
+        </li>
+      </ul>
+
+      <h2>Repro steps</h2>
+      <ol>
+        <li>
+          Open the app and narrow the browser window to phone width (≈390px) — or DevTools → device
+          toolbar.
+        </li>
+        <li>
+          Go through Home → Analytics → Add-on requests, and as head of sales — Board and Assistant:
+          content is in a single column, no horizontal scroll, the sidebar is a thin strip of icons.
+        </li>
+        <li>Return the window to desktop width (1440px) — the layout is unchanged.</li>
+      </ol>
+      <p class="muted">
+        Processes (kanban) were intentionally left untouched — the board has its own horizontal
+        scroll. Login was not changed.
+      </p>
+    </div>
+  </body>
+</html>

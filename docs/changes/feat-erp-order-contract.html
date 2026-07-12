@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customer order ERP contract — idempotency — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      .was {
+        color: var(--no);
+      }
+      .now {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>The "Customer order" ERP contract</h1>
+      <p>Required fields · idempotency · the ERP write-rejection error model</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            The <span class="kbd">createCustomerOrder</span> contract is finished end to end: exact
+            required fields, the idempotency-key format, a typed ERP rejection.
+            <span class="tag">#135</span>
+          </li>
+          <li>
+            <b>Idempotency works on the stub</b>: retrying against the same deal doesn't spawn a
+            second order, it returns the existing one.
+          </li>
+          <li>
+            <b>The shipment date is required</b> (the ERP won't post an order without it): added to
+            the order form.
+          </li>
+          <li>
+            Decisions are recorded in <span class="kbd">docs/adr/0006-erp-order-contract.md</span>.
+            A real ERP will be wired up later by an adapter (#15) — the interface stays the same.
+          </li>
+          <li>
+            The logic is covered by tests (15 for the order contract); the whole verify suite is
+            green — 366 tests.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>Aspect</th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>Resubmitting an order</td>
+              <td class="was">every click created a new order (risk of duplicates)</td>
+              <td class="now">an idempotency key — a retry returns the same order, no duplicate</td>
+            </tr>
+            <tr>
+              <td>Shipment date</td>
+              <td class="was">wasn't requested — the ERP wouldn't post such an order</td>
+              <td class="now">a required field in the form and in the contract</td>
+            </tr>
+            <tr>
+              <td>ERP write rejection</td>
+              <td class="was">not modeled</td>
+              <td class="now">
+                a typed <span class="kbd">ErpWriteError</span> with a reason → a message for the
+                user, not a 500 crash
+              </td>
+            </tr>
+            <tr>
+              <td>Fields / ids / service account</td>
+              <td class="was">a "magic API", fields not documented</td>
+              <td class="now">
+                the contract in ADR-0006: fields, CRM↔ERP ids, a separate write account
+              </td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open a won deal (the "Won" stage), the "Customer order (ERP)" block.</li>
+            <li>
+              Pick a product, quantity, <b>a shipment date</b> → "Create order in ERP" → an order
+              number appears.
+            </li>
+            <li>
+              Click "Create order" <b>again</b> for the same deal → the <b>same number</b> comes
+              back with an "already created" note (no duplicate was created — idempotency).
+            </li>
+            <li>
+              Try it without a shipment date → the form won't submit (the field is required); on the
+              server such a request is rejected with a clear error.
+            </li>
+          </ol>
+          <p class="note">
+            Right now the number comes from an ERP stub; real numbers will arrive with adapter #15
+            over the same contract.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · ERP order contract (#135)</footer>
+  </body>
+</html>

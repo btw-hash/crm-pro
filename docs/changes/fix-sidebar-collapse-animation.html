@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#351 · Sidebar collapse-animation artifact — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      /* ── Live mini demo ───────────────────────────────── */
+      .demo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.4rem;
+      }
+      .demo {
+        background: #f8f3ef; /* page background color (same as the scoop cut-out) */
+        border-radius: 14px;
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e3d8ce;
+      }
+      .demo .cap {
+        position: absolute;
+        top: 8px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        z-index: 10;
+      }
+      .demo.bad .cap {
+        color: #b04141;
+      }
+      .demo.good .cap {
+        color: #1f8a4c;
+      }
+      /* dark sidebar wrapper */
+      .sb {
+        position: absolute;
+        top: 40px;
+        left: 18px;
+        background: #1c1f27;
+        border-radius: 22px;
+        height: 230px;
+        width: 200px;
+        transition: width 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .sb.collapsed {
+        width: 64px;
+      }
+      /* BUG: overflow always visible → the scoop shows on the dark background while collapsing */
+      .demo.bad .sb {
+        overflow: visible;
+      }
+      /* FIX: hidden during the animation, visible only once settled collapsed */
+      .demo.good .sb {
+        overflow: hidden;
+      }
+      .demo.good .sb.rest-collapsed {
+        overflow: visible;
+      }
+      /* active-item indicator layer (anchored to the rail's 64px right edge) */
+      .ind {
+        position: absolute;
+        top: 80px;
+        right: 0;
+        width: 38px;
+        height: 96px;
+        pointer-events: none;
+      }
+      .ind .scoop {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 38px;
+        height: 96px;
+      }
+      .ind .disc {
+        position: absolute;
+        right: -22px;
+        top: 26px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #2b303c;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+      }
+      .dot {
+        position: absolute;
+        left: 22px;
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        background: #3a3f4c;
+      }
+      .dot.d1 {
+        top: 36px;
+      }
+      .dot.d2 {
+        top: 96px;
+      }
+      .dot.d3 {
+        top: 156px;
+      }
+      .btn {
+        margin-top: 0.9rem;
+        background: #2a3543;
+        color: #fff;
+        border: none;
+        border-radius: 9px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .hint {
+        font-size: 0.86rem;
+        color: #6a727c;
+        margin: 0.5rem 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#351 · Visual artifact during the sidebar collapse animation</h1>
+      <p>The white "gap" around the active item during menu collapse — fixed.</p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <p>
+          In the collapsed sidebar, the active item is highlighted by a "blob" — a scoop cut-out in
+          the page background color (<code>#F8F3EF</code>) that appears to "bite into" the dark
+          sidebar. When collapsing, the dark box's width animates
+          <code>248 → 78px</code>, while the cut-out's geometry is computed for the final 78px.
+          During the transition, the cut-out momentarily ended up <b>inside</b> the still-wide dark
+          box and was visible as a crooked white blob on the dark background. Now, during the
+          animation, the cut-out is neatly clipped by the right edge of the narrowing box and
+          appears in sync with the width — no gap.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Before → after (live demo)</h2>
+        <p class="hint">
+          Click "Collapse/Expand" under each panel. On the left — the bug (a white blob flashes on
+          the dark background during the collapse); on the right — the fix (the cut-out smoothly
+          follows the edge).
+        </p>
+        <div class="demo-grid">
+          <div class="demo bad">
+            <div class="cap">BEFORE · artifact</div>
+            <div class="sb" id="sbBad">
+              <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+              <div class="ind">
+                <svg class="scoop" viewBox="0 0 38 96" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M38,0 C38,23 5,24 5,48 C5,72 38,73 38,96 Z" fill="#F8F3EF" />
+                </svg>
+                <span class="disc"></span>
+              </div>
+            </div>
+          </div>
+          <div class="demo good">
+            <div class="cap">AFTER · smooth</div>
+            <div class="sb collapsed rest-collapsed" id="sbGood">
+              <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+              <div class="ind">
+                <svg class="scoop" viewBox="0 0 38 96" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M38,0 C38,23 5,24 5,48 C5,72 38,73 38,96 Z" fill="#F8F3EF" />
+                </svg>
+                <span class="disc"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1.4rem; margin-top: 0.4rem">
+          <button class="btn" id="btnBad" style="flex: 1">Collapse / expand (bug)</button>
+          <button class="btn" id="btnGood" style="flex: 1">Collapse / expand (fix)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Before → after (the fix in essence)</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>
+              The dark box instantly got <code>overflow: visible</code>, while the width was still
+              animating 248→78. The scoop cut-out (geometry sized for 78px) "hung" inside the wide
+              box as a white blob until the animation finished — a crooked white gap around the
+              active icon.
+            </p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              For the duration of the width animation, the box holds
+              <code>overflow: hidden</code> (the <code>animating</code> flag, lifted after 420ms).
+              The cut-out/disc are clipped by the box edge and appear in sync with the width.
+              <code>visible</code> — only once the collapsed box has settled. The end states are
+              unchanged.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps (in the app)</h2>
+        <ol>
+          <li>
+            Open the app, navigate to any section (the active item is highlighted by a "blob").
+          </li>
+          <li>
+            Collapse the sidebar (the "menu" icon) and watch the active icon right during the
+            animation.
+          </li>
+          <li>
+            Confirm: there is no white gap/crooked blob around the active item — the cut-out
+            smoothly follows the width.
+          </li>
+          <li>
+            Expand back — the transition is clean too. The end states look the same as before.
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <script>
+      // Bug: overflow always visible (as it was before the fix) — the white blob flashes through.
+      document.getElementById("btnBad").addEventListener("click", function () {
+        document.getElementById("sbBad").classList.toggle("collapsed");
+      });
+      // Fix: overflow:hidden during the animation, visible only once the box has settled.
+      var sbGood = document.getElementById("sbGood");
+      var goodTimer = null;
+      document.getElementById("btnGood").addEventListener("click", function () {
+        sbGood.classList.remove("rest-collapsed"); // hidden for the duration of the animation
+        sbGood.classList.toggle("collapsed");
+        if (goodTimer) clearTimeout(goodTimer);
+        goodTimer = setTimeout(function () {
+          // turn visible on only if at rest and collapsed (as in the component)
+          if (sbGood.classList.contains("collapsed")) {
+            sbGood.classList.add("rest-collapsed");
+          }
+        }, 420);
+      });
+    </script>
+  </body>
+</html>

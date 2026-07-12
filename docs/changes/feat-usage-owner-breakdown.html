@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI spend by employee — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      code {
+        background: #f3f5f8;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.9em;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>AI spend — now broken down by employee</h1>
+      <p>Which managers spend how many tokens and dollars on AI — over a period</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was built (#405, an extension of #401)</h2>
+        <ul>
+          <li>
+            Every AI call is now tied to the <b>employee</b> who initiated it (via the session). The
+            "AI spend" screen now has a <b>"By employee"</b> breakdown: calls, tokens, and cost per
+            manager over the period.
+          </li>
+          <li>
+            Data-privacy compliance: only a <b>surrogate id</b> for the employee is written to the
+            log (not a name/email); a readable name is substituted on screen from the reference
+            table. Calls outside a session appear as "System / no session".
+          </li>
+          <li>Works with both AI providers — doesn't depend on prompt caching.</li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>AI spend</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Breakdowns</td>
+                <td class="was">Only "by feature" (what we spend on)</td>
+                <td>"By feature" + "By employee" (who's spending)</td>
+              </tr>
+              <tr>
+                <td>Attribution</td>
+                <td class="was">Anonymous department-wide spend</td>
+                <td>Spend tied to a manager (surrogate id → name on screen)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Log in as <b>head of sales</b> (demo login "Alan").</li>
+            <li>Open <b>"AI spend"</b> in the menu.</li>
+            <li>
+              On a stand with live AI (<code>AI_MODE=live</code>), ask the assistant a few questions
+              from different users — a <b>"By employee"</b> table appears below the "By feature"
+              table, with calls, tokens, and cost for each person.
+            </li>
+            <li>
+              In stub mode there's no data (the model isn't called) — both tables are empty, showing
+              an honest empty state.
+            </li>
+          </ol>
+          <p class="was">
+            NB: in-memory mode shows a breakdown of the most recent calls (a ring buffer); full
+            history for a period comes from Postgres.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · AI spend by employee (#405)</footer>
+  </body>
+</html>

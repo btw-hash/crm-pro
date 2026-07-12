@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Domain errors from server actions → inline, not 500 — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #1b8fd6;
+        --bad: #c0392b;
+        --good: #1e8e5a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--bad);
+      }
+      .now {
+        color: var(--good);
+      }
+      code {
+        background: #f3f5f8;
+        padding: 0.05rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.86em;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Domain errors no longer trigger a red "500" overlay</h1>
+      <p>The audit form and other deal-card actions now report errors gently, inline</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed (closes #232)</h2>
+        <ul>
+          <li>
+            <b>Bug (reproduced):</b> on the deal card, saving an audit with empty fields threw a
+            <span class="was">red Runtime overlay</span> "Specify at least one piece of equipment or
+            client pain point" — scary and confusing.
+          </li>
+          <li>
+            <b>After:</b> the same error is now shown as a
+            <span class="now">gentle inline caption right in the form</span>, the page doesn't
+            crash; you can fix it and save right away.
+          </li>
+          <li>
+            <b>Along the way:</b> ran an adversarial audit across <b>all 12</b> server-action files.
+            No other overlays are reachable from the UI; hardened edge cases (tech queue, stage
+            transitions) against crashing on malformed requests.
+          </li>
+          <li>
+            Side effect: the audit author is now recorded as the real user (previously a hardcoded
+            stub).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Empty audit → "Save"</td>
+                <td class="was">Full-screen red overlay (Runtime Error)</td>
+                <td class="now">Inline error below the form, page intact</td>
+              </tr>
+              <tr>
+                <td>"Take into work" on an already-taken request</td>
+                <td class="was">
+                  Risk of a 500 on an <code>instanceof</code> mismatch (Turbopack)
+                </td>
+                <td class="now">Reliably caught → inline message</td>
+              </tr>
+              <tr>
+                <td>A malformed direct request to a deal action</td>
+                <td class="was">A plain <code>Error</code> → overlay</td>
+                <td class="now">A clean rejection, no crash</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify (main scenario)</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Sign in as <b>Alan Peterson (Head of Sales)</b> or the owner of a deal at the "Audit"
+              stage.
+            </li>
+            <li>Open a deal at the "Production audit" stage (e.g. "Sapore Sourdough Starter…").</li>
+            <li>
+              In the "Production audit" block, <b>leave everything blank</b> and click "Save audit".
+            </li>
+            <li>
+              Below the form,
+              <b>"Specify at least one piece of equipment or client pain point"</b> appears — no red
+              overlay.
+            </li>
+            <li>
+              Fill in "Equipment" (e.g. "Miwe rotary oven") → "Save" → the audit is saved and
+              displayed.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · domain errors → inline (#232)</footer>
+  </body>
+</html>

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — change showcase · Client creation + autocomplete</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        flex: 1;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      .ba {
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+      .ba h3 {
+        margin: 0 0 0.25rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ba p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .ba--was {
+        background: #f6f8fa;
+      }
+      .ba--was h3 {
+        color: var(--muted);
+      }
+      .ba--now {
+        background: #eef9f0;
+      }
+      .ba--now h3 {
+        color: #1f8a4c;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.45rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Client creation + autocomplete in the deal form</h1>
+      <p>
+        Branch <span class="tag">feat/client-create-autocomplete</span> · 523 tests green ·
+        typecheck + lint + format clean
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            <b>Client creation</b> — a "+ New client" button on
+            <span class="kbd">/clients</span> (available to managers and head of sales). Opens a
+            modal: name (required), city, EIN. The client appears in the list immediately.
+          </li>
+          <li>
+            <b>Autocomplete client search</b> in the new deal form: the "Client" field was replaced
+            with a combobox that filters as you type (client-side over the passed-in list, no new
+            requests). Keyboard navigation: ↑↓ arrows, Enter, Esc.
+          </li>
+          <li>
+            <b>Inline client creation from the deal form</b>: if you type a name that's not in the
+            list, a "+ Create client '...'" option appears. Clicking it expands an inline block with
+            city/EIN fields; the client is created automatically together with the deal.
+          </li>
+          <li>
+            <b>New use case createClient</b> (application layer) + port
+            <span class="kbd">ClientRepository.create</span> + implementation in
+            InMemoryClientRepository. 5 TDD tests.
+          </li>
+          <li>
+            Clean architecture is respected: the domain has no next/react/infra. The composition
+            root is extended additively.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Before → after</h2>
+        </div>
+        <div class="card__body">
+          <div class="ba ba--was">
+            <h3>Before</h3>
+            <p>
+              Clients couldn't be created through the UI. The new deal form had a plain
+              <code>&lt;select&gt;</code> with no filtering: with 25+ clients it was hard to find
+              the right one.
+            </p>
+          </div>
+          <div class="ba ba--now">
+            <h3>After</h3>
+            <p>
+              On <span class="kbd">/clients</span> — a "+ New client" button with a modal. In the
+              deal form — a combobox with instant filtering; if the client doesn't exist — create
+              them right from the form with no navigation.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Repro steps</h2>
+        </div>
+        <div class="card__body">
+          <b>1. Creating a client on /clients</b>
+          <ol class="steps">
+            <li>Open <span class="kbd">/clients</span> (role head or mop).</li>
+            <li>The "+ New client" button in the list header.</li>
+            <li>Fill in the name (required), city, EIN → "Create client."</li>
+            <li>The client appears in the list.</li>
+          </ol>
+
+          <b style="display: block; margin-top: 1rem">2. Autocomplete in the new deal form</b>
+          <ol class="steps">
+            <li>Open <span class="kbd">/deals</span> → the "+ New deal" button.</li>
+            <li>
+              In the "Client" field, start typing a name — the list filters by substring
+              (case-insensitive).
+            </li>
+            <li>Select a client by clicking or with ↑↓/Enter.</li>
+          </ol>
+
+          <b style="display: block; margin-top: 1rem"
+            >3. Inline client creation from the deal form</b
+          >
+          <ol class="steps">
+            <li>In the same modal, type the name of a client that doesn't exist.</li>
+            <li>A "+ Create client '...'" option appears in the dropdown — click it.</li>
+            <li>A "New client" block expands with city/EIN fields.</li>
+            <li>
+              Fill in the deal name, click "Create deal" — the client and the deal are created
+              atomically.
+            </li>
+          </ol>
+
+          <p class="note">
+            Hot files: <code>composition-root.ts</code> (additive, +1 line in the container),
+            <code>create-deal-modal.tsx</code> (replaced &lt;select&gt; with a combobox + inline
+            block).
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>CRM Pro · issue #209 · feat/client-create-autocomplete</footer>
+  </body>
+</html>

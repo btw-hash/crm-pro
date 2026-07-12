@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assortment analytics: procurement analysis — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Assortment analytics — procurement analysis</h1>
+      <p>What to reorder, what to hold, what to cut back — by depletion rate, not by stock level</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (closes #178 and the entire epic #176)</h2>
+        <ul>
+          <li>
+            The <b>"Assortment"</b> page gets a second section — <b>"Procurement"</b> (alongside the
+            sales analysis from #177): for each item, a <b>reorder / hold / cut back</b>
+            signal.
+          </li>
+          <li>
+            <b>Under-stocked</b> → depleting fast, stock is running out → "reorder" with a
+            <b>recommended quantity</b>; <b>overstocked</b> → sitting there, cash is tied up → "cut
+            back on ordering".
+          </li>
+          <li>
+            The key metric is <b>months of stock</b> (stock level ÷ sales velocity), not the raw
+            stock level — it accounts for depletion/velocity.
+          </li>
+          <li>
+            Introduced a <b>purchasing/receiving</b> model (`getPurchaseHistory` behind the ERP
+            port) — a synthetic seed for the demo; in production it's pulled from the ERP. The
+            numbers are deterministic, AI doesn't take part (data guardrail #179).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Procurement planning</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>How it's figured out</td>
+                <td class="was">
+                  The category manager manually pulls together procurement/stock in the ERP every
+                  week
+                </td>
+                <td>The section suggests it automatically: reorder / hold / cut back by item</td>
+              </tr>
+              <tr>
+                <td>Criterion</td>
+                <td class="was">
+                  Often "by stock level" — you can't tell if stock is depleting or just sitting
+                </td>
+                <td>Months of stock (stock level ÷ depletion rate) + reorder quantity</td>
+              </tr>
+              <tr>
+                <td>Procurement data</td>
+                <td class="was">Not in the model</td>
+                <td>Receipts behind the ERP port (`getPurchaseHistory`), deterministic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Sign in as <b>Alan Peterson (Head of Sales)</b> or <b>Buyer</b>, open "Assortment".
+            </li>
+            <li>
+              The second section, <b>"Procurement — what to reorder, hold, cut back"</b>; items
+              needing action are on top.
+            </li>
+            <li>
+              <b>Belcolade</b> (top seller) — "▲ Reorder … stock is running out" (~0.1 months of
+              stock), recommendation "<b>reorder ~3,220 units</b>".
+            </li>
+            <li>
+              <b>Mimetic</b> — "▲ Reorder": 0 units purchased in the last 3 months, yet it's selling
+              (they stopped ordering something that's in demand = under-stocked).
+            </li>
+            <li>
+              <b>S500</b> — "▼ Cut back on ordering … cash is tied up" (4.6 months of stock);
+              <b>Tegral</b> — dead stock (∞: 820 in stock, no sales).
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>
+      Change showcase · docs/changes · assortment analytics: procurement analysis (#178)
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New client onboarding — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin: 0.4rem 0 0;
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #fafcfe;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+      .pill--legal {
+        border-color: #f0c674;
+        background: #fdf6e6;
+      }
+      .pill--ok {
+        border-color: #9fd8b6;
+        background: #eef9f1;
+        color: #1f8a4c;
+      }
+      .pill--bad {
+        border-color: #e3b3b3;
+        background: #fbeeee;
+        color: #b04141;
+      }
+      .arrow {
+        color: var(--muted);
+      }
+      table.ba {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.3rem;
+      }
+      table.ba th,
+      table.ba td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      table.ba th {
+        background: #fafcfe;
+        width: 7rem;
+      }
+      .was {
+        color: #b04141;
+      }
+      .now {
+        color: #1f8a4c;
+      }
+      .note {
+        background: #fafcfe;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin-top: 0.8rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>New client onboarding</h1>
+      <p>
+        Document package collection → legal review → the client can be activated. A dedicated
+        section <span class="kbd">/onboarding</span> instead of "we agreed verbally."
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was built</h2>
+        <ul>
+          <li>
+            A new <b>"🤝 Onboarding"</b> section (<span class="kbd">/onboarding</span>): a new
+            counterparty can't be activated until they've gone through document collection and legal
+            review — a real operational step (contract work / data-privacy compliance) that used to
+            live "in someone's head."
+          </li>
+          <li>
+            <b>Package lifecycle</b> with explicit statuses: "Collecting documents" → "Under legal
+            review" → "Approved" / "Rejected (needs rework)". Transitions are only allowed legally
+            (domain rules, not a free status change).
+          </li>
+          <li>
+            <b>A standard package of 6 documents</b> is created automatically (Company card,
+            Certificate of good standing, Articles of incorporation, EIN certificate, Power of
+            attorney for the signatory, Bank details). It can only be sent to legal
+            <b>once all of them are collected</b>.
+          </li>
+          <li>
+            <b>Legal review:</b> a head of sales acting as the approver sees "Approve" / "Reject"
+            buttons; on rejection they write a resolution (what needs to be fixed), the package goes
+            back for rework and can be resubmitted.
+          </li>
+          <li>
+            Clean architecture: the <b>onboarding</b> domain (transition rules) + an
+            <b>OnboardingRepository</b> port + a use case + an in-memory implementation behind the
+            port (ready to be swapped for Postgres/ERP through the same interface). Transition logic
+            is covered by domain tests.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Package lifecycle</h2></div>
+        <div class="card__body">
+          <div class="flow">
+            <span class="pill">Collecting documents</span>
+            <span class="arrow">→ (all 6 collected)</span>
+            <span class="pill pill--legal">Under legal review</span>
+            <span class="arrow">→</span>
+            <span class="pill pill--ok">Approved</span>
+          </div>
+          <div class="flow" style="margin-top: 0.7rem">
+            <span class="pill pill--legal">Under legal review</span>
+            <span class="arrow">→ (legal rejects + a resolution)</span>
+            <span class="pill pill--bad">Rejected (needs rework)</span>
+            <span class="arrow">→ resubmitted →</span>
+            <span class="pill pill--legal">Under legal review</span>
+          </div>
+          <div class="note">
+            The rules are strict: a package can be sent to legal <b>only</b> from
+            "Collecting"/"Rework" and <b>only</b> once all documents are collected; it can be
+            approved/rejected <b>only</b> from "Under review". Any other transition is rejected by
+            the domain with an
+            <span class="kbd">OnboardingError</span>
+            (a quiet "push through" of an incomplete package isn't possible).
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="ba">
+            <tr>
+              <th>Before</th>
+              <td class="was">
+                A new client was activated "based on a verbal agreement": legal review and the
+                document set lived in conversations / email, with no trace in the system. It was
+                unclear what stage a client was at or whether everything had been collected.
+              </td>
+            </tr>
+            <tr>
+              <th>After</th>
+              <td class="now">
+                An "Onboarding" section with a card for every new counterparty: you can see the
+                status, which of the 6 documents are collected, a "Send to legal" button (once
+                ready), and the legal resolution. A client's stage is <b>a fact in the system</b>,
+                not something in a manager's head.
+              </td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Access (RBAC)</h2></div>
+        <div class="card__body">
+          <ul>
+            <li>
+              The section is visible to <b>head of sales / Manager / category manager</b> roles
+              (gated by <span class="kbd">canSeeMargin</span>); a technologist doesn't need it.
+            </li>
+            <li>
+              The <b>"Approve" / "Reject"</b> buttons are only available to the
+              <b>approver</b> (head of sales acting as the legal role, gated by
+              <span class="kbd">canSeeTeamAnalytics</span>) — a Manager submits the package but
+              doesn't approve it themselves.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open <b>Onboarding</b> (<span class="kbd">/onboarding</span>) as head of sales.</li>
+            <li>
+              In the <b>"New onboarding"</b> form, enter the client's name (and optionally a tax
+              ID), check off some of the documents → create it. The card appears with status
+              <b>"Collecting documents"</b>.
+            </li>
+            <li>
+              While not all 6 documents are collected, there's no "Send to legal" button. Finish the
+              package → <b>"Send to legal"</b> appears → the status becomes
+              <b>"Under legal review"</b>.
+            </li>
+            <li>
+              As the approver — click <b>"Approve"</b> → status <b>"Approved"</b> (the client can
+              now be activated). Or <b>"Reject"</b> with a resolution → status
+              <b>"Rejected (needs rework)"</b>, the resolution is shown on the card.
+            </li>
+            <li>
+              Edge case: try creating an onboarding record with an empty name — the domain rejects
+              it ("Enter the client's name").
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · new client onboarding (#131)</footer>
+  </body>
+</html>

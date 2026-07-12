@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daily shipment summary report — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Daily shipment summary report</h1>
+      <p>
+        A link in the order → warehouse → delivery chain: the system rolls up the day's totals
+        itself, a human just confirms
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was built (partially closes #128)</h2>
+        <ul>
+          <li>
+            The <b>"Shipment & delivery"</b> page now has a <b>"Daily summary report"</b> section —
+            placed exactly between "Warehouse letter" and "Delivery schedule" (as described in the
+            issue: letter → <b>summary report</b> → schedule).
+          </li>
+          <li>
+            For each shipment date, there's a card with the day's totals: <b>total weight</b>,
+            number of shipments, clients, trucks involved, plus "<b>unassigned truck</b>" and
+            "<b>delivered</b>", and a table of order / client / address / weight / truck / stage.
+          </li>
+          <li>
+            Everything is computed <b>deterministically from orders</b> (a pure domain function),
+            not by AI. The system collects the numbers — a human only confirms them (passive
+            capture).
+          </li>
+          <li>
+            The section is available to operational roles (procurement/category manager, head of
+            sales).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>"Shipments" section</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Document chain</td>
+                <td class="was">
+                  Warehouse letter → straight to the delivery schedule (the middle link was empty)
+                </td>
+                <td>Warehouse letter → <b>daily summary report</b> → delivery schedule</td>
+              </tr>
+              <tr>
+                <td>Daily totals</td>
+                <td class="was">
+                  Not computed anywhere — a manager would have to tally weight/trip count by hand
+                </td>
+                <td>Day card: weight, shipments, clients, trucks, unassigned, delivered</td>
+              </tr>
+              <tr>
+                <td>Number source</td>
+                <td class="was">—</td>
+                <td>Deterministic aggregation from orders (a pure function, covered by tests)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Why</h2></div>
+        <div class="card__body">
+          The main business pain is manually re-typing data between departments. Before delivery,
+          someone still has to roll up "how much are we shipping today, on how many trucks, to
+          whom." Now the system builds that rollup itself from orders — the department just needs to
+          look and confirm, not recompute it.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Start the dev server and open the <b>"Shipments"</b> section (head of
+              sales/procurement role).
+            </li>
+            <li>
+              Below "Warehouse letter" there's now a <b>"Daily summary report"</b> block — one card
+              per shipment date.
+            </li>
+            <li>
+              For <b>2026-06-25</b> the daily total shows <b>880 kg</b>, "2 shipm. · 2 clients · 1
+              truck" (two shipments on one truck are merged).
+            </li>
+            <li>
+              For <b>2026-06-27</b> the total shows "0 trucks · <b>unassigned: 1</b>", and the row
+              shows "— not assigned —" (a shipment with no driver).
+            </li>
+            <li>
+              For <b>2026-06-23</b> — "<b>delivered: 1</b>": the report reflects what actually
+              happened that day, so it includes delivered shipments too (unlike the delivery
+              schedule, which doesn't).
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · daily shipment summary report (#128)</footer>
+  </body>
+</html>

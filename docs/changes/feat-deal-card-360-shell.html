@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase · deal-card-360-shell</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 860px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 28px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol,
+      ul {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">deal-card-360-shell</span>
+    </header>
+    <main>
+      <h2>360 deal card — shell, stepper, bento (PR6, step 6a)</h2>
+      <div class="card">
+        <p>
+          <strong>Before:</strong> the deal card <code>/deals/[id]</code> was a flat page: title,
+          controls, a "Stage · Manager" line, and "Overview / Tasks" tabs. No stage stepper, no
+          single visual focal point for "what to do now".
+        </p>
+        <p><strong>After:</strong> an XL bento layout matching the "CRM Pro UI" reference:</p>
+        <ul>
+          <li>a back-link "← All deals";</li>
+          <li>
+            a <strong>header band</strong> (glass): a "DEAL" chip + status chip ("In progress" / "No
+            next step") + outcome badge + large title + manager avatar and name + current stage +
+            "Open in ERP" button (for commercial roles);
+          </li>
+          <li>
+            a <strong>stage stepper</strong> following the real 6-stage pipeline (Qualification →
+            Audit → Test request → Testing → Proposal → Completed): completed stages are dark with a
+            checkmark, the current one is red, future ones are light with a number, connected by
+            lines;
+          </li>
+          <li>a row of stage actions: advance/revert stage, "More info", edit/delete;</li>
+          <li>
+            a <strong>2-column bento</strong>: on the left — a "What to do now" hero (next step /
+            stalled-deal hint + AI advisor) and the stage sections; on the right — "About the deal"
+            (fields, comment) and "Tasks and feed" (history + dictate/add task).
+          </li>
+        </ul>
+        <p>
+          This is <strong>purely a visual shell</strong>: all forms, composers
+          (audit/samples/report/proposal/order), stage controls, and RBAC are reused as-is.
+          Rebuilding the workspaces (qualification, test→report→document, completion) is the next
+          steps 6b–6e of epic #442.
+        </p>
+        <p>
+          The "5-step stepper vs 6-stage domain" fork (from #442) is resolved: the stepper is
+          rendered from the domain's <code>FUNNEL_TRACK</code> / <code>DEAL_STAGE_LABELS</code> — a
+          single source shared with the kanban, with no renaming of <code>deal-stage.ts</code> and
+          no leakage into the board.
+        </p>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <ol>
+          <li>
+            Open any deal on the pipeline → click the card → "Open in full" (or go directly to
+            <code>/deals/&lt;id&gt;</code>).
+          </li>
+          <li>
+            At the top — the back-link, the header band with chips and title, the manager's avatar.
+          </li>
+          <li>
+            Stepper: for a deal at "Qualification" — circle 1 is red, 2–6 are light; for a deal at
+            "Testing" — 1–3 are dark with a checkmark, 4 is red, 5–6 are light.
+          </li>
+          <li>
+            On the left — "What to do now" and the stage sections; on the right — "About the deal"
+            and "Tasks and feed".
+          </li>
+          <li>Stage buttons (advance/revert), "More info", editing — work as before.</li>
+        </ol>
+        <p>
+          Verified headed (Chrome headless: deals at "Qualification" and "Testing" — stepper, band,
+          bento). <code>npm run verify</code> green (914 tests, +4 for <code>stepStates</code>).
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>feat: tech-flow — Full tech request lifecycle</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+      }
+      h2 {
+        margin-top: 2rem;
+        color: #374151;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      td,
+      th {
+        border: 1px solid #d1d5db;
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.75em;
+        font-weight: 600;
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        margin-right: 4px;
+      }
+      .new {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .changed {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .removed {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .note {
+        background: #f0f9ff;
+        border-left: 4px solid #0ea5e9;
+        padding: 0.75rem 1rem;
+        margin: 1rem 0;
+        border-radius: 0 6px 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>feat: tech-flow — Full tech request lifecycle</h1>
+    <p>
+      Issues: <strong>#460</strong> (manager's form) · <strong>#461</strong> (technologist's
+      response on the manager's side) · <strong>#463</strong> (technologist queue) ·
+      <strong>#464</strong> (end-to-end connectivity)
+    </p>
+
+    <h2>What changed</h2>
+
+    <h3>Domain</h3>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Change</th>
+      </tr>
+      <tr>
+        <td><code>domain/tech-request/tech-request.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Added <code>demo</code> and
+          <code>audit_req</code> kinds (backward compatible with the seed's
+          <code>onsite</code>/<code>test</code>). New fields: <code>deadline</code>,
+          <code>consultFormat</code>, <code>demoLocation</code>, <code>demoAddress</code>,
+          <code>demoProducts</code>, <code>auditFocus</code>. Constants
+          <code>CONSULT_FORMAT_LABELS</code>, <code>DEMO_LOCATION_LABELS</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>domain/test-act/test-act.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Added the <code>partial</code> result. New
+          <code>TestActKind</code> type (<code>workup</code> / <code>consult_summary</code> /
+          <code>audit_summary</code>). Field <code>sentAt: string | null</code> — a "sent to
+          manager" flag. Field <code>techRequestId</code> — end-to-end linkage. Helper
+          <code>markActSent</code>.
+        </td>
+      </tr>
+    </table>
+
+    <h3>Application / Use cases</h3>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Change</th>
+      </tr>
+      <tr>
+        <td><code>application/use-cases/send-test-act.ts</code></td>
+        <td>
+          <span class="tag new">new</span> <code>makeSendTestAct</code> — marks the act
+          <code>sentAt</code> and notifies the Manager.
+        </td>
+      </tr>
+      <tr>
+        <td><code>application/use-cases/get-deal-workspace.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> <code>DealWorkspace</code> now contains
+          <code>testActs: readonly TestAct[]</code> (all acts for the deal, not just the first one).
+        </td>
+      </tr>
+      <tr>
+        <td><code>application/ports/test-act-repository.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Added methods <code>listByDealId</code>,
+          <code>listByTechRequestId</code>, <code>findById</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>application/dashboard/home-aggregate.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> <code>byKind</code> now includes the new keys
+          <code>demo</code> and <code>audit_req</code>.
+        </td>
+      </tr>
+    </table>
+
+    <h3>UI — manager (#460, #461)</h3>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Change</th>
+      </tr>
+      <tr>
+        <td><code>app/deals/[id]/_components/tech-request-form.tsx</code></td>
+        <td>
+          <span class="tag changed">changed</span> Full rebuild. Step 1 — pick a type (3 cards:
+          Consultation / Demo & tests / Audit) + type-dependent fields + "Deadline". Step 2 — a
+          "Review the request" summary → "Confirm and send". A green status after submission.
+        </td>
+      </tr>
+      <tr>
+        <td><code>app/deals/[id]/_components/audit-workspace.tsx</code></td>
+        <td>
+          <span class="tag changed">changed</span> The active stage shows
+          <code>TechRequestForm</code>. A past stage shows a list of submitted requests (read-only).
+          <code>AuditForm</code> / <code>ProductionAudit</code> were removed.
+        </td>
+      </tr>
+      <tr>
+        <td><code>app/deals/[id]/_components/testing-workspace.tsx</code></td>
+        <td>
+          <span class="tag changed">changed</span> Read-only for the manager. Empty state — a clock,
+          "Waiting for the technologist's response." Filled state — a "Technologist responded" card
+          + acts by type (Test act / Consultation summary / Audit summary) + a result chip
+          (green/amber/red). Icons #e7eef9/#2f5fb0. The manual act form for the manager was removed.
+        </td>
+      </tr>
+      <tr>
+        <td><code>app/deals/[id]/actions.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> <code>requestTechAction</code> reads all the new
+          fields and passes them to <code>createTechRequest</code>.
+        </td>
+      </tr>
+    </table>
+
+    <h3>UI — technologist (#463)</h3>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Change</th>
+      </tr>
+      <tr>
+        <td><code>app/tech-queue/_components/tech-queue-item.tsx</code></td>
+        <td>
+          <span class="tag changed">changed</span> Clickable row → a popup (closes ONLY via the
+          close button). Two modes: Info (type-specific details, a "Fill in act" button) and Act
+          (type-dependent form + result chips + comment). "Save document" → "Send to manager". The
+          "Fill in act" button in the row for <code>in_progress</code> requests opens the popup
+          directly in act mode.
+        </td>
+      </tr>
+      <tr>
+        <td><code>app/tech-queue/actions.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Added <code>saveTestActAction</code> and
+          <code>sendTestActAction</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>app/tech-queue/page.tsx</code></td>
+        <td>
+          <span class="tag changed">changed</span> "Deadline" column. The "site visits" metric →
+          "demos". Action column width 160px.
+        </td>
+      </tr>
+      <tr>
+        <td><code>app/tech-queue/_lib/tech-queue-filter.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Filter <code>onsite</code> → <code>demo</code>.
+          Chip "Site visits" → "Demos & tests".
+        </td>
+      </tr>
+    </table>
+
+    <h3>Infrastructure</h3>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Change</th>
+      </tr>
+      <tr>
+        <td><code>prisma/schema.prisma</code></td>
+        <td>
+          <span class="tag changed">changed</span> <code>TestAct</code>: removed
+          <code>@unique</code> on <code>dealId</code> (one deal — multiple acts), added fields
+          <code>techRequestId</code>, <code>actKind</code>, <code>recommendation</code>,
+          <code>auditChecked</code>, <code>auditRemarks</code>, <code>auditRecommendation</code>,
+          <code>sentAt</code>. <code>TechRequest</code>: added <code>deadline</code>,
+          <code>consultFormat</code>, <code>demoLocation</code>, <code>demoAddress</code>,
+          <code>demoProducts</code>, <code>auditFocus</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>infrastructure/persistence/prisma-test-act-repository.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> <code>save()</code> writes all the new fields.
+          Added <code>listByDealId</code>, <code>listByTechRequestId</code>, <code>findById</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>infrastructure/persistence/prisma-tech-request-repository.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> The mapper and <code>save()</code> support the
+          new fields.
+        </td>
+      </tr>
+      <tr>
+        <td><code>infrastructure/composition-root.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Added <code>sendTestAct</code> and
+          <code>listTestActsByDeal</code>.
+        </td>
+      </tr>
+    </table>
+
+    <h2>End-to-end connectivity (REQ-6 / #464)</h2>
+    <div class="note">
+      A manager fills in the form → a <code>TechRequest</code> is created with <code>dealId</code> →
+      the technologist sees it in the queue → fills in an act with <code>techRequestId</code> →
+      clicks "Send to manager" → <code>sentAt</code> is set → the manager sees the card in
+      "Technologist's response".
+    </div>
+
+    <h2>Tests</h2>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Change</th>
+      </tr>
+      <tr>
+        <td><code>testing-workspace.test.tsx</code></td>
+        <td>
+          <span class="tag changed">changed</span> Rewritten for the new read-only format: the
+          awaiting state, tech response, act types, result chips (partial/failure), unsent acts
+          aren't shown.
+        </td>
+      </tr>
+      <tr>
+        <td><code>tech-queue-filter.test.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Sample data and assertions updated for
+          <code>demo</code> instead of <code>onsite</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>home-aggregate.test.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> <code>byKind</code> expects
+          <code>demo: 0, audit_req: 0</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>get-home-dashboard.test.ts</code></td>
+        <td>
+          <span class="tag changed">changed</span> Same — extended <code>toEqual</code> for
+          <code>byKind</code>.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — warm "CRM Pro UI" theme, rebuilt to match the prototype</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Warm "CRM Pro UI" theme — frontend rebuilt 1:1 to match the prototype</h1>
+    <p>
+      <span class="tag">design handoff</span> &middot; branch
+      <code>feat/ui-warm-theme</code> &middot; source: <code>reference/CRM-PRO.dc.html</code> +
+      <code>screenshots/*.png</code>
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The entire frontend was brought
+        <strong>1:1 to the designer's warm "CRM Pro UI" prototype</strong> — not just a recolor, but
+        a <strong>rebuild of every screen's structure</strong> to match the reference, while keeping
+        the real data (CRM/ERP), logic, RBAC, and drag-and-drop.
+      </li>
+      <li>
+        Palette: brick red <code>#BF322B</code> + ochre <code>#E3B32B</code> on a cream background,
+        frosted-glass cards, a dark floating sidebar, Arial. Styles are inline + hand-written SVG,
+        matching the reference.
+      </li>
+      <li>
+        <strong>Shell:</strong> a collapsible sidebar with a "floating disc" indicator (3 layers on
+        <code>transform</code> + icon cross-fade), a glass topbar (search/bell/avatar chip), the
+        active menu item in dark <code>#2b303c</code>.
+      </li>
+      <li>
+        <strong>Animations:</strong> a screen-entry <code>scrIn</code> effect when navigating
+        between sections, a tab-switch animation, a slide-in deal drawer, a smooth sidebar morph,
+        thin themed scrollbars.
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Blue classic CRM-style look, flat cards, emoji icons</td>
+        <td>Warm "CRM Pro UI" system: glass cards, Lucide/SVG icons, Arial</td>
+      </tr>
+      <tr>
+        <td>Deals — a plain kanban with no avatars/meta; a drawer with flat fields</td>
+        <td>
+          Kanban with saved-view pills, avatar initials, a goal pill, "no next step"; a drawer with
+          a slide-in and a stage tracker made of pills
+        </td>
+      </tr>
+      <tr>
+        <td>Clients — a flat list with chip rows</td>
+        <td>
+          A glass grid table (Client+Tax ID/Segment/AR/Limit/Manager/Deals) with real balances
+        </td>
+      </tr>
+      <tr>
+        <td>Operational sections — inconsistent layout</td>
+        <td>
+          A single ops pattern: header/Filter/Export, filter chips, a metrics panel, a table with
+          status badges
+        </td>
+      </tr>
+      <tr>
+        <td>Transitions between sections/tabs — no animation</td>
+        <td><code>scrIn</code> on every screen + a tab-switch animation</td>
+      </tr>
+    </table>
+
+    <h2>Screen map (rebuilt to match the reference)</h2>
+    <table>
+      <tr>
+        <th>Screen</th>
+        <th>Reference screenshot</th>
+      </tr>
+      <tr>
+        <td>Home (role-based bento dashboard, gauge/donut/pipeline, AI insight)</td>
+        <td><code>01-home-dashboard.png</code></td>
+      </tr>
+      <tr>
+        <td>Deals — kanban + slide-out drawer</td>
+        <td><code>03-deals-kanban.png</code></td>
+      </tr>
+      <tr>
+        <td>Clients — list / Client 360</td>
+        <td><code>02-clients-list.png</code> / <code>08-client-360.png</code></td>
+      </tr>
+      <tr>
+        <td>Analytics / Catalog+cart / Assistant</td>
+        <td><code>05</code> / <code>04</code> / <code>06</code></td>
+      </tr>
+      <tr>
+        <td>
+          Operational (Procurement/Assortment/Shipments/Accounting + Notifications/Tech
+          queue/Logistics/Packing/Defects/My shipments/Onboarding/Add-on requests)
+        </td>
+        <td><code>07-operational-section.png</code></td>
+      </tr>
+      <tr>
+        <td>Login (glass card, monogram, quick role-based sign-in)</td>
+        <td><code>09-login.png</code></td>
+      </tr>
+    </table>
+
+    <h2>Repro steps (golden path)</h2>
+    <ol>
+      <li>
+        <code>npm run dev</code> → <code>http://localhost:3000</code> (log in as head of sales).
+      </li>
+      <li>
+        <strong>Menu:</strong> click the hamburger — the sidebar expands smoothly, the active item's
+        disc indicator is fully visible and slides on navigation.
+      </li>
+      <li>
+        <strong>Deals:</strong> saved-view pills (All/Mine/🔥Urgent/No next step); open a card → the
+        drawer slides in from the right (a pill-based stage tracker, an "AI extracted → confirmed"
+        feed); drag a card between stages — drag-drop works; stage-change buttons are visible
+        (#256).
+      </li>
+      <li>
+        <strong>Clients:</strong> a grid table with real AR/limits (an overage shown in red); open a
+        client → a 360 card (metrics, animated tabs, contacts).
+      </li>
+      <li>
+        <strong>Analytics / Catalog / Assistant / operational sections</strong> — check against the
+        screenshots; role switching on Home and tab switching in the 360 view are animated.
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        <code>npm run verify</code> <span class="ok">green</span> — typecheck + lint + format:check
+        + 582 tests. Drag-drop/RBAC/server actions/forms were kept verbatim (presentation only).
+      </li>
+      <li>
+        Every screen was checked in the browser against its <code>screenshots/*.png</code>; the data
+        is real (mock numbers from the prototype that leaked in from the agents were replaced with
+        ours: Clients 248→25, empty balances→real ones, Analytics' striped bar→solid).
+      </li>
+      <li>
+        Regression #256 was not reintroduced: stage-change buttons are visible outside the kanban
+        (the <code>.kanban__card .stage-controls</code> scope was preserved).
+      </li>
+    </ul>
+  </body>
+</html>

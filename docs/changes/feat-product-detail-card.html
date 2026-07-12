@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#375 · Product detail card on click — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ul,
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Catalog: product card on click — ERP data + AI description</h1>
+      <p>Issue #375 · branch <code>feat/product-detail-card</code> · builds on #308</p>
+    </header>
+
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            In the catalog table,
+            <b>clicking a row now opens the product card</b> (<code>/products/[id]</code>) — the
+            same pattern as the client card <code>/clients/[id]</code>.
+          </li>
+          <li>
+            The card shows <b>ERP data</b>: the recommended price (margin — only for commercial
+            roles), available stock with a status badge, shelf life, and packing.
+          </li>
+          <li>An <b>"Open in ERP"</b> button (ERP window) — same as on the client card.</li>
+          <li>
+            An <b>AI description</b> block (text + source link) and a Sales Kit "Advantages"
+            section; "Copy for client" and "Schedule client outreach" actions (Manager/head of
+            sales).
+          </li>
+          <li>Selection checkboxes and row action buttons <b>don't</b> open the card.</li>
+          <li>
+            Numbers/stock come from the ERP (deterministic); AI is only responsible for the
+            description text.
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Before → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <ul>
+              <li>The SKU table (#308) — row data, but no detail view.</li>
+              <li>There was nowhere to expand ERP data and the AI product description.</li>
+            </ul>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <ul>
+              <li>Clicking a row → the full product card with ERP metrics.</li>
+              <li>AI description + "Open in ERP" + Sales Kit — same as the client card.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open <code>/products</code> as a commercial role (on localhost — Head of sales).</li>
+          <li>Click any product row (not the checkbox/button) → the product card opens.</li>
+          <li>
+            On the card: name + stock status, SKU/category, ERP metrics (price/stock/ shelf
+            life/packing), the AI description block, advantages, "Open in ERP".
+          </li>
+          <li>
+            Click "Open in ERP" → the ERP window (in production, where the window address is set).
+          </li>
+          <li>"Back to catalog" returns to the table.</li>
+          <li>Verify: clicking a row's checkbox selects it and does NOT open the card.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Verification</h2>
+        <ul>
+          <li><code>npm run verify</code> — green (typecheck + lint + format + 718 tests).</li>
+          <li>
+            2 new tests in <code>product-catalog.test.tsx</code>: clicking a row → navigates to
+            <code>/products/p1</code>; clicking a checkbox selects it and doesn't navigate.
+          </li>
+          <li>
+            Browser/HTTP: <code>/products/product-belcolade-nv</code> → 200 (name, SKU,
+            price/stock/shelf life/packing, AI description, advantages); rows are clickable; a bad
+            id → 404.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

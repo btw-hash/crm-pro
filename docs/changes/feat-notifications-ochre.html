@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Ochre notifications model (feat/notifications-ochre)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --ochre-bg: #fbf1d6;
+        --ochre-fg: #9a6a00;
+        --red-bg: #f7e4e2;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .ba > div {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .ba .lab {
+        font: 700 11px Arial;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 6px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      .chip {
+        display: inline-block;
+        font: 700 11px Arial;
+        padding: 2px 9px;
+        border-radius: 999px;
+        vertical-align: middle;
+      }
+      .chip--new {
+        background: var(--ochre-bg);
+        color: var(--ochre-fg);
+      }
+      .chip--imp {
+        background: var(--red-bg);
+        color: var(--accent);
+      }
+      ol {
+        margin: 8px 0 0;
+        padding-left: 22px;
+      }
+      li {
+        margin: 0 0 6px;
+      }
+      img.shot {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Ochre notifications model</h1>
+      <p class="sub">
+        feat/notifications-ochre · Closes #430 · design §5.1 — "new" and "important" separated by
+        color.
+      </p>
+
+      <div class="card">
+        <h2>1. "New" is now ochre, not red</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>
+              Unread items were marked <span class="chip chip--imp">new</span> in red — the same
+              color as urgent. The eye confused novelty with importance.
+            </p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>
+              Everything new is marked the same way, <span class="chip chip--new">new</span> in
+              ochre: an ochre badge, bold title, a light ochre row background. Read items are gray,
+              no markers.
+            </p>
+          </div>
+        </div>
+        <p class="note">
+          The bell counter and the "N new" strip are also ochre now (used to be red).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>2. "Important" is a separate red flag on top of "new"</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>
+              There was no importance dimension — critical notifications couldn't be highlighted.
+            </p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>
+              Important notifications get a red chip
+              <span class="chip chip--imp">important</span> on top of the ochre "new". Red now means
+              importance only, not novelty.
+            </p>
+          </div>
+        </div>
+        <p class="note">
+          Demo: "Deal has been stuck for 12 days" — <span class="chip chip--new">new</span>
+          <span class="chip chip--imp">important</span>; "Credit limit exceeded" — read, but still
+          <span class="chip chip--imp">important</span>.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>3. Section filters — matched to the design</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>All / New / Read / By task.</p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>
+              All / Unread / Processes / System. "System" is notifications not tied to a process
+              (limits, summaries, approvals, onboarding).
+            </p>
+          </div>
+        </div>
+        <p class="note">The bell and the section use the same labels (single source of truth).</p>
+      </div>
+
+      <div class="card">
+        <h2>How to see it</h2>
+        <img class="shot" src="feat-notifications-ochre.png" alt="Notifications section" />
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open the app as head of sales (the default on localhost).</li>
+          <li>
+            Click the bell in the top right → the counter and "new" markers are ochre; important
+            items show a red "important" flag.
+          </li>
+          <li>
+            Open the "Notifications" section → unread rows have an ochre background and bold title;
+            a red "important" chip on critical items.
+          </li>
+          <li>
+            Switch the "Processes" / "System" filters → the list narrows; "System" shows only
+            notifications with no process attached.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </body>
+</html>

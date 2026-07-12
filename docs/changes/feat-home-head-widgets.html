@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Head of sales home page — revenue by period (feat/home-head-widgets)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .ba > div {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .ba .lab {
+        font: 700 11px Arial;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 6px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      ol {
+        margin: 8px 0 0;
+        padding-left: 22px;
+      }
+      li {
+        margin: 0 0 6px;
+      }
+      img.shot {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Head of sales home page — "Revenue by period" + "Full report"</h1>
+      <p class="sub">feat/home-head-widgets · Closes #435 · design §8.</p>
+
+      <div class="card">
+        <h2>1. "Revenue by period" widget with a Month / Quarter / Year switch</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>
+              On the head of sales home page, revenue showed only last month's figure as a single
+              number — with no breakdown by period.
+            </p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>
+              A separate widget with a <b>Month / Quarter / Year</b> switch and graphite bars of
+              revenue by period (darker ≠ higher — a single accent graphite).
+            </p>
+          </div>
+        </div>
+        <p class="note">
+          The numbers are actual revenue (a deterministic aggregation of the ERP's monthly history),
+          no invented "plan": there's no revenue target in $ in the system, so we show the actuals.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>2. The "Full report →" link</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>There was no one-click way from the home page into the team's full analytics.</p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>The "Full report →" link from the widget leads to the "Analytics" section.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>How to see it</h2>
+        <img class="shot" src="feat-home-head-widgets.png" alt="Head of sales home page" />
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open the home page as the head of sales role (the default on localhost).</li>
+          <li>Find the "Revenue by period" widget (next to "Team pipeline").</li>
+          <li>
+            Switch between Month / Quarter / Year → the bars and totals rebuild for the period.
+          </li>
+          <li>Click "Full report →" → "Analytics" opens.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Next (PR4b)</h2>
+        <p class="note">
+          "Team activity" (Week / Month) and "Decisions waiting on you" were split out into the next
+          PR: they need plumbing for team activity over time. The "Processes by stage" donut, the AI
+          insight, and "Needs attention" were already on the home page.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

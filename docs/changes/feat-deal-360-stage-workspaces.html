@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase · deal-360-stage-workspaces</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 880px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 28px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 18px 0 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol,
+      ul {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">deal-360-stage-workspaces</span>
+    </header>
+    <main>
+      <h2>360 deal card — stage workspaces (PR6, steps 6b–6d)</h2>
+      <div class="card">
+        <p>
+          Continuation of the 360 deal card (after the 6a shell). Three stages got working areas
+          matching the "CRM Pro UI" reference.
+        </p>
+
+        <h3>6b · "Qualification" workspace</h3>
+        <p>
+          <strong>Before:</strong> at the "Qualification" stage the card only showed "next step" —
+          there was nowhere to record the client profile/need/potential.
+        </p>
+        <p>
+          <strong>After:</strong> a checklist of 5 collapsible sub-steps — "Profile and segment",
+          "Need and pain point", "Decision-maker and contacts", "Potential", "Terms and credit risk"
+          — each with fields and a "Done" button; the sub-step number turns into a checkmark once
+          filled in. Data is saved to a new <code>deal_qualifications</code> table (additive
+          migration). The "Recognize document (AI)" and "Dictate" buttons are "coming soon" stubs
+          (AI/voice will be wired up in a separate step).
+        </p>
+
+        <h3>6c · "Testing" workspace (report → document)</h3>
+        <p>
+          <strong>Before:</strong> disconnected blocks for the technologist request and the
+          voice-dictated report.
+        </p>
+        <p>
+          <strong>After:</strong> a single bento workspace: a list of saved test-report documents
+          (date, product · dosage, "Success/Not successful" chip), then a "Test report" card with
+          dictation (reuses the existing composer) and a note that "the report will be saved as a
+          deal document", with technologist requests below.
+        </p>
+
+        <h3>6d · Completion — order ungated</h3>
+        <p>
+          <strong>Before:</strong> the "Customer order" in ERP could only be created if a completed
+          deal had its outcome set to "Won" — hence the self-contradiction "the deal is 'Completed'
+          but the order requires 'Won'" (complaint #397).
+        </p>
+        <p>
+          <strong>After:</strong> the order can be created for any <strong>completed</strong> deal;
+          the "Won/Lost" outcome became an <strong>optional</strong> note (collapsed into "Mark deal
+          outcome (for analytics)") and no longer blocks the order. The credit limit/payment terms
+          check (#34) is unchanged. Win rate in analytics is still calculated from the outcome.
+        </p>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <ol>
+          <li>
+            Open a deal at the "Qualification" stage (e.g. initial qualification) → the
+            "Qualification" section with 5 sub-steps; expand a sub-step, fill it in, click "Done" →
+            the number turns into a checkmark.
+          </li>
+          <li>
+            Open a deal at "Testing" → the "Technologist request and test report" section: the
+            report card with dictation; if a report exists — a document row with a result chip.
+          </li>
+          <li>
+            Open a <strong>completed</strong> deal → the "Customer order (ERP)" section shows the
+            order form immediately (no "Won" requirement), with the payment terms limit; "Mark deal
+            outcome" is collapsed and optional.
+          </li>
+        </ol>
+        <p>
+          Verified headed (Chrome): deal-3 (qualification — 5 sub-steps + AI banner), deal-8
+          (testing), deal-6 (completed — order ungated, payment terms limit in place).
+          <code>npm run verify</code> green (934 tests: +5 qualification domain, +5 use-case, +9
+          testing workspace, +1 order). The <code>add_deal_qualification</code> migration is
+          verified via postgres-smoke (db:deploy + drift-check).
+        </p>
+      </div>
+
+      <h2>Known limitations (for next steps)</h2>
+      <div class="card">
+        <ul>
+          <li>AI document recognition and dictation in qualification are "coming soon" stubs.</li>
+          <li>
+            The qualification workspace shows editable fields even at a passed stage (not
+            "read-only") — will be polished in 6e.
+          </li>
+          <li>
+            Visual polish of the "Audit"/"Proposal" sections and the overall final look — step 6e
+            (no reference exists for these stages; being designed separately for approval).
+          </li>
+        </ul>
+      </div>
+    </main>
+  </body>
+</html>

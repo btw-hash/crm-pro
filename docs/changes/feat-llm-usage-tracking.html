@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI spend tracking — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      code {
+        background: #f3f5f8;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.9em;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>AI spend tracking — actual, per request</h1>
+      <p>
+        How many tokens and dollars go into each AI feature — visible in the new "AI spend" section
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed (#401, building on #216)</h2>
+        <ul>
+          <li>
+            For <b>every</b> model call the server now records the <b>actual</b> token spend (in /
+            out / cached) + which feature triggered it, the model, and the time. Previously the
+            provider's usage was thrown away, and the "cost" shown in the assistant was an
+            underestimated client-side guess.
+          </li>
+          <li>
+            A new <b>"AI spend"</b> section (for the head of sales): a summary over a period + a
+            "what we're spending on" table by feature, with cost in dollars.
+          </li>
+          <li>
+            The log is a separate telemetry channel: it writes <b>only numbers and labels</b>, no
+            request/response text (GDPR/CCPA). Memory has a hard cap — it doesn't grow on the demo
+            VM.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>AI spend</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Where the numbers come from</td>
+                <td class="was">
+                  An estimate from visible text length (underestimated), never saved
+                </td>
+                <td>The provider's actual <code>usage</code> for every call, in the log</td>
+              </tr>
+              <tr>
+                <td>Coverage</td>
+                <td class="was">Only the assistant, only the current screen session</td>
+                <td>
+                  All 9 AI features (voice→act, letters, descriptions, assistant, …), persistent
+                </td>
+              </tr>
+              <tr>
+                <td>Where to look</td>
+                <td class="was">A tiny caption under the assistant's reply</td>
+                <td>The "AI spend" section: a summary + a per-feature table over 30 days</td>
+              </tr>
+              <tr>
+                <td>Storage</td>
+                <td class="was">—</td>
+                <td>memory (ring buffer + aggregates, anti-OOM) or Postgres depending on mode</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Log in as the <b>head of sales</b> (demo login "Alan Peterson").</li>
+            <li>In the left menu (the "Tools" section) open <b>"AI spend"</b> — the coin icon.</li>
+            <li>
+              In stub mode (<code>AI_MODE=stub</code>) you'll see an honest empty state: "Tracking
+              starts with the first AI call in live mode."
+            </li>
+            <li>
+              On a stand with live AI (<code>AI_MODE=live</code>) ask the assistant a question, then
+              return to "AI spend" — a row for that feature appears with tokens and cost.
+            </li>
+          </ol>
+          <p class="was">
+            ⚠ For OpenAI, cached tokens don't come through the API (billing accounts for them on its
+            own side) — the "Cached" column may not match the provider invoice.
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Under the hood (for developers)</h2></div>
+        <div class="card__body">
+          <ul>
+            <li>
+              Interception — an outer decorator <code>UsageTrackingLlmProvider</code>; the feature
+              label travels through <code>LlmFeatureScope</code> (AsyncLocalStorage, same as
+              <code>pseudonym-scope</code>).
+            </li>
+            <li>
+              Storage sits behind ports <code>LlmUsageSink</code> /
+              <code>UsageReportRepository</code>; in-memory and Prisma implementations (<code
+                >usage_records</code
+              >
+              + <code>usage_daily</code>).
+            </li>
+            <li>
+              Writes are fire-and-forget, errors are swallowed — tracking never breaks the
+              assistant's reply. Cost is computed from tokens deterministically (AI never invents
+              it).
+            </li>
+            <li>
+              Flags: <code>USAGE_TRACKING</code>, <code>USAGE_RETENTION_DAYS</code>,
+              <code>USAGE_MEMORY_MAX_ROWS</code>. Covered by ~45 tests (incl. an anti-OOM stress
+              test).
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · AI spend tracking (#401)</footer>
+  </body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase — readable label on the analytics peak bar (#358)</title>
+    <style>
+      body {
+        font:
+          15px/1.55 system-ui,
+          Arial,
+          sans-serif;
+        color: #1f2430;
+        max-width: 760px;
+        margin: 40px auto;
+        padding: 0 18px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 17px;
+        margin-top: 28px;
+      }
+      .grid {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .card {
+        flex: 1;
+        min-width: 240px;
+        border: 1px solid #e7e2da;
+        border-radius: 12px;
+        padding: 16px;
+        background: #fbf8f4;
+      }
+      .bar {
+        height: 120px;
+        background: #c0392b;
+        border-radius: 10px;
+        position: relative;
+        margin-top: 30px;
+      }
+      .badge {
+        position: absolute;
+        top: -26px;
+        left: 50%;
+        transform: translateX(-50%);
+        font: 600 12px Arial;
+        padding: 4px 10px;
+        border-radius: 7px;
+        white-space: nowrap;
+      }
+      .before {
+        background: rgba(255, 255, 255, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        color: #fff;
+      }
+      .after {
+        background: #c0392b;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(31, 45, 80, 0.18);
+      }
+      ol {
+        padding-left: 20px;
+      }
+      code {
+        background: #efeae2;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Analytics: visible label above the peak bar</h1>
+    <p>
+      Issue <a href="https://github.com/millbrookfoods/crm-pro/issues/358">#358</a> ·
+      <code>/analytics</code> screen → "Monthly revenue trend".
+    </p>
+
+    <h2>What changed</h2>
+    <p>
+      The label (amount) above the <b>tallest</b> bar wasn't visible — the peak badge had a
+      semi-transparent white background and white text, which on the page's light background was
+      "white on white". Now the peak badge has a solid accent background (matching the bar) + white
+      text, always readable.
+    </p>
+
+    <h2>Before → after</h2>
+    <div class="grid">
+      <div class="card">
+        <b>Before</b>
+        <div class="bar"><span class="badge before">$21,000</span></div>
+        <p style="color: #8a8f99; margin-bottom: 0">Label invisible (white on light).</p>
+      </div>
+      <div class="card">
+        <b>After</b>
+        <div class="bar"><span class="badge after">$21,000</span></div>
+        <p style="color: #8a8f99; margin-bottom: 0">Label readable (accent + white text).</p>
+      </div>
+    </div>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Open <code>/analytics</code> as a Head of sales.</li>
+      <li>Look at the "Monthly revenue trend" block.</li>
+      <li>The tallest bar now shows its amount above it (previously empty).</li>
+    </ol>
+  </body>
+</html>

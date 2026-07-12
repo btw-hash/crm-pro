@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#211 — Rename "Deal goal" → "Visit goal"</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --green: #34c759;
+        --warn: #ff9500;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+      header.top .badge {
+        background: var(--accent);
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.15em 0.55em;
+        letter-spacing: 0.03em;
+      }
+      .container {
+        max-width: 840px;
+        margin: 2rem auto;
+        padding: 0 1.5rem 4rem;
+      }
+      h2 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin: 2rem 0 0.75rem;
+      }
+      p,
+      li {
+        color: var(--fg);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 1rem;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .diff-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      .diff-table th {
+        text-align: left;
+        padding: 0.4rem 0.7rem;
+        background: var(--bg);
+        border-bottom: 2px solid var(--border);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      .diff-table td {
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .diff-table tr:last-child td {
+        border-bottom: none;
+      }
+      .old {
+        color: #c0392b;
+        text-decoration: line-through;
+      }
+      .new {
+        color: #27ae60;
+        font-weight: 600;
+      }
+      .file {
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .decision-box {
+        background: #fff8e1;
+        border-left: 4px solid var(--warn);
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+      }
+      .decision-box strong {
+        color: #c67c00;
+      }
+      .check {
+        color: var(--green);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <span class="badge">#211</span>
+      <h1>Rename: "Deal goal" → "Visit goal"</h1>
+    </header>
+
+    <div class="container">
+      <h2>Decision on the contested point</h2>
+      <div class="decision-box">
+        <strong>"Deals → Tasks" — NOT implemented.</strong>
+        <p style="margin: 0.5rem 0 0">
+          The deal card (the "Add manually" section, "Type" dropdown) already has an
+          <code>option value="task"</code> labeled <strong>"Task"</strong> — an activity type.
+          Renaming the "Deals" section to "Tasks" would create a direct terminology collision on the
+          same screen: "Task" as the pipeline and "Task" as an activity type. Only the second part
+          of the issue was implemented — improving the label of the <em>goal</em> field.
+        </p>
+      </div>
+
+      <h2>What changed</h2>
+      <div class="card">
+        <table class="diff-table">
+          <thead>
+            <tr>
+              <th>UI location</th>
+              <th>Before</th>
+              <th>After</th>
+              <th>File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Deal card — inline overview field</td>
+              <td class="old">Deal goal</td>
+              <td class="new">Visit goal</td>
+              <td class="file">deals/[id]/_components/deal-inline-fields.tsx</td>
+            </tr>
+            <tr>
+              <td>"Edit deal" dialog</td>
+              <td class="old">Goal</td>
+              <td class="new">Visit goal</td>
+              <td class="file">deals/[id]/_components/deal-crud-controls.tsx</td>
+            </tr>
+            <tr>
+              <td>"New deal" modal</td>
+              <td class="old">Goal</td>
+              <td class="new">Visit goal</td>
+              <td class="file">deals/_components/create-deal-modal.tsx</td>
+            </tr>
+            <tr>
+              <td>Pipeline filter (kanban)</td>
+              <td class="old">Goal:</td>
+              <td class="new">
+                Visit goal: <span class="muted">(+ title tooltip "Client visit goal")</span>
+              </td>
+              <td class="file">deals/_components/deals-kanban.tsx</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>What was NOT changed (intentionally)</h2>
+      <ul>
+        <li>Route <code>/deals</code> — unchanged</li>
+        <li>
+          The <code>DealGoal</code> type, the <code>goal</code> DB field, domain entities —
+          unchanged
+        </li>
+        <li>
+          The <code>&lt;dt&gt;Goal&lt;/dt&gt;</code> label in the side drawer — a short form,
+          understood from context
+        </li>
+        <li>The command palette entry "Go to: Deals" — that's the section's navigation label</li>
+        <li>The "Deals" section in the sidebar — not renamed (see rationale above)</li>
+      </ul>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <p>
+          <span class="check">✓</span> <code>npm run verify</code> — 99 files, 518 tests, green
+          (typecheck + lint + format + tests)
+        </p>
+        <p>
+          <span class="check">✓</span> No new tests needed: only string label constants changed,
+          component logic and behavior are untouched
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+# Before push — full typecheck and tests (what lint-staged doesn't cover file-by-file).
+# If push is slow or in the way, you can temporarily bypass: git push --no-verify
+npm run typecheck
+npm test

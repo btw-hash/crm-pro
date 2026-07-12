@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — fix/sidebar-rail-create-button</title>
+    <style>
+      body {
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #1c1f27;
+        max-width: 760px;
+        margin: 32px auto;
+        padding: 0 18px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 17px;
+        margin-top: 28px;
+      }
+      .pill {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 12px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        border: 1px solid #e3ded8;
+        padding: 7px 10px;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background: #f8f3ef;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      code {
+        background: #f8f3ef;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><span class="pill">fix(ui)</span> "New request" button on the collapsed sidebar rail</h1>
+
+    <h2>What changed</h2>
+    <p>
+      The collapsed rail (the narrow dark panel) was missing the red "+" "New request" button. In
+      the reference design ("CRM Pro UI") it's there — a red square icon between the hamburger and
+      the navigation — but it was removed in chore #298 and only remained in the expanded panel.
+      Restored it on the rail: for the same roles with create permission (Head of Sales / Manager),
+      opening the same request-creation window.
+    </p>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Sidebar state</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Expanded panel</td>
+        <td>Full-width "+ New request" button</td>
+        <td>Unchanged</td>
+      </tr>
+      <tr>
+        <td>Collapsed rail</td>
+        <td>No create button</td>
+        <td>Red 46×46 "+" square (reference): between the hamburger and the icon list</td>
+      </tr>
+    </table>
+    <p>
+      The "+" button opens the same <code>CreateRequestModal</code> window (Deal / Shipment / Add-on
+      request) as the button in the expanded panel. Visible only to the <code>head</code> /
+      <code>mop</code> roles; server-side permission validation in the actions was not changed.
+    </p>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Sign in as Head of Sales or Manager (in dev, localhost opens as Head of Sales).</li>
+      <li>Collapse the side menu into the rail (hamburger icon at the top of the sidebar).</li>
+      <li>See the red "+" button right below the hamburger, above the list of section icons.</li>
+      <li>
+        Click "+" → the "New request" window opens with a choice of Deal / Shipment / Add-on
+        request.
+      </li>
+      <li>
+        Sign in as technologist / accountant / logistics / buyer → there is no "+" button on the
+        rail (no create permission).
+      </li>
+    </ol>
+  </body>
+</html>

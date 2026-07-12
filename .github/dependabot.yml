@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # app npm dependencies
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  # GitHub Actions (helps keep pins and updates current)
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

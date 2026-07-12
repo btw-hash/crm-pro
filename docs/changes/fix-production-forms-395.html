@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Production: editing forms (#395)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --success: #197a48;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font:
+          15px/1.6 system-ui,
+          sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        padding: 2rem 1rem;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin: 2rem 0 0.75rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.35rem;
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 1.25rem 0 0.5rem;
+        color: var(--accent);
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+      }
+      .badge-fix {
+        background: #fef3cd;
+        color: #7a5c00;
+      }
+      .badge-feat {
+        background: #d4edda;
+        color: #155724;
+      }
+      .badge-test {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      code {
+        font: 0.85rem/1.4 monospace;
+        background: #ede8e1;
+        padding: 0.1rem 0.3rem;
+        border-radius: 3px;
+      }
+      pre {
+        background: #ede8e1;
+        border-radius: 6px;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        margin: 0.75rem 0;
+      }
+      ul {
+        padding-left: 1.25rem;
+      }
+      li {
+        margin-bottom: 0.35rem;
+      }
+      .diff-before {
+        color: var(--accent);
+      }
+      .diff-after {
+        color: var(--success);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid var(--border);
+      }
+      th {
+        background: #ede8e1;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Production: editing forms</h1>
+      <p class="sub">Issue #395 · fix/production-forms-395 · 2026-06-29</p>
+
+      <h2>Summary</h2>
+      <div class="card">
+        <p>Two items of the "Production" epic have been implemented:</p>
+        <ul style="margin-top: 0.75rem">
+          <li>
+            <span class="badge badge-fix">fix</span> <strong>[15] Production audit</strong> — added
+            an edit mode for a saved audit.
+          </li>
+          <li>
+            <span class="badge badge-fix">fix</span> <strong>[16] Test/sample batch</strong> — fixed
+            the sample-add error + added an edit mode for the quantity.
+          </li>
+        </ul>
+      </div>
+
+      <h2>[16] Root cause of the sample-add error and the fix</h2>
+
+      <h3>What was broken</h3>
+      <div class="card">
+        <p>
+          In <code>requestSampleAction</code> (actions.ts), the <code>catch</code> block did not
+          handle <code>DealNotFoundError</code>:
+        </p>
+        <pre class="diff-before">
+catch (cause) {
+  if (cause instanceof InsufficientStockError || cause instanceof SampleRequestStageError) {
+    return { ok: false, error: cause.message };
+  }
+  throw cause;  // ← DealNotFoundError bubbled up as a 500
+}</pre
+        >
+        <p>
+          In addition, under Turbopack/Next.js <code>instanceof</code> is unreliable between "use
+          server" and SSR bundles (documented in neighboring actions). For
+          <code>InsufficientStockError</code> and <code>SampleRequestStageError</code> there was no
+          fallback by <code>.name</code>, so under a certain build configuration these errors also
+          fell through to <code>throw cause</code> and produced a 500 instead of an inline message.
+        </p>
+      </div>
+
+      <h3>How it was fixed</h3>
+      <div class="card">
+        <pre class="diff-after">
+catch (cause) {
+  if (
+    cause instanceof InsufficientStockError ||
+    cause instanceof SampleRequestStageError ||
+    cause instanceof DealNotFoundError ||
+    (cause instanceof Error &amp;&amp;
+      (cause.name === "InsufficientStockError" ||
+        cause.name === "SampleRequestStageError" ||
+        cause.name === "DealNotFoundError"))
+  ) {
+    return { ok: false, error: cause.message };
+  }
+  throw cause;
+}</pre
+        >
+        <p>
+          Now all three domain errors are returned as <code>{ ok: false, error }</code> — shown
+          inline in the form, they no longer produce a 500.
+        </p>
+      </div>
+
+      <h2>[15] Editing a production audit</h2>
+
+      <h3>Before</h3>
+      <div class="card">
+        <p>
+          After the audit was saved, the <em>Equipment</em> and <em>Client pain points</em>
+          fields were shown read-only. To fix a data-entry mistake you had to create a new audit
+          (the same record got overwritten via upsert).
+        </p>
+      </div>
+
+      <h3>After</h3>
+      <div class="card">
+        <p>
+          When the "Production audit" section is active (<code>auditVis === "active"</code>) and an
+          audit already exists — instead of a read-only card, a pre-filled <code>AuditForm</code> is
+          shown with the current values (edit mode). Saving calls <code>updateAuditAction</code> →
+          <code>updateProductionAudit</code> use-case → <code>AuditRepository.update()</code>.
+        </p>
+      </div>
+
+      <h2>[16] Editing a sample request</h2>
+
+      <h3>Before</h3>
+      <div class="card">
+        <p>
+          The list of requests was shown read-only. It was impossible to change the reserved
+          quantity without re-creating the request.
+        </p>
+      </div>
+
+      <h3>After</h3>
+      <div class="card">
+        <p>
+          In the "Test batch / samples" section (when active), a collapsible "Edit last request"
+          element appears below the add form. Inside is a form with the current quantity that calls
+          <code>updateSampleAction</code> → <code>updateSampleRequest</code> use-case. The product
+          and technologist do not change (the reservation in the ERP has already been made).
+        </p>
+      </div>
+
+      <h2>Files touched</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src/domain/audit/production-audit.ts</code></td>
+            <td>
+              Added <code>UpdateProductionAuditInput</code>, <code>updateProductionAudit()</code>,
+              <code>AuditNotFoundError</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>src/domain/sample/sample-request.ts</code></td>
+            <td>Added <code>SampleRequestNotFoundError</code></td>
+          </tr>
+          <tr>
+            <td><code>src/application/ports/audit-repository.ts</code></td>
+            <td>Added the <code>update()</code> method</td>
+          </tr>
+          <tr>
+            <td><code>src/application/ports/sample-request-repository.ts</code></td>
+            <td>Added <code>update()</code> and <code>findById()</code></td>
+          </tr>
+          <tr>
+            <td><code>src/application/use-cases/update-production-audit.ts</code></td>
+            <td>New use-case</td>
+          </tr>
+          <tr>
+            <td><code>src/application/use-cases/update-production-audit.test.ts</code></td>
+            <td>6 tests (TDD)</td>
+          </tr>
+          <tr>
+            <td><code>src/application/use-cases/update-sample-request.ts</code></td>
+            <td>New use-case</td>
+          </tr>
+          <tr>
+            <td><code>src/application/use-cases/update-sample-request.test.ts</code></td>
+            <td>5 tests (TDD)</td>
+          </tr>
+          <tr>
+            <td><code>src/infrastructure/persistence/in-memory-audit-repository.ts</code></td>
+            <td><code>update()</code> implementation</td>
+          </tr>
+          <tr>
+            <td><code>src/infrastructure/persistence/prisma-audit-repository.ts</code></td>
+            <td><code>update()</code> implementation via Prisma</td>
+          </tr>
+          <tr>
+            <td>
+              <code>src/infrastructure/persistence/in-memory-sample-request-repository.ts</code>
+            </td>
+            <td><code>update()</code> and <code>findById()</code> implementation</td>
+          </tr>
+          <tr>
+            <td><code>src/infrastructure/persistence/prisma-sample-request-repository.ts</code></td>
+            <td><code>update()</code> and <code>findById()</code> implementation</td>
+          </tr>
+          <tr>
+            <td><code>src/infrastructure/composition-root.ts</code></td>
+            <td>
+              Registration of <code>updateProductionAudit</code> and
+              <code>updateSampleRequest</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>src/app/deals/[id]/actions.ts</code></td>
+            <td>
+              New <code>updateAuditAction</code>, <code>updateSampleAction</code>; catch fix in
+              <code>requestSampleAction</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>src/app/deals/[id]/_components/audit-form.tsx</code></td>
+            <td><code>existing</code> mode (editing)</td>
+          </tr>
+          <tr>
+            <td><code>src/app/deals/[id]/_components/sample-request-form.tsx</code></td>
+            <td><code>existing</code> mode (editing the quantity)</td>
+          </tr>
+          <tr>
+            <td><code>src/app/deals/[id]/page.tsx</code></td>
+            <td>Passing <code>existing</code> into the forms; collapsible sample-edit block</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Tests</h2>
+      <div class="card">
+        <p>
+          <span class="badge badge-test">test</span> Before: 842 tests (137 files). After:
+          <strong>860 tests (140 files)</strong>. +18 new tests, all green.
+        </p>
+        <ul style="margin-top: 0.5rem">
+          <li>
+            <code>update-production-audit.test.ts</code> — 6 tests: patching fields, preserving
+            metadata, AuditNotFoundError, DealNotFoundError, validating an empty audit
+          </li>
+          <li>
+            <code>update-sample-request.test.ts</code> — 5 tests: updating the quantity, preserving
+            unchanged fields, NotFoundError, validating zero and negative values
+          </li>
+          <li>
+            +7 tests from a parallel branch (<code>set-deal-outcome</code>,
+            <code>deal.test.ts</code>) came in via rebase
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

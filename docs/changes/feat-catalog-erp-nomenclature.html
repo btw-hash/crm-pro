@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — catalog nomenclature from the ERP (#277)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      The catalog now pulls nomenclature from the ERP + brought back the numeric stock level and
+      expiration date
+    </h1>
+    <p>
+      <span class="tag">feat(catalog)</span> &middot; PR <code>#277</code> &middot; closes
+      <code>#276</code> &middot; branch <code>feat/catalog-erp-nomenclature</code>
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        In the owner's words: "it's strange that the catalog works like an online store — we need
+        data from the ERP." The cart logic is correct (the manager builds up a request), but
+        <strong>the product list itself was hardcoded in the CRM</strong>, instead of coming from
+        the ERP. Plus the <code>#263</code> redesign hid the free stock number and the expiration
+        date.
+      </li>
+      <li>
+        New port method <code>ErpGateway.listNomenclature()</code> — the nomenclature reference from
+        the ERP. Implemented in the stub (seed) and in <code>ODataErpGateway</code> (the real
+        <code>Catalog_Nomenclature</code>, mapped to the live ERP's <code>$metadata</code>).
+      </li>
+      <li>
+        <code>ProductRepository.upsertMany()</code> (in-memory + Prisma): upsert by id; items
+        removed in the ERP are <strong>not deleted</strong> (deals have FKs pointing to them).
+      </li>
+      <li>
+        Use case <code>makeSyncNomenclature()</code> — ERP → DB sync: the ERP is the source of the
+        list, CRM enrichment (Sales Kit) is preserved via a merge by id so the sync doesn't wipe it
+        out. Run with <code>npm run sync:erp</code> (postgres/odata; a stub for testing the pipeline
+        without the ERP). The catalog reads from the synced DB — "not realtime," as agreed on 06/25.
+      </li>
+      <li>
+        <strong>Catalog UI:</strong> brought back the numeric free stock level (N kg) and an
+        "Expiration date" line on the product card.
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Aspect</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Product list source</td>
+        <td class="was">Hardcoded in the CRM (local repository)</td>
+        <td class="now">A synced reference from the ERP (<code>npm run sync:erp</code>)</td>
+      </tr>
+      <tr>
+        <td>Free stock on the card</td>
+        <td class="was">Only a status badge, no number (the redesign hid it)</td>
+        <td class="now">Status badge + exact "N kg" available</td>
+      </tr>
+      <tr>
+        <td>Expiration date</td>
+        <td class="was">Wasn't shown</td>
+        <td class="now">A "Expiration date: …" line (important for food products)</td>
+      </tr>
+      <tr>
+        <td>CRM enrichment (Sales Kit)</td>
+        <td>—</td>
+        <td class="now">Preserved via merge — the ERP sync doesn't wipe it out</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>
+        Run the sync: <code>npm run sync:erp</code> (in stub mode it pulls from the seed
+        nomenclature — products get populated, e.g. 0 → 9).
+      </li>
+      <li>
+        <code>npm run dev</code>, log in as head of sales/procurement, open
+        <strong>Catalog</strong>.
+      </li>
+      <li>
+        See on the product card: a <strong>numeric free stock "N kg"</strong> next to the status
+        badge and a <strong>"Expiration date: …"</strong> line.
+      </li>
+      <li>The product list — from the synced DB (not a hardcoded set in the CRM).</li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li><code>sync:erp</code> against a real Postgres (ERP stub): products 0 → 9.</li>
+      <li>Sync unit test: the merge preserves the kit; an empty ERP doesn't delete items.</li>
+      <li>Catalog in the browser: stock as a number + expiration date.</li>
+      <li><code>npm run verify</code> <span class="ok">green</span> (109 files, 584 tests).</li>
+    </ul>
+
+    <p>
+      <strong>Follow-up (not in this PR):</strong> a <code>Catalog_Nomenclature</code> endpoint in
+      <code>tools/mock-erp</code> for the odata sync against a fake ERP; mapping expiration/pack
+      size from real ERP fields; a sync schedule/button (cron or admin action).
+    </p>
+  </body>
+</html>

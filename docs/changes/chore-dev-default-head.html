@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dev default = Head of Sales — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Dev: signing in without a session now defaults to Head of Sales</h1>
+      <p>localhost with no login shows the entire product (all sections) · dev only</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            In dev, when login is optional (no session), the default user is now
+            <b>Alan Peterson (Head of Sales)</b> instead of Daniel Owens (Sales Rep).
+          </li>
+          <li>
+            The Head of Sales sees ALL sidebar sections, so localhost now demonstrates the entire
+            product right away: Procurement, Shipments, Packing, Defect Warehouse, Tech Queue,
+            Assistant.
+          </li>
+          <li>
+            To sign in as a specific role — use <span class="kbd">/login</span> (quick buttons) or
+            "Switch". In production, sign-in is required and this flag is ignored — prod behavior is
+            unchanged.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after (dev, no login)</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th></th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>User</td>
+              <td>Daniel Owens (Sales Rep)</td>
+              <td>Alan Peterson (Head of Sales)</td>
+            </tr>
+            <tr>
+              <td>Sidebar sections</td>
+              <td>5 (Sales Rep role gating)</td>
+              <td>11 (all)</td>
+            </tr>
+            <tr>
+              <td>Visible in the demo</td>
+              <td>part of the product</td>
+              <td>the whole product</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              If a session is still active in the browser (a name shows in the header) — click "Sign
+              out".
+            </li>
+            <li>
+              Open localhost — the header shows "Alan Peterson · Head of Sales", the sidebar has 11
+              sections.
+            </li>
+            <li>
+              Use the "Switch" button to switch to Sales Rep/Technologist/Buyer and compare
+              permissions.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · dev default = Head of Sales (#163)</footer>
+  </body>
+</html>

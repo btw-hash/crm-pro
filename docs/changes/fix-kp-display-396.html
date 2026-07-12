@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro &mdash; change showcase &middot; fix-kp-display-396</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1b7f3b;
+        --ok-bg: #e7f5ee;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        color: #fff;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 860px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 32px 0 10px;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 6px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 20px 0 6px;
+        color: var(--accent-strong);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+      }
+      .card p {
+        margin: 0 0 8px;
+      }
+      .card p:last-child {
+        margin: 0;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        margin: 12px 0;
+      }
+      td,
+      th {
+        border: 1px solid var(--border);
+        padding: 7px 10px;
+        text-align: left;
+      }
+      th {
+        background: #f3f6f9;
+        font-weight: 600;
+      }
+      .was {
+        color: #c0392b;
+        text-decoration: line-through;
+      }
+      .now {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      pre {
+        background: #2a3543;
+        color: #e8edf3;
+        padding: 14px 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+      .note {
+        background: #fff8e6;
+        border: 1px solid #f0e2b6;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro &mdash; change showcase</h1>
+      <span class="badge">fix-kp-display-396</span>
+    </header>
+    <main>
+      <h2>[21] Proposal prices are no longer &quot;&mdash;&quot;</h2>
+      <div class="card">
+        <p>
+          <strong>Problem.</strong> At the "Proposal calculation" stage, in the "Proposal and letter
+          (AI)" block, the <b>Price</b>, <b>Monthly purchase</b>, and <b>Total</b> columns showed
+          "&mdash;" for every line item. Monthly volume and "Client savings" were computed correctly
+          &mdash; only the prices were empty.
+        </p>
+        <p>
+          <strong>Cause.</strong> In <code>build-proposal-draft.ts</code> (line ~82) the price was
+          taken only from the client's individual price (<code>erp.getIndividualPrice</code>). If
+          the client doesn't have one &mdash; <code>unitPrice = null</code> &rarr; in the UI
+          <code>priceFmt ?? "&mdash;"</code>, <code>lineTotalFmt ?? "&mdash;"</code>,
+          <code>totalFmt ?? "&mdash;"</code> render dashes. There was no fallback to the catalog
+          price.
+        </p>
+        <p>
+          <strong>Fix.</strong> Added a deterministic fallback to the product's RSP from the catalog
+          (Sales Kit). The ERP's individual price still takes priority; RSP kicks in only when
+          there's no individual price. The numbers aren't invented by the AI &mdash; RSP lives in
+          the catalog data (<code>seedProducts</code>, present for all 9 demo products).
+        </p>
+        <pre>
+// before
+const unitPrice = individualPrice?.price ?? null;
+// after
+const unitPrice = individualPrice?.price ?? product.kit?.rsp ?? null;</pre
+        >
+        <table>
+          <tr>
+            <th></th>
+            <th>Before</th>
+            <th>After</th>
+          </tr>
+          <tr>
+            <td>Price / Purchase / Total</td>
+            <td class="was">"&mdash;" for every line item</td>
+            <td class="now">
+              price from individual (if present) or catalog RSP; the total is computed
+            </td>
+          </tr>
+        </table>
+        <div class="note">
+          <strong>Caveat.</strong> RSP is the recommended <em>retail</em> price; for a B2B client
+          the exact price comes from the ERP via <code>getIndividualPrice</code>. The
+          <code>ErpGateway</code>
+          port currently has no separate list/wholesale price, so RSP is the best available
+          deterministic source for the demo (instead of "&mdash;"). With a real ERP the price will
+          be correct automatically.
+        </div>
+      </div>
+
+      <h2>Repro steps</h2>
+      <div class="card">
+        <ol>
+          <li>
+            Sign in as a manager, open a process (deal), get to the "Proposal calculation" stage.
+          </li>
+          <li>Select product(s), enter the quantity, click "Build proposal (AI)".</li>
+          <li>
+            Before: the Price / Monthly purchase / Total columns = "&mdash;". Now: a numeric price
+            and total are shown (from the ERP's individual price or the catalog RSP).
+          </li>
+        </ol>
+      </div>
+
+      <h2>Files</h2>
+      <div class="card">
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Change</th>
+          </tr>
+          <tr>
+            <td><code>src/application/use-cases/build-proposal-draft.ts</code></td>
+            <td>Line 83: <code>?? product.kit?.rsp ?? null</code> &mdash; RSP fallback</td>
+          </tr>
+          <tr>
+            <td><code>src/application/use-cases/build-proposal-draft.test.ts</code></td>
+            <td>
+              +2 cases: "no individual price &rarr; RSP, total is computed", "individual price
+              present &rarr; it's used"
+            </td>
+          </tr>
+        </table>
+        <div class="note">
+          <strong
+            >[22] (saving the proposal to the card instead of the feed) &mdash; deferred</strong
+          >
+          in this PR. A correct implementation (attaching the proposal to the process card) touches
+          the activities domain, which is currently being rewritten in a parallel rename branch
+          (tasks&rarr;processes). We'll do it as a separate PR after that one lands, to avoid a
+          conflict. Epic #396 stays open (Refs, not Closes).
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

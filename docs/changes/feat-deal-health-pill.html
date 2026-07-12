@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Score Pill — deal health — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      .dot {
+        display: inline-block;
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 0.35rem;
+      }
+      .g {
+        background: #1f8a4c;
+      }
+      .y {
+        background: #e6a700;
+      }
+      .r {
+        background: #d4493f;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Score Pill — deal health at a glance</h1>
+      <p>
+        A colored indicator on the pipeline card · the head of sales sees the whole team without a
+        click
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            A colored "health" dot indicator now shows on the deal card in the pipeline:
+            <span class="dot g"></span>green · <span class="dot y"></span>yellow ·
+            <span class="dot r"></span>red. <span class="kbd">#153</span>
+          </li>
+          <li>
+            Combines existing signals (days on stage + "no next step") into a single visual marker —
+            no need to open a deal to see where it's stuck.
+          </li>
+          <li>Terminal deals (Won/Lost) don't show the indicator.</li>
+          <li>
+            The first step of the demo UX upgrade (see
+            <span class="kbd">specs/demo-ux-upgrades.md</span>).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Color rule</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>Color</th>
+              <th>When</th>
+              <th>Meaning</th>
+            </tr>
+            <tr>
+              <td><span class="dot g"></span>Green</td>
+              <td>has a next step, on stage &lt; 7 days</td>
+              <td>on track, moving on time</td>
+            </tr>
+            <tr>
+              <td><span class="dot y"></span>Yellow</td>
+              <td>no next step OR stalled ≥ 7 days</td>
+              <td>needs attention</td>
+            </tr>
+            <tr>
+              <td><span class="dot r"></span>Red</td>
+              <td>stuck ≥ 14 days OR no next step and already stalled</td>
+              <td>critical — easy to lose</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Why (vs legacy CRMs)</h2></div>
+        <div class="card__body">
+          In a legacy CRM, you have to open a deal to see its state. Here the head of sales sees the
+          "health" of the whole pipeline in 10 seconds right on the board — where it's green, where
+          it's red. Comparable to Pipedrive Deal Rotting, HubSpot Deal Health.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open the "Deals" section (the pipeline).</li>
+            <li>
+              To the left of each card's name is a colored dot. Hover over it → a tooltip explains
+              the state.
+            </li>
+            <li>
+              A deal with no next step / stuck on stage for a long time → a yellow or red dot.
+            </li>
+            <li>Drag a deal to "Won" → the dot disappears (the deal is closed).</li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · Deal health Score Pill (#153)</footer>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# testing / coverage
+/coverage
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# env
+.env
+.env*.local
+
+# misc
+.DS_Store
+*.log
+
+# secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# dev-DB dumps / ERP exports — may contain PII, keep out of the repo
+*.dump
+*.sql
+*.sql.gz
+# but Prisma migrations are schema-as-code, must be in git (overrides *.sql above)
+!prisma/migrations/**/*.sql
+/data/
+/seed-db/
+
+# local Claude Code artifacts (incl. orphaned agent worktree copies) —
+# never commit (otherwise git add -A drags a whole copy's node_modules into the repo)
+.claude/

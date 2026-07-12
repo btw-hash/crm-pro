@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Showcase · Deal outcome + unblocking the "Customer order" (feat/deal-outcome-write-path)
+    </title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --success: #197a48;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 23px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 26px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+        box-shadow: 0 6px 18px rgba(45, 38, 32, 0.06);
+      }
+      .card h2 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+      code {
+        background: #f0ece5;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      ol,
+      ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .ok {
+        color: var(--success);
+        font-weight: 600;
+      }
+      .bad {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .pill--won {
+        border: 1px solid rgba(31, 158, 108, 0.35);
+        background: rgba(31, 158, 108, 0.14);
+        color: var(--success);
+      }
+      .pill--lost {
+        border: 1px solid rgba(191, 50, 43, 0.3);
+        background: rgba(191, 50, 43, 0.12);
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Deal outcome (Won/Lost) + unblocking the "Customer order"</h1>
+      <p class="sub">
+        branch <code>feat/deal-outcome-write-path</code> · #397 [24] · reported by the client
+      </p>
+
+      <div class="card">
+        <h2>The bug</h2>
+        <p>
+          At the "Completed" stage the "Customer order (ERP)" form showed up, but creating an order
+          was impossible — the domain requires <code>outcome === "won"</code>, and
+          <span class="bad">there was no way to mark a deal "Won" in the UI</span> (the
+          <code>outcome</code> field was only set in the seed; there was no setter in the app). #400
+          only fixed the error text — the actual dead end remained.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>After</h2>
+        <p>
+          An outcome write path was added. On a completed deal — buttons
+          <span class="pill pill--won">✓ Won</span>
+          <span class="pill pill--lost">Lost</span>. The order form is now gated by outcome:
+        </p>
+        <ul>
+          <li>
+            <b>Completed, no outcome</b> → "Mark the outcome…" + buttons (no order is offered);
+          </li>
+          <li><b>Won</b> → the "Customer order" form is active, the order can be created;</li>
+          <li><b>Lost</b> → "no order is placed" + buttons (the outcome can be corrected).</li>
+        </ul>
+        <p class="note">
+          The outcome is written to the deal history as an <code>outcome_set</code> event ("Deal
+          outcome"). The outcome can be changed (correction).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>How it was built (clean architecture, TDD)</h2>
+        <ol>
+          <li>
+            <b>domain</b> <code>setDealOutcome(deal, outcome)</code> — only at the "Completed" stage
+            (otherwise <code>DealOutcomeError</code>), immutable, changes are allowed;
+          </li>
+          <li><b>domain/deal-event</b> — a new event type <code>outcome_set</code>;</li>
+          <li><b>use-case</b> <code>makeSetDealOutcome</code> (save + write the event);</li>
+          <li>
+            <b>server-action</b> <code>setDealOutcomeAction</code> (owner access via
+            <code>dealAccess</code>, catches the domain error);
+          </li>
+          <li>
+            <b>UI</b> <code>DealOutcomeControls</code> + a gate on the order section in the deal
+            card. Wiring — in <code>composition-root</code> (a self-contained commit).
+          </li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>
+            Open a completed deal with no outcome → the "Customer order" block shows "Mark the
+            outcome" + buttons.
+          </li>
+          <li>Click "Won" → the "Customer order (ERP)" form appears, the order gets created.</li>
+          <li>
+            Click "Lost" (or correct it) → no order is offered; the feed shows the "Deal outcome"
+            event.
+          </li>
+        </ol>
+        <p class="note">
+          <span class="ok">Gate:</span> <code>npm run verify</code> green (849 tests;
+          +domain/use-case outcome tests). Verified live in the browser on the demo/after stopping a
+          parallel session (its dev server was holding the folder).
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

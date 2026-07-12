@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — change showcase · deal stage undo</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        flex: 1;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      .ba {
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+      .ba h3 {
+        margin: 0 0 0.25rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ba p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .ba--was {
+        background: #f6f8fa;
+      }
+      .ba--was h3 {
+        color: var(--muted);
+      }
+      .ba--now {
+        background: #eef9f0;
+      }
+      .ba--now h3 {
+        color: #1f8a4c;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.45rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      .mock-kanban {
+        display: flex;
+        gap: 0.8rem;
+        overflow-x: auto;
+        padding-bottom: 0.4rem;
+      }
+      .mock-col {
+        flex: 0 0 160px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #f8fafc;
+        padding: 0.6rem;
+      }
+      .mock-col__head {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.5rem;
+      }
+      .mock-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.55rem 0.65rem;
+        font-size: 0.88rem;
+        margin-bottom: 0.4rem;
+      }
+      .mock-card__title {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+      .mock-btn {
+        display: inline-block;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        background: #fff;
+        color: var(--accent-strong);
+        margin: 0.15rem 0.15rem 0 0;
+        cursor: default;
+      }
+      .mock-btn--revert {
+        color: #888;
+        border-color: #ddd;
+      }
+      .mock-btn--revert:hover {
+        background: #fff3cd;
+        border-color: #e6b800;
+        color: #333;
+      }
+      .mock-event {
+        border-left: 3px solid var(--border);
+        padding: 0.4rem 0.7rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+      .mock-event--revert {
+        border-color: #e6b800;
+        background: #fffbea;
+      }
+      .mock-event--forward {
+        border-color: var(--accent);
+        background: #f0faff;
+      }
+      .mock-event__label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 0.15rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Deal stage undo (revert)</h1>
+      <p>
+        Branch <span class="tag">feat/deal-stage-undo</span> · a manager can fix a mistaken
+        transition and move a deal back through the pipeline
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            Forward transitions through the pipeline — unchanged, the forward guard is
+            <b>not weakened</b>.
+          </li>
+          <li>
+            An explicit <b>"Revert stage"</b> operation was added: drag the card into an earlier
+            column or press the <b>↩</b> button on the card.
+          </li>
+          <li>
+            Reverting asks for a <b>reason</b> (optional) — recorded in the event feed for the head
+            of sales.
+          </li>
+          <li>
+            Domain: a new function <code>canRevert(from, to)</code> — allows only an earlier open
+            stage (not <i>won</i>/<i>lost</i>).
+          </li>
+          <li>
+            Feed: a new event type <code>stage_reverted</code> with the label "Stage reverted" and
+            the reason text — pipeline analytics aren't broken.
+          </li>
+          <li>274 tests green, typecheck + lint + format clean.</li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Before → after</h2>
+        </div>
+        <div class="card__body">
+          <div class="ba ba--was">
+            <h3>Before</h3>
+            <p>
+              Dragging a card into a column with an earlier stage was silently ignored (<code
+                >canTransition</code
+              >
+              returned <code>false</code>, there were no backward buttons). A wrong transition could
+              not be fixed without directly touching the database.
+            </p>
+          </div>
+          <div class="ba ba--now">
+            <h3>After</h3>
+            <p>
+              Dragging backward opens a dialog for the reason and reverts the deal. The card now has
+              <b>↩ &lt;Stage&gt;</b> buttons for every valid revert target. The event feed shows the
+              revert with the "Stage reverted" label, from→to arrows, and the reason.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>UI mockup</h2>
+        </div>
+        <div class="card__body">
+          <p style="margin-top: 0; color: var(--muted); font-size: 0.88rem">
+            A card at the "Testing" stage — forward buttons and revert buttons side by side:
+          </p>
+          <div class="mock-kanban">
+            <div class="mock-col">
+              <div class="mock-col__head">Audit</div>
+            </div>
+            <div class="mock-col">
+              <div class="mock-col__head">Test request</div>
+            </div>
+            <div class="mock-col" style="border-color: var(--accent-strong)">
+              <div class="mock-col__head" style="color: var(--accent-strong)">Testing</div>
+              <div class="mock-card">
+                <div class="mock-card__title">Alpha LLC</div>
+                <div>
+                  <span class="mock-btn">→ Proposal calc</span>
+                  <span class="mock-btn">→ Lost</span>
+                </div>
+                <div>
+                  <span class="mock-btn mock-btn--revert">↩ Test request</span>
+                  <span class="mock-btn mock-btn--revert">↩ Production audit</span>
+                  <span class="mock-btn mock-btn--revert">↩ Qualification</span>
+                </div>
+              </div>
+            </div>
+            <div class="mock-col">
+              <div class="mock-col__head">Proposal calc</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Event feed after a revert</h2>
+        </div>
+        <div class="card__body">
+          <div class="mock-event mock-event--forward">
+            <div class="mock-event__label">Stage change</div>
+            Production audit → Testing
+          </div>
+          <div class="mock-event mock-event--revert">
+            <div class="mock-event__label">Stage reverted</div>
+            Reverted: Testing → Production audit. Reason: dragged by mistake
+          </div>
+          <div class="mock-event mock-event--forward">
+            <div class="mock-event__label">Stage change</div>
+            Production audit → Testing
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Repro steps</h2>
+        </div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Start the app: <span class="kbd">npm run dev</span> → open
+              <span class="kbd">http://localhost:3000</span>.
+            </li>
+            <li>
+              Go to <span class="kbd">/deals</span> (the kanban pipeline). Find a card at a stage
+              past "Qualification" — for example "Production audit".
+            </li>
+            <li>
+              <b>Forward transition:</b> click the <b>→ Proposal calc</b> button — the card
+              optimistically moves to the "Proposal calc" column. Or drag the card right into the
+              desired column.
+            </li>
+            <li>
+              <b>Revert via button:</b> on the card in "Proposal calc" click
+              <b>↩ Production audit</b>. A "State the reason" dialog opens — enter text or leave it
+              empty and press OK.
+            </li>
+            <li>
+              The card optimistically moves back to "Production audit". If a reason was given — the
+              server logs it in the deal's feed.
+            </li>
+            <li>
+              <b>Revert via drag:</b> grab the card and drag it into an earlier column — the same
+              reason dialog appears.
+            </li>
+            <li>
+              Open the deal card (<span class="kbd">/deals/[id]</span>) → the "Event feed" block.
+              See an entry with the <b>"Stage reverted"</b> label, from → to arrows, and the reason
+              text (if given).
+            </li>
+            <li>
+              <b>Boundary check:</b> try dragging a card to <i>Won</i> or <i>Lost</i> via revert —
+              this should not work (terminal stages). Drag a deal from "Qualification" — there
+              should be no ↩ buttons (nothing to revert to).
+            </li>
+          </ol>
+          <p class="note">
+            The revert reason is optional. Pressing "Cancel" in the dialog aborts the operation with
+            no changes.
+          </p>
+          <p class="note">
+            Triggers (auto-task for the sales rep, notification) <b>don't fire</b> on a revert —
+            it's an explicit correction, not the normal forward progress through the pipeline.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>CRM Pro · change showcase · PR3 Contour I — stage undo</footer>
+  </body>
+</html>

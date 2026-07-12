@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Head of sales assistant → tool agent (ReAct) — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .lead li {
+        margin: 0.4rem 0;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      code {
+        background: #f3f5f8;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.86em;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Head of sales assistant — now a tool agent (ReAct)</h1>
+      <p>The AI chooses tools itself (CRM data / web search) and can combine them</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (#281 — assistant evolution)</h2>
+        <ul>
+          <li>
+            The "ask CRM or search the web" routing is no longer decided by a
+            <b>fragile regex</b> (<code>WEB_SEARCH_RE</code> removed). The decision is made by
+            <b>the AI itself</b> — as a ReAct agent.
+          </li>
+          <li>
+            Two tools: <code>query_crm</code> — a snapshot of our data
+            (deals/clients/managers/AR/pipeline, numbers computed by code);
+            <code>search_web</code> — search on the open internet (suppliers, market, new
+            companies).
+          </li>
+          <li>
+            The agent can <b>combine</b> both tools (e.g. first check the market on the web, then
+            cross-reference our deals) and then give a single answer. The answer's source can now be
+            <b>"CRM," "web," or "CRM + web."</b>
+          </li>
+          <li>
+            PII guard: the outgoing web query is stripped of phone numbers
+            (<code>sanitizeWebQuery</code>), the full CRM snapshot <b>never</b> goes out to the
+            internet — only the public search query does.
+          </li>
+          <li>
+            Architecturally: the agent is built as a loop over instructed JSON
+            (<code>extractJson</code>), without native function-calling — provider-neutral
+            (Claude/OpenAI).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Head of sales assistant</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Who decides "CRM or web"</td>
+                <td class="was">A fragile regex on the question's wording (easy to miss)</td>
+                <td>The AI agent chooses the tool itself based on the meaning of the question</td>
+              </tr>
+              <tr>
+                <td>Combining sources</td>
+                <td class="was">Impossible — strictly one or the other</td>
+                <td>Possible: web + CRM in one answer (source "CRM + web")</td>
+              </tr>
+              <tr>
+                <td>Web query and PII</td>
+                <td class="was">The question text went to search as-is</td>
+                <td>
+                  It's stripped of phone numbers; the AI is instructed not to include internal data
+                </td>
+              </tr>
+              <tr>
+                <td>Answer footer label</td>
+                <td class="was">"Web search" or "CRM snapshot"</td>
+                <td>Added "CRM + web search" for combined answers</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Log in with the <b>Head of sales</b> role and open the <b>"Assistant"</b> section.
+            </li>
+            <li>
+              Ask about our data: <i>"Which deals are stalled with no next step?"</i> → an answer
+              from the CRM snapshot, footer reads "CRM snapshot: N tasks …".
+            </li>
+            <li>
+              Ask about the outside world: <i>"Find new ingredient suppliers"</i> → an answer from
+              web search, footer reads "Web search" + a list of source links.
+            </li>
+            <li>
+              Ask a combined question: <i>"Compare the cocoa market with our active deals"</i> → the
+              agent uses both web and CRM; footer reads "CRM + web search …" and links.
+            </li>
+            <li>
+              Privacy check: even if a phone number slips into the question, it won't make it into
+              the outgoing search query (stripped by the PII guard).
+            </li>
+          </ol>
+          <p class="was">
+            NB: AI answers depend on the provider (on the demo stand — a deterministic stub: a
+            2-step agent that picks a tool by keyword and answers with a summary).
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · assistant → tool agent ReAct (#281)</footer>
+  </body>
+</html>

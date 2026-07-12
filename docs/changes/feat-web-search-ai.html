@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Real web search + AI analysis — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      code {
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.86em;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Real web search + AI analysis of results</h1>
+      <p>
+        The head of sales's assistant now HELPS (analyzes what it found) instead of dumping a raw
+        list of links
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was built (closes #281)</h2>
+        <ul>
+          <li>
+            <b>Real general web search</b> is now connected — the Brave Search API, behind the
+            existing <code>WebSearchGateway</code> port. By default everything stays on a
+            deterministic stub (<code>WEB_SEARCH_MODE=stub</code>).
+          </li>
+          <li>
+            KEY CHANGE: on a web question ("find cocoa suppliers", "who's in the market"), the
+            assistant no longer <b>dumps a raw list of links</b> — what it finds
+            <b>is analyzed by our AI</b> in CRM Pro's business context: what's relevant
+            <b>to us</b> (ingredient distribution) and why, what to check next; sources (URLs) at
+            the end.
+          </li>
+          <li>
+            The AI relies ONLY on the snippets it found — it doesn't invent numbers or facts (a
+            project rule). If the search found nothing, it's an honest "nothing found", and the AI
+            isn't called.
+          </li>
+          <li>
+            The demo stub also produces <b>meaningful text</b> (a brief summary of the results +
+            links), not a single list line.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Web question to the assistant</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Result source</td>
+                <td class="was">Stub only (fixed demo links)</td>
+                <td>
+                  Real Brave Search API when <code>WEB_SEARCH_MODE=live</code>; the stub is the
+                  default
+                </td>
+              </tr>
+              <tr>
+                <td>What the head of sales sees</td>
+                <td class="was">A raw "• Title / snippet" list — figure it out yourself</td>
+                <td>
+                  An AI breakdown: which options are relevant to us and why, what to check next +
+                  sources
+                </td>
+              </tr>
+              <tr>
+                <td>AI layer contract</td>
+                <td class="was">
+                  Only answers from the CRM snapshot (<code>answerManagerQuestion</code>)
+                </td>
+                <td>
+                  New method <code>AiGateway.answerFromWebSearch</code> (analyzes snippets in CRM
+                  Pro's context)
+                </td>
+              </tr>
+              <tr>
+                <td>Empty result</td>
+                <td class="was">"nothing found"</td>
+                <td>"nothing found" (the AI isn't called — nothing to analyze)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify (on the stub, no keys)</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Log in as <b>Alan (head of sales)</b>, open the assistant chat.</li>
+            <li>
+              Ask "<b>find new ingredient suppliers</b>" — the question is recognized as a web
+              search (not a CRM-snapshot query).
+            </li>
+            <li>
+              On the stub, the answer is a <b>brief summary</b>: "Found N sources… key ones: … worth
+              checking relevance to us" + a list of links (not a single list line).
+            </li>
+            <li>
+              Live mode (separately, via env): <code>WEB_SEARCH_MODE=live</code> +
+              <code>WEB_SEARCH_API_KEY</code> + <code>AI_MODE=live</code> — then the search goes to
+              the Brave Search API, and the results are analyzed by our AI in context.
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Note for production (Brave API key)</h2></div>
+        <div class="card__body">
+          <p style="margin: 0">
+            The adapter is resilient: on any failure (missing/invalid key, network issue, malformed
+            response) it silently returns an empty list (the assistant gently says "nothing found");
+            the API key is never written to logs.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · real web search (Brave) + AI analysis (#281)</footer>
+  </body>
+</html>

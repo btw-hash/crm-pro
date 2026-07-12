@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase — accountant section (in_accounting stage)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 820px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 3px solid #f4b400;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      code {
+        background: #f0f0f0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #f4b400;
+        color: #000;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Accountant section — "In accounting" stage</h1>
+    <p>
+      <span class="tag">#215 follow-up</span> &middot; branch <code>feat/accounting-stage</code>
+      &middot; closes the shipment operational loop
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The <code>/accounting</code> page appeared — the accountant's workspace. The
+        <code>accountant</code> role was added earlier (#215), but had no screen of its own.
+      </li>
+      <li>
+        The accountant sees orders at the <code>in_accounting</code> stage (which the manager handed
+        off via the memo), processes ERP documents, and moves the order to the warehouse (<code
+          >in_accounting → in_warehouse</code
+        >).
+      </li>
+      <li>
+        The "🧾 Accounting" nav item is visible to the <code>accountant</code> and head of sales
+        roles.
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <p>
+      <strong>Before:</strong> the shipment chain broke — the manager handed the order to
+      accounting, but there was no one to move it further to the warehouse (the
+      <code>in_accounting</code> stage had no interface).
+    </p>
+    <p>
+      <strong>After:</strong> the accountant processes it and hands it to the warehouse → the order
+      reaches the logistics coordinator → the manager sees the updated status. The loop
+      <code>manager → accountant → warehouse → logistics</code> is closed.
+    </p>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Log in as an accountant (demo role <code>accountant</code>).</li>
+      <li>Open "Accounting" (<code>/accounting</code>) — the list of orders being processed.</li>
+      <li>
+        Click "Processed, to warehouse →" on an order — it leaves the list (status
+        <code>in_warehouse</code>).
+      </li>
+      <li>Under the manager in "My shipments" — that order's status changed to "At warehouse."</li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        TDD: <code>list-accounting-shipments</code> — 5 tests (filter by stage, sorting, status
+        label, move to warehouse, "not found" error).
+      </li>
+      <li><code>npm run verify</code> green.</li>
+      <li>
+        Live (:3003, accountant role): <code>/accounting</code> renders the queue, the transition
+        works.
+      </li>
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · "Comment" field on a deal (#393)</title>
+    <style>
+      body {
+        font:
+          15px/1.6 Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-top: 28px;
+        border-bottom: 2px solid #e6ddd4;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e6ddd4;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 12px 0;
+      }
+      code {
+        background: #f1ece6;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+      ol li {
+        margin: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>"Comment" field on a deal (#393, item 11)</h1>
+      <p>
+        The final item of epic #393. Deals now have a free-text comment — set on creation, edited
+        afterward, visible on the card and side panel.
+      </p>
+
+      <h2>What changed</h2>
+      <div class="card">
+        <ul>
+          <li>
+            A new optional domain field <code>Deal.comment</code> + an additive migration
+            <code>add_deal_comment</code> (nullable TEXT, <code>0_init</code> untouched).
+          </li>
+          <li>The "New deal" form — a "Comment" field (below "Owner").</li>
+          <li>
+            The "Edit deal" form — a "Comment" field with the current value; an empty string clears
+            it.
+          </li>
+          <li>
+            The deal card <code>/deals/[id]</code> and the side panel show the comment if set.
+          </li>
+          <li>
+            Wired through domain → use-cases (create/update) → Prisma repository (read/write).
+          </li>
+        </ul>
+      </div>
+
+      <h2>Reproduction steps</h2>
+      <div class="card">
+        <ol>
+          <li>"Deals" → "New deal": fill in the form + enter a "Comment" → create.</li>
+          <li>Open the deal card → under the stage you'll see a "Comment: …" line.</li>
+          <li>"Edit" → change/clear the comment → "Save" → the value updates.</li>
+          <li>
+            Open the deal via the side panel from the board → the comment is visible above the "Task
+            feed".
+          </li>
+        </ol>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <code>npm run verify</code> green: typecheck + lint + format + <b>846 tests</b> (including
+        new domain cases: trim/clear comment in createDeal and updateDealDetails).
+      </div>
+    </div>
+  </body>
+</html>

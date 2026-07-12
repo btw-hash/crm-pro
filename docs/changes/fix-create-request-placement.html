@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Showcase · "Create request" placement</title>
+    <style>
+      body {
+        font: 15px/1.6 Arial;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h2 {
+        font-size: 18px;
+        border-bottom: 2px solid #e6ddd4;
+        padding-bottom: 6px;
+        margin-top: 26px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e6ddd4;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 12px 0;
+      }
+      .was {
+        color: #9a3b34;
+      }
+      .now {
+        color: #197a48;
+        font-weight: 600;
+      }
+      code {
+        background: #f1ece6;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+      ol li {
+        margin: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Correct placement of the create buttons</h1>
+      <p>
+        #419 mistakenly put "Create request" in the "Processes" header, replacing the historical
+        "Create process". Restored to how it should be.
+      </p>
+      <h2>Before → after</h2>
+      <div class="card">
+        <p>
+          "Processes" header: <span class="was">"Create request" (#419)</span> →
+          <span class="now">"Create process" (NewDealButton, as historically)</span>
+        </p>
+        <p>
+          Sidebar (shared menu, top): <span class="was">no button (removed by #298)</span> →
+          <span class="now"
+            >"Create request" (3 modes), as the historical create button in the menu</span
+          >
+        </p>
+      </div>
+      <h2>Details</h2>
+      <div class="card">
+        <ul>
+          <li>
+            "Create request" (process/shipment/add-on request) is now a full-width button at the top
+            of the sidebar, <b>only in the expanded panel</b>, for <b>Head of sales and Manager</b>.
+          </li>
+          <li>
+            "Create process" is back in the "Processes" page header (opens the process-creation
+            modal, as before; the "create from client card" flow is preserved).
+          </li>
+          <li>
+            The request modal's data is fetched in the (server) layout and passed to the client
+            sidebar as a slot — so the sidebar doesn't pull in a server-only chain.
+          </li>
+        </ul>
+      </div>
+      <h2>Verification</h2>
+      <div class="card">
+        <code>npm run verify</code> green (900 tests) + production build. Verified headed, logged
+        in, after deploy.
+      </div>
+    </div>
+  </body>
+</html>

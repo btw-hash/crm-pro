@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Deletion history (soft-delete, #397 item 23)</title>
+    <style>
+      body {
+        font:
+          15px/1.6 Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 23px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-top: 28px;
+        border-bottom: 2px solid #e6ddd4;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e6ddd4;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 12px 0;
+      }
+      code {
+        background: #f1ece6;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+      ol li {
+        margin: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>End-to-end history, including deletions (#397 item 23)</h1>
+      <p>
+        Wraps up epic #397. Verified that key actions are recorded in history, and closed the one
+        remaining gap — deletions.
+      </p>
+
+      <h2>What was already in history (verified)</h2>
+      <div class="card">
+        <ul>
+          <li>
+            <b>Completed stages</b> — a <code>stage_changed</code> /
+            <code>stage_reverted</code> event on every transition.
+          </li>
+          <li><b>Proposal</b> — "Save to process" writes an entry to the "Task feed".</li>
+          <li>
+            Audit, samples, test act, deal outcome, ERP order — each has its own event type (8
+            types).
+          </li>
+        </ul>
+      </div>
+
+      <h2>What changed — deletions now have history</h2>
+      <div class="card">
+        <ul>
+          <li>
+            <b>Soft delete:</b> "Delete process" no longer erases the record — it sets a
+            <code>deletedAt</code> marker. The process disappears from the board/lists/analytics,
+            but the process itself and all of its history (events/activities) are preserved.
+          </li>
+          <li>
+            A new <code>deal_deleted</code> event ("Process deleted") — who deleted it and when.
+          </li>
+          <li>
+            A side-effect bug fix: previously a process <i>with history</i> couldn't be deleted at
+            all (an FK error on child events). Now deletion always goes through.
+          </li>
+          <li>
+            An additive migration <code>add_deal_deleted_at</code> (nullable TEXT,
+            <code>0_init</code> untouched).
+          </li>
+        </ul>
+      </div>
+
+      <h2>Repro steps</h2>
+      <div class="card">
+        <ol>
+          <li>Open a process (with activities/events) → "Edit" → "Delete process".</li>
+          <li>
+            The process disappears from the board and lists, and you're redirected to "Processes".
+          </li>
+          <li>
+            The DB record is preserved with <code>deletedAt</code>; history shows a "Process
+            deleted" event.
+          </li>
+        </ol>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <code>npm run verify</code> is green (typecheck + lint + format + <b>881 tests</b>,
+        including the soft-delete domain and the updated delete-deal use case). Local Postgres smoke
+        test (migrate deploy + clean drift + seed + smoke 12/12) — cloud CI is temporarily
+        unavailable (Actions billing).
+      </div>
+    </div>
+  </body>
+</html>

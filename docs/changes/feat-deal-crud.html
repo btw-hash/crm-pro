@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — change showcase · Deal CRUD</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        flex: 1;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      .ba {
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+      .ba h3 {
+        margin: 0 0 0.25rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ba p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .ba--was {
+        background: #f6f8fa;
+      }
+      .ba--was h3 {
+        color: var(--muted);
+      }
+      .ba--now {
+        background: #eef9f0;
+      }
+      .ba--now h3 {
+        color: #1f8a4c;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.45rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Deal CRUD: create / edit / delete</h1>
+      <p>
+        Branch <span class="tag">feat/deal-crud</span> · 298 tests green · typecheck + lint + format
+        clean
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            <b>Creating a deal</b> — a "+ New deal" button on <span class="kbd">/deals</span>
+            (available to sales reps and the head of sales). Opens an in-app modal: client, name,
+            goal, owner (defaults to the current user). The deal appears in the pipeline at the
+            "Qualification" stage.
+          </li>
+          <li>
+            <b>Editing</b> — an "Edit" button on the deal page <span class="kbd">/deals/[id]</span>.
+            Opens an in-app modal with prefilled fields. Available to the owning sales rep and the
+            head of sales.
+          </li>
+          <li>
+            <b>Deletion</b> — a "Delete deal" button on the same page → an in-app confirmation modal
+            with the deal's name → a redirect to <span class="kbd">/deals</span> after deletion.
+            Available to the owning sales rep and the head of sales.
+          </li>
+          <li>
+            Clients cannot be created/edited — only selected from existing ones (the ERP owns
+            clients).
+          </li>
+          <li>Stage is not changed through CRUD — it's managed by the kanban board.</li>
+          <li>
+            Clean architecture is respected: the domain has no next/react/infra, dependencies point
+            inward. <b>298 tests green</b> (+25 new: domain × 14, use-cases × 11).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Before → after</h2>
+        </div>
+        <div class="card__body">
+          <div class="ba ba--was">
+            <h3>Before</h3>
+            <p>
+              Deals came only from the seed — none could be created, renamed, or deleted through the
+              UI. Data was frozen at launch.
+            </p>
+          </div>
+          <div class="ba ba--now">
+            <h3>After</h3>
+            <p>
+              A sales rep or the head of sales creates deals right from the pipeline. The owning
+              sales rep and the head of sales edit the name, client, goal, owner — and delete the
+              deal with confirmation. All operations go through in-app modals, no browser
+              prompt/confirm.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Repro steps</h2>
+        </div>
+        <div class="card__body">
+          <p><b>Scenario 1 — creating a deal</b></p>
+          <ol class="steps">
+            <li>
+              Start: <span class="kbd">npm run dev</span> → open
+              <span class="kbd">http://localhost:3000/deals</span>.
+            </li>
+            <li>
+              Confirm you're logged in as a sales rep (default — Owens). The
+              <b>"+ New deal"</b> button sits next to the "Deals" heading.
+            </li>
+            <li>Click "+ New deal" → an in-app modal opens (not a browser popup).</li>
+            <li>
+              Pick a client, enter the name "CRUD Test", pick the goal "Launch new SKU", owner — the
+              current user (default).
+            </li>
+            <li>Click "Create deal" → the modal closed.</li>
+            <li>The new "CRUD Test" card appears in the <b>"Qualification"</b> pipeline column.</li>
+          </ol>
+
+          <p style="margin-top: 1.4rem"><b>Scenario 2 — editing a deal</b></p>
+          <ol class="steps">
+            <li>Open the just-created "CRUD Test" deal (click the card's name).</li>
+            <li>
+              Click the <b>"Edit"</b> button under the heading → an in-app modal opens with
+              prefilled fields.
+            </li>
+            <li>Change the name to "CRUD Test — renamed".</li>
+            <li>Click "Save" → the modal closed, the page heading updated.</li>
+            <li>Return to <span class="kbd">/deals</span> — the card shows the new name.</li>
+          </ol>
+
+          <p style="margin-top: 1.4rem"><b>Scenario 3 — deleting a deal</b></p>
+          <ol class="steps">
+            <li>Open the "CRUD Test — renamed" deal.</li>
+            <li>
+              Click the <b>"Delete deal"</b> button → a confirmation modal appears with the deal's
+              name.
+            </li>
+            <li>
+              Confirm the text: "Delete deal 'CRUD Test — renamed'? This action is irreversible."
+            </li>
+            <li>Click "Delete" → a redirect to <span class="kbd">/deals</span>.</li>
+            <li>The "CRUD Test — renamed" card is gone from the pipeline.</li>
+          </ol>
+
+          <p class="note">
+            RBAC: a technologist or a procurement officer doesn't see the "+ New deal", "Edit",
+            "Delete" buttons. Log in as a technologist:
+            <span class="kbd">username=kent, password=demo1234</span>.
+          </p>
+          <p class="note">
+            Edge case: deleting someone else's deal (sales rep Owens → Grant's deal) — the buttons
+            don't show, and the server action also checks ownership.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>CRM Pro · change showcase · feat/deal-crud</footer>
+  </body>
+</html>

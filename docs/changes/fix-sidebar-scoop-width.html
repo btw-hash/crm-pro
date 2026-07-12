@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — fix/sidebar-scoop-width</title>
+    <style>
+      body {
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #1c1f27;
+        max-width: 760px;
+        margin: 32px auto;
+        padding: 0 18px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 17px;
+        margin-top: 28px;
+      }
+      .pill {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 12px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        border: 1px solid #e3ded8;
+        padding: 7px 10px;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background: #f8f3ef;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      code {
+        background: #f8f3ef;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><span class="pill">fix(ui)</span> Narrowing the active-item scoop cut-out on the rail</h1>
+
+    <h2>What changed</h2>
+    <p>
+      On the collapsed rail, the cream "scoop" cut-out (cove) around the active icon was noticeably
+      wider than the reference design: it went 40px deep at a rail width of 78px (eating up half of
+      it) and stretched 140px tall (~2.3 rows). Brought back in line with the reference — a thin,
+      neat cove.
+    </p>
+    <p>
+      There was no regression: the cut-out's geometry has been unchanged since the rail's first
+      commit (<code>ac8f064</code>, June 27) — the implementation was simply built wider than the
+      reference from the start.
+    </p>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Layer</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Cut-out (SVG scoop)</td>
+        <td>46×140, 40px deep</td>
+        <td>34×92, 22px deep</td>
+      </tr>
+      <tr>
+        <td>Active-item disc</td>
+        <td>56px, 28px protrusion</td>
+        <td>50px, 22px protrusion</td>
+      </tr>
+      <tr>
+        <td>Glyph (icon on the disc)</td>
+        <td>24px</td>
+        <td>22px</td>
+      </tr>
+    </table>
+    <p>
+      All three layers were recalculated consistently (<code>shift()</code> for the new sizes),
+      vertical centering on the row is preserved.
+    </p>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Open the app under any role → navigate to "Home" (<code>/</code>).</li>
+      <li>Collapse the side menu into the rail (hamburger icon at the top of the sidebar).</li>
+      <li>
+        See the active item "Home": the dark disc with the house icon in a
+        <b>thin</b> cream cove at the rail's right edge — no wide white "blob".
+      </li>
+      <li>
+        Navigate to another section from the rail → the cove and disc smoothly travel to the new
+        item, the cut-out stays just as thin.
+      </li>
+    </ol>
+  </body>
+</html>

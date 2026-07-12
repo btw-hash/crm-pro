@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Command palette (Ctrl+K) — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Command palette — search and navigation with Ctrl+K</h1>
+      <p>Find a client, deal, or product in a second from any screen</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done</h2>
+        <ul>
+          <li>
+            <span class="kbd">Ctrl+K</span> (or <span class="kbd">⌘K</span>) opens the palette from
+            anywhere; there's a <b>🔍 Search</b> trigger button in the header.
+          </li>
+          <li>
+            Fuzzy search across <b>clients</b>, <b>deals</b>, and the <b>catalog</b> + navigation
+            commands (Go to: Clients / Deals / Analytics / Catalog).
+          </li>
+          <li>
+            Keyboard: <span class="kbd">↑↓</span> to select, <span class="kbd">↵</span> to open,
+            <span class="kbd">esc</span> to close.
+          </li>
+          <li>
+            Search respects permissions (RBAC via a server action): a manager can't find another
+            manager's portfolio.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Why (vs legacy CRMs)</h2></div>
+        <div class="card__body">
+          In a legacy CRM, finding the right client/deal means digging through menus and a slow
+          search. Here — press Ctrl+K, type a couple of letters, Enter — you're there. A hallmark of
+          a modern tool (Linear, Notion, Figma, Attio).
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              On any screen, press <span class="kbd">Ctrl+K</span> (or the "Search" button in the
+              header).
+            </li>
+            <li>
+              Type part of a name — e.g. "baker" → a list of clients; "glaze" → deals/products.
+            </li>
+            <li>Use the arrows to select, <span class="kbd">Enter</span> — go to the record.</li>
+            <li>An empty query shows navigation commands for the sections.</li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · command palette Ctrl+K (#154)</footer>
+  </body>
+</html>

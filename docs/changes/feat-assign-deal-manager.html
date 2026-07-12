@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Head of sales reassigns a deal to a manager — showcase #210</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Head of sales reassigns a deal to a manager</h1>
+      <p>#210 · "↪ Reassign" on the kanban board + notification to the recipient</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            The head of sales sees a <b>↪ Reassign</b> button on every kanban card — it opens a mini
+            popover with a manager picker.
+          </li>
+          <li>
+            On reassignment — a <b>notification</b> to the new owner: "The head of sales reassigned
+            a deal to you…" (in the notifications feed, the bell in the header).
+          </li>
+          <li>
+            RBAC: the button is shown only to the <b>head</b> role. The manager and technologist
+            don't see it. The server action duplicates the role check (a direct POST bypassing the
+            UI doesn't get around it).
+          </li>
+          <li>No-op if the owner is already the same — a duplicate notification isn't created.</li>
+          <li>New use case <span class="kbd">assignDealManager</span> covered by 5 tests (TDD).</li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th></th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>Reassigning a deal</td>
+              <td>Only via inline-edit "Owner" in the card (a manager — only their own)</td>
+              <td>"↪ Reassign" button right on the kanban card (head of sales only)</td>
+            </tr>
+            <tr>
+              <td>Notification to the recipient</td>
+              <td>Wasn't created when the owner changed</td>
+              <td>Automatic on reassignment via the new use case</td>
+            </tr>
+            <tr>
+              <td>RBAC</td>
+              <td>The owner inline-select is available to anyone (who has access to the deal)</td>
+              <td>The "Reassign" button — head of sales only; the server action checks the role</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Repro steps (dev :3042)</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open <span class="kbd">http://localhost:3042/deals</span>.</li>
+            <li>
+              Make sure you're logged in as <b>Alan Peterson (Head of sales)</b> — the line under
+              the header reads "User: Alan Peterson · Head of sales."
+            </li>
+            <li>
+              On any kanban card, click <span class="kbd">↪ Reassign</span> — a popover with a
+              manager dropdown appears.
+            </li>
+            <li>Select another manager (e.g. "Peters"), click "Reassign."</li>
+            <li>
+              Confirm: the manager's name on the card changed (no optimistic relabeling — a reload
+              is needed, since the name lives in server-rendered data; the owning manager updates
+              after revalidatePath).
+            </li>
+            <li>
+              Log in as Peters (<span class="kbd">/login</span> → select Manager → Peters). An
+              unread notification "The head of sales reassigned a deal to you…" should appear in the
+              bell.
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Changed files</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>File</th>
+              <th>Purpose</th>
+            </tr>
+            <tr>
+              <td><span class="kbd">src/application/use-cases/assign-deal-manager.ts</span></td>
+              <td>New use case: RBAC check + owner change + notification</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="kbd">src/application/use-cases/assign-deal-manager.test.ts</span>
+              </td>
+              <td>5 TDD tests: change, notification, RBAC rejection, deal not found, no-op</td>
+            </tr>
+            <tr>
+              <td><span class="kbd">src/infrastructure/composition-root.ts</span> ⚠ hot</td>
+              <td>Registers assignDealManager in the container</td>
+            </tr>
+            <tr>
+              <td><span class="kbd">src/app/deals/actions.ts</span></td>
+              <td>Server action assignManagerAction (RBAC + revalidatePath)</td>
+            </tr>
+            <tr>
+              <td><span class="kbd">src/app/deals/_components/deals-kanban.tsx</span></td>
+              <td>New props canAssign/managers, passed into QuickActions</td>
+            </tr>
+            <tr>
+              <td><span class="kbd">src/app/deals/_components/quick-actions.tsx</span></td>
+              <td>"↪ Reassign" button + popover with manager select</td>
+            </tr>
+            <tr>
+              <td><span class="kbd">src/app/deals/page.tsx</span></td>
+              <td>Passes canAssign and managerOptions into DealsKanban</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+    </div>
+    <footer>feat/assign-deal-manager · #210 · 2026-06-26</footer>
+  </body>
+</html>

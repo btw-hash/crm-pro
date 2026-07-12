@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#308 · Catalog → SKU reference table — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ul,
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Catalog → compact SKU reference table</h1>
+      <p>Issue #308 · branch <code>feat/catalog-sku-table</code></p>
+    </header>
+
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            The catalog was reworked from an "online store" look (3-column cards + cart + a "Place
+            order" modal) into a <b>compact SKU reference table</b> — a working tool for the
+            manager, not a storefront.
+          </li>
+          <li>
+            Columns:
+            <b>SKU · name · category · stock · price · expiration · pack size · actions</b>. Margin
+            in the price column — only for commercial roles (<code>showMargin</code>).
+          </li>
+          <li>
+            <b>Search</b> by name/SKU + two rows of <b>filters</b>: by category and by stock status
+            (in stock / low / on order).
+          </li>
+          <li>The cart and order placement were <b>removed entirely</b>.</li>
+          <li>
+            "Copy for proposal" was <b>kept</b>: row checkboxes → a "Selected: N items" panel → a
+            "Copy selected for proposal" button (a list of name+SKU+price to the clipboard). The
+            selection survives a filter change — a proposal can be assembled across different
+            categories.
+          </li>
+          <li>
+            "Schedule client pitch" (launching a new SKU) and "Copy for client" (pitch) were kept as
+            row actions.
+          </li>
+          <li>
+            Price and stock — from the Mock ERP (numbers are deterministic, AI doesn't touch them).
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Before → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <ul>
+              <li>A 3-column grid of product cards with a large price and an AI block.</li>
+              <li>An "Add to cart" button, cart counter, a cart modal with +/− quantity.</li>
+              <li>A "Place order" button in the modal (storefront shop logic).</li>
+              <li>One row of filters — categories only.</li>
+            </ul>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <ul>
+              <li>A dense table: one row = one SKU, many items visible at once.</li>
+              <li>Row checkboxes + a batch "Copy for proposal" panel.</li>
+              <li>No cart and no "Place order" — this is a reference tool.</li>
+              <li>Two filters — category and stock status; search by name/SKU.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>
+            Open <code>/products</code> under a commercial role (on localhost — Head of sales).
+          </li>
+          <li>
+            You'll see the SKU table with SKU/stock/price/expiration/pack size columns and
+            stock-status badges.
+          </li>
+          <li>Type "vanilla" (or a SKU) into search → the table narrows to matches.</li>
+          <li>
+            Click a category chip (e.g. "Chocolate") and a status chip ("On order") → rows filter by
+            both conditions.
+          </li>
+          <li>Check the boxes on a few rows → "Selected: N items" appears at the top.</li>
+          <li>
+            Click "Copy selected for proposal" → the clipboard gets a list like
+            <code>• Product name (SKU) — $X / kg</code>; the button shows "Copied ✓".
+          </li>
+          <li>Confirm there's no "Cart" or "Place order" button anywhere.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Verification</h2>
+        <ul>
+          <li><code>npm run verify</code> — green (typecheck + lint + format + 694 tests).</li>
+          <li>
+            10 new tests for the <code>product-catalog.test.tsx</code> component (table, filters,
+            checkboxes, proposal copy, no cart).
+          </li>
+          <li>
+            Browser/HTTP: <code>/products</code> → 200, real SKUs render from the Mock ERP
+            (Belcolade/Miroir/margarine), stock badges 5 in stock / 2 low / 2 on order, no cart or
+            "Place order" markup.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

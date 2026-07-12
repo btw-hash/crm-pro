@@ -1,0 +1,101 @@
+# Production composition: the app + Caddy (reverse proxy with auto-HTTPS).
+# Run it: docker compose up -d --build
+# Secrets come from a .env file (DO NOT commit it) or a secrets manager.
+# In a production environment handling personal data, prefer delivering secrets via
+# docker secrets / a cloud secrets manager (file-based *_FILE secrets) rather than
+# environment variables (visible via `docker inspect`).
+
+services:
+  app:
+    build: .
+    image: crm-pro:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      ERP_MODE: ${ERP_MODE:-stub}
+      ERP_BASE_URL: ${ERP_BASE_URL:-}
+      ERP_USERNAME: ${ERP_USERNAME:-}
+      ERP_PASSWORD: ${ERP_PASSWORD:-}
+      AI_MODE: ${AI_MODE:-stub}
+      AI_PROVIDER: ${AI_PROVIDER:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    # Hardening (safe defaults):
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Extra hardening — ENABLE AND TEST on the first deploy:
+    # cap_drop: ["ALL"]            # the app doesn't need any Linux capabilities
+    # read_only: true              # immutable filesystem
+    # tmpfs: ["/tmp", "/app/.next/cache"]  # writable paths for Next standalone
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # cap_drop: ["ALL"]
+    # cap_add: ["NET_BIND_SERVICE"]   # needed for ports 80/443
+
+  # --- LOCAL DEV: PostgreSQL for PERSISTENCE_MODE=postgres ---
+  # For production with personal data, prefer a managed PostgreSQL service (with
+  # backups/HA) over a self-managed container.
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-crmpro}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-crmpro}
+      POSTGRES_DB: ${POSTGRES_DB:-crmpro}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-crmpro} -d ${POSTGRES_DB:-crmpro}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db_data:

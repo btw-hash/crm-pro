@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Saved Views — pipeline filter tabs — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      .tabs {
+        display: flex;
+        gap: 0.3rem;
+        border-bottom: 1px solid var(--border);
+        margin: 0.4rem 0 0.2rem;
+      }
+      .tab {
+        padding: 0.4rem 0.75rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+      }
+      .tab b {
+        font-size: 0.72rem;
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 0.02rem 0.4rem;
+        margin-left: 0.35rem;
+        font-weight: 400;
+      }
+      .tab--active {
+        color: var(--accent-strong);
+        border-bottom-color: var(--accent);
+        font-weight: 600;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Saved Views — filter tabs above the pipeline</h1>
+      <p>
+        One click for the right slice of deals · the view is saved both in the URL and across
+        sessions
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was built</h2>
+        <ul>
+          <li>
+            A row of view tabs with counters now sits above the pipeline board:
+            <div class="tabs">
+              <span class="tab tab--active">All<b>5</b></span>
+              <span class="tab">My active<b>4</b></span>
+              <span class="tab">No next step<b>3</b></span>
+              <span class="tab">Critical<b>1</b></span>
+            </div>
+          </li>
+          <li>
+            Clicking a tab instantly filters the board; the active view is highlighted, with a
+            counter shown.
+          </li>
+          <li>
+            The view is remembered: in the URL (<span class="kbd">?view=critical</span> — can be
+            shared) and in the browser across sessions.
+          </li>
+          <li>"Critical" is tied to the Score Pill (#153), "My active" is my own open deals.</li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>What each view shows</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>View</th>
+              <th>What's in it</th>
+            </tr>
+            <tr>
+              <td>All</td>
+              <td>all deals visible to you</td>
+            </tr>
+            <tr>
+              <td>My active</td>
+              <td>assigned to you and not closed (not Won/Lost)</td>
+            </tr>
+            <tr>
+              <td>No next step</td>
+              <td>deals with no planned next step — "easy to lose track of"</td>
+            </tr>
+            <tr>
+              <td>Critical</td>
+              <td>red by Score Pill: stuck ≥14 days or long overdue on a next step</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Why (vs a legacy CRM)</h2></div>
+        <div class="card__body">
+          The head of sales can answer "where is the team stuck" in one click — "No next step" or
+          "Critical". In a legacy CRM this has to be rebuilt with a filter every time. Comparable
+          patterns: Pipedrive Filters, HubSpot Views, Linear views.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open "Deals" — 4 tabs with counters are visible above the board.</li>
+            <li>
+              Click "Critical" → only red deals remain on the board; the URL becomes ?view=critical.
+            </li>
+            <li>Refresh the page / open in a new tab — the selected view persists.</li>
+            <li>Views combine with the "Goal" filter — you can narrow it further.</li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · Saved Views (#155)</footer>
+  </body>
+</html>

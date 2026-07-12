@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#298 Remove the "Create task" button from the sidebar — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#298 · Remove the "Create task" button from the sidebar</h1>
+      <p>
+        The duplicate create button was removed from the global menu — creation now lives only on
+        the Tasks screen.
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>What changed</h2>
+        <p>
+          The "+ Create task" button was duplicated: in the sidebar (globally) and on the
+          <code>/deals</code> screen itself. It's not needed in the global menu — removed. Creating
+          a task still works as before, via the button on the Tasks screen
+          (<code>NewDealButton</code>, role-gated).
+        </p>
+      </div>
+      <div class="card">
+        <h2>Before → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>
+              At the top of the expanded sidebar — a large "+ Create task" button linking to
+              <code>/deals</code>. The same button also exists on the Tasks screen itself.
+            </p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>The sidebar has no button. Creation only happens on the Tasks screen.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open the app as Sales Rep or Head of Sales (both can see creation).</li>
+          <li>Expand the sidebar → confirm there's NO "+ Create task" button at the top.</li>
+          <li>
+            Go to the "Tasks" section → the create button is there, the modal opens, the task is
+            created.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — revived filters on "Clients" (#301)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+      .pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .pill-on {
+        background: #1c1f27;
+        color: #fff;
+      }
+      .pill-off {
+        background: #fff;
+        color: #16181d;
+        border: 1px solid #e8e1d9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Revived the filters on the "Clients" page</h1>
+    <p>
+      <span class="tag">fix(clients)</span> &middot; closes <code>#301</code> &middot; branch
+      <code>fix/clients-filters</code>
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The <strong>All / Key / Debtors / New</strong> pills on <code>/clients</code> showed
+        counters, but clicking them <strong>did nothing</strong> — there was no state, no handlers,
+        no URL parameter. On a demo this stands out immediately (dead buttons).
+      </li>
+      <li>
+        This is now a working <strong>server-side filter through the URL</strong>
+        <code>?filter=</code>: clicking a pill reloads the list already filtered (SSR), the active
+        pill is visually highlighted, and the link can be <strong>copied and shared</strong> — it
+        opens to the same slice.
+      </li>
+      <li>
+        Filtering reuses <strong>exactly the same predicates</strong> used to compute the counters
+        ("high" priority = <em>Key</em>, credit limit exceeded = <em>Debtors</em>, no deals =
+        <em>New</em>) — a pill's counter always equals the number of rows it shows.
+      </li>
+      <li>
+        The predicates were pulled out into a pure domain module
+        <code>src/domain/client/client-filter.ts</code> — the same filter will go on the operational
+        screens too (a shared filter, <code>#321</code>).
+      </li>
+      <li>The warm theme of the pills (classes, colors, shape) is untouched.</li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Clicking the "Debtors" pill</td>
+        <td class="was">Nothing happens — the list doesn't change</td>
+        <td class="now">Only debtors remain in the list (credit limit exceeded)</td>
+      </tr>
+      <tr>
+        <td>"Key" / "New" / "All" pills</td>
+        <td class="was">Dead — just a counter number</td>
+        <td class="now">Filter: key accounts (A) / no deals / the whole list</td>
+      </tr>
+      <tr>
+        <td>Active pill</td>
+        <td class="was">"All" always highlighted, even without filtering</td>
+        <td class="now">
+          The selected one is highlighted
+          <span class="pill pill-on">Debtors</span>
+          <span class="pill pill-off">All</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Direct link <code>/clients?filter=debtors</code></td>
+        <td class="was">Opened the full list (parameter ignored)</td>
+        <td class="now">Opens the already-filtered debtor list</td>
+      </tr>
+      <tr>
+        <td>Pill counter vs. results</td>
+        <td>Counter was computed separately from the (missing) filtering</td>
+        <td class="now">One source of truth — counter = number of rows returned</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li><code>npm run dev</code>, log in as Head of sales (balances/debtors visible).</li>
+      <li>Open <strong>Clients</strong> (<code>/clients</code>).</li>
+      <li>
+        Click the <strong>"Debtors"</strong> pill → the list keeps only clients over their credit
+        limit; the "Debtors" pill is highlighted dark.
+      </li>
+      <li>
+        Check <strong>"Key"</strong> (only "high" priority), <strong>"New"</strong> (only clients
+        with no deals), <strong>"All"</strong> (full list).
+      </li>
+      <li>
+        Copy the address <code>/clients?filter=debtors</code> into a new tab → the list is
+        <strong>immediately</strong> filtered (the slice is shareable via link).
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        Unit tests on the filter predicates (<code>client-filter.test.ts</code>) and on the page
+        returning a filtered set by parameter (<code>client-list-filter.test.ts</code>): all / key /
+        debtors / new, preserving the original index, counter = length of the results.
+      </li>
+      <li><code>npm run verify</code> <span class="ok">green</span> (118 files, 663 tests).</li>
+      <li>
+        Didn't run a browser check in the worktree (isolated branch) — the behavior is covered by
+        unit tests; visual verification on the stand after merge.
+      </li>
+    </ul>
+
+    <p>
+      <strong>Follow-up:</strong> reuse the predicates on the operational screens — a shared filter,
+      <code>#321</code>.
+    </p>
+  </body>
+</html>

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase &middot; Color accuracy fixes (fix/ui-color-accuracy)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --success: #1f9e6c;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 26px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+        box-shadow: 0 6px 18px rgba(45, 38, 32, 0.06);
+      }
+      .card h2 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+      .ba {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin: 8px 0 4px;
+      }
+      .chip {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 12px;
+        background: #fff;
+        font-size: 13px;
+      }
+      .chip b {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .was {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .now {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .now-green {
+        color: var(--success);
+        font-weight: 600;
+      }
+      code {
+        background: #f0ece5;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      li {
+        margin: 3px 0;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>UI color inaccuracies</h1>
+      <p class="sub">
+        branch <code>fix/ui-color-accuracy</code> &middot; CRM Pro's warm UI theme &middot; from a
+        client signal + a color audit (6 agents)
+      </p>
+
+      <div class="card">
+        <h2>1. Card titles on the "Tasks" board — were red</h2>
+        <p>
+          All deal card titles (kanban and completed) were colored accent-red, even though titles
+          are dark throughout the theme (like "Deal" in the drawer, tiles, login).
+        </p>
+        <div class="ba">
+          <span class="chip"
+            ><b>Before</b> <span class="was">Collect receivables and a new shipment</span></span
+          >
+          <span class="chip"
+            ><b>After</b> <span class="now">Collect receivables and a new shipment</span></span
+          >
+        </div>
+        <p class="note">
+          <code>button.kanban__card-title</code>: <code>color: var(--accent-strong)</code> →
+          <code>var(--fg)</code>. The hover underline (clickability) is preserved.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>2. Catalog: "Task created" text — raw CSS green</h2>
+        <p>
+          The success message for launching a new SKU used the CSS keyword
+          <code>green</code> (#008000) instead of the success token.
+        </p>
+        <div class="ba">
+          <span class="chip"
+            ><b>Before</b>
+            <span style="color: #008000; font-weight: 600">Task created — open</span></span
+          >
+          <span class="chip"><b>After</b> <span class="now-green">Task created — open</span></span>
+        </div>
+        <p class="note">
+          <code>launch-sku-button.tsx</code>: <code>color: "green"</code> →
+          <code>var(--success)</code> (as everywhere else in the catalog).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>3. Delete modal: "This action is irreversible." — an out-of-place gray</h2>
+        <p>
+          The caption was colored with a one-off cold <code>#828c99</code>, not used anywhere else.
+        </p>
+        <div class="ba">
+          <span class="chip"
+            ><b>Before</b>
+            <span style="color: #828c99; font-weight: 600">This action is irreversible.</span></span
+          >
+          <span class="chip"
+            ><b>After</b>
+            <span style="color: #6e6a66; font-weight: 600">This action is irreversible.</span></span
+          >
+        </div>
+        <p class="note">
+          <code>deal-crud-controls.tsx</code>: <code>#828c99</code> → <code>var(--muted)</code>.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open <code>/deals</code> ("Tasks") in any role → card titles are dark, not red.</li>
+          <li>
+            <code>/products</code> → "Launch new SKU" → the "Task created" message — green via the
+            success token.
+          </li>
+          <li>
+            <code>/deals/[id]</code> → delete a task → the "This action is irreversible." text — a
+            warm muted gray.
+          </li>
+        </ol>
+        <p class="note" style="margin-top: 12px">
+          The color audit confirmed the rest of the palette is disciplined. The systemic "cold gray
+          <code>#9a9ea8</code> instead of the warm <code>--muted</code>" (150+ places) is a
+          consistent pattern from a 1:1 prototype rollout, a separate tokenization debt; left
+          untouched here. Dead rules <code>.assistant__who</code>/<code>.chip--alert</code> (red,
+          but unused anywhere) are left for a separate cleanup.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

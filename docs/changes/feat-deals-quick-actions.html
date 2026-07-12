@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quick actions on card hover — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      table.ba {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.3rem;
+      }
+      table.ba th,
+      table.ba td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      table.ba th {
+        background: #fafcfe;
+        width: 7rem;
+      }
+      .was {
+        color: #b04141;
+      }
+      .now {
+        color: #1f8a4c;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Quick actions on a pipeline card — log a call in one field</h1>
+      <p>Log an activity and set the next step right from the board, without opening the deal</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            Hovering a deal card reveals quick actions:
+            <b>+ Activity</b>, <b>⏭ Next step</b>, <b>⇄ Change stage</b>.
+          </li>
+          <li>
+            <b>Activity</b> opens a mini popover: a type pill (<b>Call / Visit / Note</b>), one
+            <b>"What happened?"</b> field, and a date (defaults to today).
+            <span class="kbd">↵ Enter</span> saves, <span class="kbd">esc</span> closes.
+          </li>
+          <li>
+            <b>Next step</b> — the same popover, but it writes a task with a due date (this is the
+            deal's "next step").
+          </li>
+          <li>
+            <b>Change stage</b> expands the already-existing transition/revert buttons (the
+            transition logic isn't duplicated).
+          </li>
+          <li>
+            The entry appears in the deal's feed right away, <b>with its author and time</b>.
+            Respects the owner boundary: a sales rep can only log against their own deals (the same
+            check as a stage transition).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after (logging a call)</h2></div>
+        <div class="card__body">
+          <table class="ba">
+            <tr>
+              <th>Before</th>
+              <td class="was">
+                Open the deal card → the "Activities" tab → the "Add manually" form → pick a type →
+                enter text → Save → return to the board.
+                <b>4+ clicks and leaving the page.</b>
+              </td>
+            </tr>
+            <tr>
+              <th>After</th>
+              <td class="now">
+                Hover the card → <b>+ Activity</b> → type the text → <span class="kbd">Enter</span>.
+                <b>Hover + 1 click + Enter, without leaving the board.</b>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Why (vs legacy CRMs)</h2></div>
+        <div class="card__body">
+          Logging a call is a manager's single most frequent action. In a legacy CRM it's a form on
+          the deal's page with back-and-forth navigation. Here logging it takes seconds right on the
+          board — a win in speed and click count (Close CRM call notes, Pipedrive quick actions).
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open <b>Deals</b> (<span class="kbd">/deals</span>).</li>
+            <li>Hover over any card — quick actions appear at the bottom.</li>
+            <li>
+              Click <b>+ Activity</b> → pick a type (defaults to "Call") → write "What happened?" →
+              <span class="kbd">Enter</span>. A <b>"Logged ✓"</b> mark appears.
+            </li>
+            <li>
+              Open that deal → the <b>"Activities"</b> tab — the new entry is at the top of the feed
+              with your name and time.
+            </li>
+            <li>
+              Check <b>⏭ Next step</b>: the same popover sets a task with a due date; the "no next
+              step" mark disappears from the card.
+            </li>
+            <li>
+              <b>⇄ Change stage</b> expands the transition buttons (→ / ↩) — the stage changes
+              optimistically, same as with drag-and-drop.
+            </li>
+            <li>
+              Edge cases: empty text isn't saved (a hint says "Describe what happened.");
+              <span class="kbd">esc</span> closes the popover without logging anything.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>
+      Change showcase · docs/changes · quick actions + one-field activity logging (#157)
+    </footer>
+  </body>
+</html>

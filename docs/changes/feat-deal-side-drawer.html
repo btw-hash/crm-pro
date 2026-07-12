@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Side drawer for the deal card — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table.ba {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table.ba th,
+      table.ba td {
+        text-align: left;
+        vertical-align: top;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+      }
+      table.ba th {
+        width: 9rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .was {
+        color: var(--no);
+      }
+      .now {
+        color: var(--ok);
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Side drawer — the deal card as a right-hand panel</h1>
+      <p>Clicking a deal opens it in a slide-out panel; the list stays visible on the left</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed (#156, demo UX TASK-4)</h2>
+        <ul>
+          <li>
+            Clicking a deal's name in the pipeline opens it in a <b>right-hand panel (drawer)</b> —
+            <b>with no navigation to a separate page</b>, the board stays visible on the left.
+          </li>
+          <li>
+            <b>Deep link / URL:</b> the open card is reflected in the address (<span class="kbd"
+              >/deals?deal=&lt;id&gt;</span
+            >) — the link can be shared, or the page reloaded, and the drawer opens on its own.
+          </li>
+          <li>
+            Closing via <span class="kbd">Esc</span> and by <b>clicking outside the panel</b> — the
+            URL returns to the list (other filters, e.g. <span class="kbd">?view=</span>, are
+            preserved).
+          </li>
+          <li>
+            Inside — the <b>Score Pill</b> (deal health), key fields (stage / manager / client /
+            goal), the <b>next step</b>, a short activity feed, and an <b>"Open in full"</b> button
+            leading to the full card.
+          </li>
+          <li>
+            Respects <b>RBAC:</b> a sales rep can't open someone else's deal even via a direct link
+            — the drawer will show "unavailable".
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Why (vs legacy CRMs)</h2></div>
+        <div class="card__body">
+          The most "modern" pattern from Attio / Linear / Intercom: you review several records in a
+          row without losing the list's context. a legacy CRM does a full page reload on every deal
+          navigation; here the list never goes away, and the card slides out on top of it. The
+          drawer is deliberately focused (not 15 sections of a heavy page) — a quick overview, with
+          an "Open in full" for the details.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="ba">
+            <tr>
+              <th>Opening a deal</th>
+              <td>
+                <span class="was">Before:</span> click → a full navigation to the page
+                <span class="kbd">/deals/&lt;id&gt;</span>, the board is lost.<br />
+                <span class="now">After:</span> click → a right-hand panel, the board stays on the
+                left.
+              </td>
+            </tr>
+            <tr>
+              <th>Reviewing several deals</th>
+              <td>
+                <span class="was">Before:</span> back-and-forth "open → back → open the next".<br />
+                <span class="now">After:</span> close the drawer (Esc) — the list is right there,
+                open the next one.
+              </td>
+            </tr>
+            <tr>
+              <th>Link to a deal</th>
+              <td>
+                <span class="was">Before:</span> only the full page.<br />
+                <span class="now">After:</span> <span class="kbd">/deals?deal=&lt;id&gt;</span> —
+                opens the drawer right in the list's context.
+              </td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open <span class="kbd">/deals</span> — the pipeline of deals.</li>
+            <li>Click any deal's name — the card panel slides out on the right.</li>
+            <li>
+              Confirm that the list stays visible on the left, and
+              <span class="kbd">?deal=&lt;id&gt;</span> appears in the address.
+            </li>
+            <li>
+              Press <span class="kbd">Esc</span> — the drawer closes, the address is clean again.
+            </li>
+            <li>
+              Open it again and click outside the panel (on the dimmed area) — it also closes.
+            </li>
+            <li>
+              Copy the address with <span class="kbd">?deal=&lt;id&gt;</span> and reload the page —
+              the drawer opens right away (deep link).
+            </li>
+            <li>
+              Log in as a sales rep and open a direct link to someone else's deal — the drawer shows
+              "unavailable".
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · deal card side drawer (#156)</footer>
+  </body>
+</html>

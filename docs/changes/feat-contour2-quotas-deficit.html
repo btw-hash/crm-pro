@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contour II — Quotas and Deficit Scoring</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .lead li {
+        margin: 0.2rem 0;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        flex: 1;
+      }
+      .num {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      .ba {
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+      .ba h3 {
+        margin: 0 0 0.25rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ba p {
+        margin: 0;
+        font-size: 0.93rem;
+      }
+      .ba--was {
+        background: #f6f8fa;
+      }
+      .ba--was h3 {
+        color: var(--muted);
+      }
+      .ba--now {
+        background: #eef9f0;
+      }
+      .ba--now h3 {
+        color: #1f8a4c;
+      }
+      .steps {
+        counter-reset: step;
+        padding-left: 0;
+        list-style: none;
+      }
+      .steps li {
+        counter-increment: step;
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 0.7rem;
+        align-items: flex-start;
+      }
+      .steps li::before {
+        content: counter(step);
+        min-width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .files {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.8rem;
+        background: #f6f8fa;
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+      }
+      .files div {
+        padding: 0.15rem 0;
+        color: var(--muted);
+      }
+      .files div b {
+        color: var(--fg);
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+        margin-right: 0.3rem;
+      }
+      .tag-new {
+        background: #eef9f0;
+        color: #1f8a4c;
+      }
+      .tag-mod {
+        background: #fff8e1;
+        color: #b07d00;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.5rem 0.8rem;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 0.5rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Contour II — Quotas and Deficit Scoring</h1>
+      <p>branch feat/contour2-quotas-deficit &middot; 2026-06-24 &middot; teammate CRM</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            <b>Sales rep quotas</b>: domain entity, list/reserve use-cases, in-memory repository,
+            seed of 6 records (3 sales reps &times; 2 products).
+          </li>
+          <li>
+            <b>Deficit scoring</b>: a deterministic 100-point formula plus greedy allocation; AI
+            never invents the numbers.
+          </li>
+          <li>
+            <b>The /procurement page</b>: a quota table per sales rep plus a deficit proposal block
+            with a per-request score breakdown; confirmation belongs to the category manager.
+          </li>
+          <li>A <span class="tag">Procurement</span> link was added to the sidebar navigation.</li>
+          <li>Clean architecture is respected: the domain has no Next/React/infra imports.</li>
+          <li>All tests are green, typecheck + lint + format are clean.</li>
+        </ul>
+      </div>
+
+      <!-- FILES -->
+      <section class="card">
+        <div class="card__head">
+          <span class="num">&#9776;</span>
+          <h2>Changed and created files</h2>
+        </div>
+        <div class="card__body">
+          <div class="files">
+            <div>
+              <span class="tag tag-new">NEW</span> <b>src/domain/quota/quota.ts</b> &mdash; the
+              Quota entity, availableVolume, reserveFromQuota, createQuota, QuotaError
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span> <b>src/domain/quota/quota.test.ts</b> &mdash; 7
+              tests: availableVolume, reservation, edge cases
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/domain/deficit/deficit-scoring.ts</b> &mdash; scoreRequest (100 points),
+              allocateDeficit (greedy algorithm)
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/domain/deficit/deficit-scoring.test.ts</b> &mdash; 11 tests: weights, ordering,
+              edge cases
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/application/ports/quota-repository.ts</b> &mdash; the QuotaRepository port
+              (listByMop / listAll / save)
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/application/use-cases/list-quotas.ts</b> &mdash; use-case with an optional
+              filter by mopId
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/application/use-cases/reserve-from-quota.ts</b> &mdash; use-case with an
+              ownership check and a domain delegate
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/application/use-cases/reserve-from-quota.test.ts</b> &mdash; 4 tests: success,
+              not-found, ownership, overrun
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/application/use-cases/allocate-deficit.ts</b> &mdash; use-case (read-only
+              proposal, passive capture)
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/application/use-cases/allocate-deficit.test.ts</b> &mdash; 3 tests: normal,
+              zero, surplus
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>src/infrastructure/persistence/in-memory-quota-repository.ts</b> &mdash;
+              InMemoryQuotaRepository
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span> <b>src/app/procurement/page.tsx</b> &mdash;
+              server component: quotas + deficit table
+            </div>
+            <div>
+              <span class="tag tag-mod">MOD</span>
+              <b>src/infrastructure/persistence/seed.ts</b> &mdash; seedQuotas (6 records),
+              seedDeficitRequests (4 requests), DEMO_DEFICIT_AVAILABLE_QTY
+            </div>
+            <div>
+              <span class="tag tag-mod">MOD</span>
+              <b>src/infrastructure/composition-root.ts</b> &mdash; InMemoryQuotaRepository +
+              listQuotas / reserveFromQuota / allocateDeficit
+            </div>
+            <div>
+              <span class="tag tag-mod">MOD</span>
+              <b>src/app/_components/sidebar-nav.tsx</b> &mdash; a "Procurement" item → /procurement
+            </div>
+            <div>
+              <span class="tag tag-new">NEW</span>
+              <b>docs/changes/feat-contour2-quotas-deficit.html</b> &mdash; this showcase
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUOTAS -->
+      <section class="card">
+        <div class="card__head">
+          <span class="num">1</span>
+          <h2>Sales rep quotas — before / after</h2>
+        </div>
+        <div class="card__body">
+          <div class="ba ba--was">
+            <h3>Before</h3>
+            <p>
+              Quotas did not exist. A manager could work with any volume with no personal reserve.
+              Plan limits lived only in the ERP.
+            </p>
+          </div>
+          <div class="ba ba--now">
+            <h3>After</h3>
+            <p>
+              The entity
+              <code
+                >Quota { mopId, productId, period, plannedVolume, reservedVolume, soldVolume }</code
+              >. The <code>reserveFromQuota</code> function throws <code>QuotaError</code> when the
+              available volume is exceeded — a hard P2 guard. The table on /procurement shows plan /
+              reserved / sold / available per sales rep and product. Rows with remaining stock below
+              15% of plan are highlighted red with a warning.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEFICIT -->
+      <section class="card">
+        <div class="card__head">
+          <span class="num">2</span>
+          <h2>Deficit scoring — before / after</h2>
+        </div>
+        <div class="card__body">
+          <div class="ba ba--was">
+            <h3>Before</h3>
+            <p>
+              When stock ran short, allocation was manual, "by arrangement" — subjective and opaque
+              to the category manager.
+            </p>
+          </div>
+          <div class="ba ba--now">
+            <h3>After</h3>
+            <p>A deterministic <code>scoreRequest</code> formula (0–100 points):</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Factor</th>
+                  <th>Weight</th>
+                  <th>Mapping</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Client status</td>
+                  <td>40</td>
+                  <td>A=40, B=25, C=10</td>
+                </tr>
+                <tr>
+                  <td>Need type</td>
+                  <td>30</td>
+                  <td>production_stop=30, scheduled=18, trial=6</td>
+                </tr>
+                <tr>
+                  <td>Shelf life</td>
+                  <td>20</td>
+                  <td>normalized over 0–30 days (0 days = 20 points)</td>
+                </tr>
+                <tr>
+                  <td>Margin</td>
+                  <td>10</td>
+                  <td>normalized over 0–100%</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="margin-top: 0.8rem">
+              <code>allocateDeficit</code>: a greedy algorithm, min(requested, remaining) in
+              descending score order. The category manager sees the proposed allocation and its
+              justification — and confirms it manually (passive capture).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPRO STEPS -->
+      <section class="card">
+        <div class="card__head">
+          <span class="num">3</span>
+          <h2>Step-by-step reproduction in the browser</h2>
+        </div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Start the app: <code>npm run dev</code> in the <code>teammate/</code> folder, open
+              <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>.
+            </li>
+            <li>
+              Log in as any sales rep: username <code>owens</code> / password <code>demo1234</code>.
+            </li>
+            <li>In the sidebar navigation click <b>Procurement</b> (a new item with a 📦 icon).</li>
+            <li>
+              Confirm that the "Quotas by sales rep" table shows 6 rows: Owens (Belcolade, S500),
+              Grant (Topfil, Mimetic), Mills (Sapore, Carat Cover).
+            </li>
+            <li>
+              Check the <b>Available</b> column: Mills' remaining Sapore stock is 30 kg (150 plan −
+              30 reserved − 140 sold = −20? no, 200−30−140=30) — a row with no warning; Grant's
+              Mimetic (150−70−75=5 kg, &lt;15% of 150) — red color and a ⚠ symbol.
+            </li>
+            <li>
+              Scroll down to the <b>Deficit proposal — Topfil Lingonberry</b> block: 150 kg
+              available.
+            </li>
+            <li>
+              Confirm that the 4 requests are sorted by descending score: the first is client A /
+              production_stop (highest score), the last is client C / trial.
+            </li>
+            <li>
+              Check the <b>Allocated, kg</b> column: the first request (80 kg) is green (in full),
+              the second (120 kg, but only 70 kg remaining) is orange (partial), the rest are red
+              (0).
+            </li>
+            <li>The <b>Justification</b> column shows the score breakdown per factor.</li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Contour II &middot; feat/contour2-quotas-deficit &middot; 2026-06-24</footer>
+  </body>
+</html>

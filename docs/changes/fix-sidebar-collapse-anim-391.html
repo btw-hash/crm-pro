@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase · sidebar-collapse-anim-391</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 820px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 28px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">sidebar-collapse-anim-391</span>
+    </header>
+    <main>
+      <h2>Fix for the sidebar collapse animation (#391 [2])</h2>
+      <div class="card">
+        <p>
+          <strong>Before:</strong> when collapsing the sidebar panel, the panel content disappeared
+          instantly, while the floating active-item indicator (the white "scoop" cut-out + the dark
+          disc with the icon) hung in the middle of the still-wide dark box, with an empty dark area
+          gaping on the right — while the width animated 248→78px. It looked broken.
+        </p>
+        <p>
+          <strong>After:</strong> during the width animation, the indicator's floating layers are
+          hidden (<code>opacity: discOn && !animating</code>) and fade in smoothly once the collapse
+          finishes. The box collapses cleanly — the icon column remains on the left, with no "blob"
+          and no empty dark trailing area. Symmetric to the panel appearing when expanding.
+        </p>
+        <p>
+          The fix is surgical: the three indicator layers (scoop / disc / glyph) in
+          <code>app-sidebar.tsx</code> — an <code>animating</code> gate was added plus an opacity
+          <code>.2s</code> fade in the transition.
+        </p>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <ol>
+          <li>Open any screen, expand the sidebar (menu icon).</li>
+          <li>
+            Collapse the sidebar → the panel collapses smoothly, with no indicator stuck in the
+            middle of the box.
+          </li>
+          <li>In the collapsed state, the active-item indicator is back in place.</li>
+        </ol>
+        <p>Verified headed (Chrome, frame-by-frame: 40/110/190/430ms into the transition).</p>
+      </div>
+    </main>
+  </body>
+</html>

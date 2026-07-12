@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>#215 Manager statuses + logistics/accountant roles</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a1a;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+      }
+      .meta {
+        color: #666;
+        font-size: 0.875rem;
+        margin-bottom: 2rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 0.25rem;
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        background: #f5f5f5;
+        padding: 0.5rem 0.75rem;
+      }
+      td {
+        padding: 0.5rem 0.75rem;
+        border-top: 1px solid #eee;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-green {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .badge-yellow {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-gray {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      .flow {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+      }
+      .stage {
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        border: 1px solid #ddd;
+      }
+      .stage-mop {
+        background: #eff6ff;
+        border-color: #93c5fd;
+      }
+      .stage-accounting {
+        background: #fef3c7;
+        border-color: #fcd34d;
+      }
+      .stage-logist {
+        background: #d1fae5;
+        border-color: #6ee7b7;
+      }
+      .arrow {
+        color: #9ca3af;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+      .files {
+        margin-top: 0.5rem;
+      }
+      .files li {
+        font-size: 0.85rem;
+        color: #374151;
+        margin-bottom: 0.2rem;
+      }
+      .section-gap {
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>#215 Manager statuses + logistics/accountant roles</h1>
+    <p class="meta">
+      <span class="badge badge-blue">feat</span>&nbsp; 2026-06-26 &middot; branch
+      <code>feat/shipment-roles-status</code>
+    </p>
+
+    <h2>What was built</h2>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Role</th>
+        <th>Route</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>"My shipments" — owner-scoped stage tracker</td>
+        <td><code>mop</code>, <code>head</code></td>
+        <td><code>/my-shipments</code></td>
+        <td><span class="badge badge-green">done</span></td>
+      </tr>
+      <tr>
+        <td>"Loading & delivery" — logistics queue + "Truck departed" button</td>
+        <td><code>logist</code>, <code>head</code></td>
+        <td><code>/logist</code></td>
+        <td><span class="badge badge-green">done</span></td>
+      </tr>
+      <tr>
+        <td><code>logist</code> / <code>accountant</code> roles added to the system</td>
+        <td>—</td>
+        <td>domain</td>
+        <td><span class="badge badge-green">done</span></td>
+      </tr>
+      <tr>
+        <td>Accountant page (<code>/accounting</code>)</td>
+        <td><code>accountant</code></td>
+        <td><code>/accounting</code></td>
+        <td><span class="badge badge-yellow">not in this PR</span></td>
+      </tr>
+    </table>
+
+    <h2>Shipment stage flow</h2>
+    <div class="flow">
+      <div class="stage stage-mop">Placed <small>(mop)</small></div>
+      <span class="arrow">→</span>
+      <div class="stage stage-accounting">In accounting <small>(accountant)</small></div>
+      <span class="arrow">→</span>
+      <div class="stage stage-gray">At the warehouse <small>(warehouse)</small></div>
+      <span class="arrow">→</span>
+      <div class="stage stage-logist">Loading <small>(logist)</small></div>
+      <span class="arrow">→</span>
+      <div class="stage stage-logist">Delivered <small>(logist)</small></div>
+    </div>
+    <p style="margin-top: 0.75rem; font-size: 0.875rem; color: #666">
+      Logistics only sees the queue at the <strong>Loading</strong> stage and moves it forward with
+      one button. A Manager sees all their own shipments at any stage (owner-scoped by
+      <code>managerId</code>).
+    </p>
+
+    <h2>New role predicates (TDD)</h2>
+    <table>
+      <tr>
+        <th>Predicate</th>
+        <th>Who gets access</th>
+      </tr>
+      <tr>
+        <td><code>canViewMyShipments</code></td>
+        <td>mop, head</td>
+      </tr>
+      <tr>
+        <td><code>canAccessAccountingStage</code></td>
+        <td>accountant, head</td>
+      </tr>
+      <tr>
+        <td><code>canAccessLoadingStage</code></td>
+        <td>logist, head</td>
+      </tr>
+    </table>
+
+    <h2>Quick login (demo)</h2>
+    <table>
+      <tr>
+        <th>Login</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>What they see</th>
+      </tr>
+      <tr>
+        <td><code>owens</code></td>
+        <td>demo</td>
+        <td>mop</td>
+        <td>/my-shipments — their own 5 shipments across all stages</td>
+      </tr>
+      <tr>
+        <td><code>logist</code></td>
+        <td>demo</td>
+        <td>logist</td>
+        <td>/logist — 1 shipment in the Loading state (shp-6)</td>
+      </tr>
+      <tr>
+        <td><code>accountant</code></td>
+        <td>demo</td>
+        <td>accountant</td>
+        <td>Home (for now just the notification counter)</td>
+      </tr>
+    </table>
+
+    <h2 class="section-gap">Key files changed</h2>
+    <ul class="files">
+      <li><strong>HOT</strong> <code>src/domain/shared/role.ts</code> — +2 roles, +3 predicates</li>
+      <li>
+        <strong>HOT</strong> <code>src/infrastructure/composition-root.ts</code> — +3 use cases
+      </li>
+      <li><strong>HOT</strong> <code>src/app/_components/sidebar-nav.tsx</code> — +2 nav items</li>
+      <li>
+        <strong>HOT</strong> <code>src/infrastructure/persistence/seed/operations.ts</code> —
+        managerId on all shipments, +shp-6 (loading)
+      </li>
+      <li>
+        <strong>HOT</strong> <code>src/infrastructure/persistence/seed/procurement.ts</code> —
+        +accountant-demo, +logist-demo
+      </li>
+      <li>
+        <code>src/domain/shipment/shipment.ts</code> — +managerId, +advanceShipmentFromStage()
+      </li>
+      <li>
+        <code>src/application/ports/shipment-repository.ts</code> — +listByManager, +listByStatus
+      </li>
+      <li>
+        <code>src/infrastructure/persistence/in-memory-shipment-repository.ts</code> — new methods
+        implemented
+      </li>
+      <li><code>src/application/use-cases/list-my-shipments.ts</code> — <strong>NEW</strong></li>
+      <li>
+        <code>src/application/use-cases/list-loading-shipments.ts</code> — <strong>NEW</strong>
+      </li>
+      <li>
+        <code>src/application/use-cases/get-home-dashboard.ts</code> — +OperationalHome, +case for
+        accountant/logist
+      </li>
+      <li><code>src/app/my-shipments/page.tsx</code> — <strong>NEW</strong></li>
+      <li><code>src/app/logist/page.tsx</code> — <strong>NEW</strong></li>
+      <li><code>src/app/logist/actions.ts</code> — <strong>NEW</strong> markDeliveredAction</li>
+      <li><code>src/app/login/page.tsx</code> — +quick-login buttons</li>
+    </ul>
+
+    <h2>New tests</h2>
+    <table>
+      <tr>
+        <th>File</th>
+        <th>Tests</th>
+        <th>What it checks</th>
+      </tr>
+      <tr>
+        <td><code>domain/shared/role.test.ts</code></td>
+        <td>+9</td>
+        <td>
+          canViewMyShipments, canAccessAccountingStage, canAccessLoadingStage, new roles in
+          existingPredicates
+        </td>
+      </tr>
+      <tr>
+        <td><code>domain/shipment/dispatch.test.ts</code></td>
+        <td>+3</td>
+        <td>
+          advanceShipmentFromStage: success, ShipmentError at the wrong stage, an accountant at the
+          wrong stage
+        </td>
+      </tr>
+      <tr>
+        <td><code>application/use-cases/list-my-shipments.test.ts</code></td>
+        <td>4 (NEW)</td>
+        <td>owner filter, sort by date, clientName+statusLabel, empty result</td>
+      </tr>
+      <tr>
+        <td><code>application/use-cases/get-home-dashboard.test.ts</code></td>
+        <td>+2</td>
+        <td>accountant and logist return only unread items, don't touch commercial ports</td>
+      </tr>
+    </table>
+
+    <h2>Verify</h2>
+    <p>
+      <span class="badge badge-green">typecheck</span>&nbsp;
+      <span class="badge badge-green">eslint</span>&nbsp;
+      <span class="badge badge-green">prettier</span>&nbsp;
+      <span class="badge badge-green">535 tests (100 files)</span>
+    </p>
+    <p style="color: #666; font-size: 0.875rem">
+      Live browser verification was not performed (the dev server on :3045 was not started as part
+      of this PR). Logic is covered by unit tests; Server Actions and pages use standard Next.js
+      with proven guard patterns.
+    </p>
+
+    <h2>Left for later</h2>
+    <ul class="files">
+      <li>
+        Accountant page <code>/accounting</code> — an in_accounting queue + a "Accepted for
+        processing" button (advance in_accounting→in_warehouse)
+      </li>
+      <li>Advance action for accountant (advanceShipmentFromStage(shipment, "in_accounting"))</li>
+      <li>A real live check in the browser under each role</li>
+    </ul>
+  </body>
+</html>

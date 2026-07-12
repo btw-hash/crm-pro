@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase — web search in the assistant</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 820px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 3px solid #f4b400;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      code {
+        background: #f0f0f0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #f4b400;
+        color: #000;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Web search in the head of sales assistant</h1>
+    <p>
+      <span class="tag">#216 / #234</span> &middot; branch <code>feat/assistant-web-search</code>
+      &middot; on top of the assistant chat (#227)
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The assistant now answers not only from the CRM snapshot, but also questions about the
+        <strong>outside world</strong> ("find new suppliers," "who's in the market") — via web
+        search.
+      </li>
+      <li>
+        Routing by the question's text: a query with search triggers goes to
+        <code>WebSearchGateway</code>, everything else — to the deterministic CRM snapshot (as
+        before).
+      </li>
+      <li>
+        The answer shows the <strong>source</strong>: "CRM snapshot" or "web search" + clickable
+        links to the found pages.
+      </li>
+      <li>Query cost estimation (tokens/$) is kept for web answers too.</li>
+    </ul>
+
+    <h2>Architecture</h2>
+    <ul>
+      <li>
+        New port <code>application/ports/web-search-gateway.ts</code> + a deterministic stub
+        <code>infrastructure/ai/stub-web-search-gateway.ts</code>.
+      </li>
+      <li>
+        The real provider (Brave Search API) connects through the same port via env
+        <code>WEB_SEARCH_MODE=live</code> — with no change to the use case.
+      </li>
+      <li>
+        <strong>PII guard:</strong> only the public question text goes to web search; the CRM
+        snapshot (PII/trade secrets) is NOT passed to search.
+      </li>
+    </ul>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Log in as the head of sales, open "🤖 Assistant."</li>
+      <li>
+        Ask "Which deals are stalled?" → an answer labeled "Source: CRM snapshot" (as before).
+      </li>
+      <li>
+        Click the example "Find new ingredient suppliers" → an answer labeled "Source: web search"
+        and a list of source links.
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        TDD: <code>ask-manager-assistant</code> — web vs CRM routing (a web question doesn't build a
+        snapshot or call the AI on CRM).
+      </li>
+      <li><code>npm run verify</code> green.</li>
+      <li>
+        Live (:3003, head of sales): a CRM question and a web question yield different sources.
+      </li>
+    </ul>
+  </body>
+</html>

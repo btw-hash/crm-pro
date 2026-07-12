@@ -1,0 +1,13 @@
+# Team is on Windows — pin LF in the repo so hooks (.husky/*) and scripts behave
+# consistently. Git normalizes line endings on commit.
+* text=auto eol=lf
+
+# Don't touch binaries.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.docx binary

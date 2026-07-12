@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat assistant + request cost — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #1b8fd6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>AI assistant: chat + estimated request cost</h1>
+      <p>The conversation now builds up as a thread; every reply shows the AI spend</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (closes #216)</h2>
+        <ul>
+          <li>
+            The Head of Sales's assistant went from a single "question-answer" to a <b>chat</b>: the
+            conversation builds up as a thread (the history of questions and answers is visible).
+          </li>
+          <li>
+            For every reply — a <b>cost estimate</b> for the request (≈ tokens and ≈ $) and, at the
+            bottom, a <b>running total</b> of AI spend.
+          </li>
+          <li>
+            Answers are still built <b>strictly from CRM data</b> (numbers come from the CRM
+            deterministically, the AI doesn't make them up), with a link to the source snapshot.
+          </li>
+          <li>
+            The cost is an <b>estimate</b> (marked "≈"), for keeping an eye on spend; the exact
+            token count comes from the provider.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Assistant</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Format</td>
+                <td class="was">One question → one answer (the previous one disappeared)</td>
+                <td>Chat thread: history is kept</td>
+              </tr>
+              <tr>
+                <td>Spend control</td>
+                <td class="was">—</td>
+                <td>≈ tokens and ≈ $ per reply + a running total</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Sign in as <b>Alan Peterson (Head of Sales)</b>, open "Assistant".</li>
+            <li>
+              Ask a question (e.g. "Who's over their credit limit?"), then a second one ("Show me
+              the workload by rep").
+            </li>
+            <li>
+              Both question-answer pairs stay in the thread; under each answer — the source and "≈ N
+              tokens · ≈ $X".
+            </li>
+            <li>
+              At the bottom — a total: "Spent (estimate): ≈ … tokens · ≈ $… across N requests".
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · chat assistant + cost (#216)</footer>
+  </body>
+</html>

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>#212 Catalog: search + cart + stock — Showcase</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          Arial,
+          sans-serif;
+        background: #eef1f5;
+        color: #2c3138;
+        margin: 0;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+      }
+      .meta {
+        color: #828c99;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+      .section {
+        margin-bottom: 2.5rem;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin-bottom: 0.8rem;
+        border-bottom: 1px solid #e3e8ee;
+        padding-bottom: 0.4rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        margin-bottom: 0.75rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        margin-right: 0.3rem;
+      }
+      .badge--green {
+        background: #e7f6ec;
+        color: #1b7f3b;
+      }
+      .badge--yellow {
+        background: #fdf3e3;
+        color: #b9791a;
+      }
+      .badge--red {
+        background: #fdecea;
+        color: #b3261e;
+      }
+      .badge--blue {
+        background: #eef4fb;
+        color: #1b6fc0;
+      }
+      .badge--gray {
+        background: #eef1f5;
+        color: #5a6573;
+      }
+      code {
+        background: #f3f6f9;
+        border: 1px solid #e3e8ee;
+        border-radius: 4px;
+        padding: 0.1rem 0.4rem;
+        font-size: 0.88rem;
+      }
+      pre {
+        background: #f3f6f9;
+        border: 1px solid #e3e8ee;
+        border-radius: 6px;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.85rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 700px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .flow {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .flow-step {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+      .flow-step::before {
+        content: "→";
+        color: #2aabee;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .tag {
+        background: #2aabee;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.4rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      li {
+        margin-bottom: 0.3rem;
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>#212 Catalog 1000+: search + cart + key info</h1>
+    <p class="meta">feat/catalog-search-cart · dev-b · 2026-06-26</p>
+
+    <div class="section">
+      <h2>What was done</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>1. Catalog search</strong>
+          <ul>
+            <li>A search field above the grid — filters instantly (client-side)</li>
+            <li>Searches by <em>name</em> and <em>SKU</em>, case-insensitive</li>
+            <li>Empty query → all products; no matches → a message</li>
+            <li>Ready for 1000+ items: filter before render, not virtualization</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>2. Cart (client-side)</strong>
+          <ul>
+            <li>A "+ Add to cart" button on every card</li>
+            <li>A counter in the "🛒 Cart (N)" button in the grid header</li>
+            <li>A drawer panel on the right: item list, +/−/✕, quantity</li>
+            <li>"Build list" → a text block to paste into a proposal</li>
+            <li>A "Copy" button → clipboard</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>3. Warehouse stock</strong>
+          <ul>
+            <li>Loaded from the ERP via <code>getStockLevel</code> in parallel for all items</li>
+            <li>Green: &gt;50 units in stock</li>
+            <li>Yellow: ≤50 units (low, running out soon)</li>
+            <li>Red: 0 — out of stock</li>
+            <li>Gray "No data" — item not found in the ERP</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>4. Key info on the card</strong>
+          <ul>
+            <li>
+              Stock <span class="badge badge--green">200 kg</span> or
+              <span class="badge badge--red">Out of stock</span>
+            </li>
+            <li>Expiration <span class="badge badge--gray">Shelf life: 12 months</span></li>
+            <li>Benefits from the Sales Kit, RSP, margin (only for allowed roles)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Architecture of the changes</h2>
+      <div class="flow">
+        <div class="flow-step">
+          <span
+            ><strong>domain/product/product-search.ts</strong> — a pure function
+            <code>searchProducts(products, query)</code>. Filters by name+sku. TDD: 5 tests.</span
+          >
+        </div>
+        <div class="flow-step">
+          <span
+            ><strong>application/use-cases/list-products-with-stock.ts</strong> — use case
+            <code>listProductsWithStock()</code>: loads products + their stock levels in parallel
+            via <code>Promise.all</code>. TDD: 3 tests.</span
+          >
+        </div>
+        <div class="flow-step">
+          <span
+            ><strong>infrastructure/composition-root.ts</strong> —
+            <code>listProductsWithStock</code> added additively to the container. Hot file — a
+            minimal edit (3 lines).</span
+          >
+        </div>
+        <div class="flow-step">
+          <span
+            ><strong>app/products/_components/product-catalog.tsx</strong> — a new client component
+            <code>ProductCatalog</code>: search (useState + searchProducts), cart (useState), drawer
+            panel, list assembly.</span
+          >
+        </div>
+        <div class="flow-step">
+          <span
+            ><strong>app/products/page.tsx</strong> — replaces the direct grid with
+            <code>&lt;ProductCatalog&gt;</code>; switched from <code>listProducts</code> to
+            <code>listProductsWithStock</code>.</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Files</h2>
+      <div class="card">
+        <table style="border-collapse: collapse; width: 100%; font-size: 0.88rem">
+          <thead>
+            <tr style="border-bottom: 2px solid #e3e8ee">
+              <th style="text-align: left; padding: 0.4rem 0.6rem">File</th>
+              <th style="text-align: left; padding: 0.4rem 0.6rem">Change</th>
+              <th style="text-align: left; padding: 0.4rem 0.6rem">Hot?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #e3e8ee">
+              <td style="padding: 0.4rem 0.6rem"><code>domain/product/product-search.ts</code></td>
+              <td style="padding: 0.4rem 0.6rem">New</td>
+              <td style="padding: 0.4rem 0.6rem"><span class="badge badge--green">no</span></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e3e8ee">
+              <td style="padding: 0.4rem 0.6rem">
+                <code>domain/product/product-search.test.ts</code>
+              </td>
+              <td style="padding: 0.4rem 0.6rem">New (TDD)</td>
+              <td style="padding: 0.4rem 0.6rem"><span class="badge badge--green">no</span></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e3e8ee">
+              <td style="padding: 0.4rem 0.6rem">
+                <code>application/use-cases/list-products-with-stock.ts</code>
+              </td>
+              <td style="padding: 0.4rem 0.6rem">New</td>
+              <td style="padding: 0.4rem 0.6rem"><span class="badge badge--green">no</span></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e3e8ee">
+              <td style="padding: 0.4rem 0.6rem">
+                <code>application/use-cases/list-products-with-stock.test.ts</code>
+              </td>
+              <td style="padding: 0.4rem 0.6rem">New (TDD)</td>
+              <td style="padding: 0.4rem 0.6rem"><span class="badge badge--green">no</span></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e3e8ee">
+              <td style="padding: 0.4rem 0.6rem">
+                <code>infrastructure/composition-root.ts</code>
+              </td>
+              <td style="padding: 0.4rem 0.6rem">+3 lines (import + interface + init)</td>
+              <td style="padding: 0.4rem 0.6rem">
+                <span class="badge badge--yellow">hot</span>
+              </td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e3e8ee">
+              <td style="padding: 0.4rem 0.6rem">
+                <code>app/products/_components/product-catalog.tsx</code>
+              </td>
+              <td style="padding: 0.4rem 0.6rem">New (client component)</td>
+              <td style="padding: 0.4rem 0.6rem"><span class="badge badge--green">no</span></td>
+            </tr>
+            <tr>
+              <td style="padding: 0.4rem 0.6rem"><code>app/products/page.tsx</code></td>
+              <td style="padding: 0.4rem 0.6rem">
+                Rewritten (replaced inline render with ProductCatalog)
+              </td>
+              <td style="padding: 0.4rem 0.6rem">
+                <span class="badge badge--yellow">hot</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Tests</h2>
+      <div class="card">
+        <p><strong>Total: 526 tests (101 files) — all green.</strong></p>
+        <ul>
+          <li>
+            <code>product-search.test.ts</code> — 5 domain tests (empty query, search by name, by
+            SKU, multiple matches, not found)
+          </li>
+          <li>
+            <code>list-products-with-stock.test.ts</code> — 3 use-case tests (combines
+            product+stock, empty list, parallel requests)
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>What's not included (scope cut)</h2>
+      <ul>
+        <li>
+          Pagination/virtualization for 1000+ items — the client-side filter works fine for the seed
+          (9 items), real 1000+ needs server-side search with pagination (separate issue)
+        </li>
+        <li>
+          Linking the cart to creating a proposal/order — the list is assembled as text for copying;
+          calling <code>buildProposalDraft</code> directly requires a dealId (a separate
+          deal-selection step)
+        </li>
+        <li>
+          Pack size — an attribute of the request, not the product, not stored in the Product domain
+        </li>
+        <li>
+          Dev verification in the browser — blocked by a Turbopack+Windows junction panic (Next
+          16.2.9 doesn't support junction node_modules); the code passed tsc + lint + 526 tests
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#307 Analytics: breakdown + export (on top of #348) — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 0.9rem;
+      }
+      .ba > div {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .was {
+        background: #fbecec;
+        border: 1px solid #f0c9c9;
+      }
+      .now {
+        background: #e9f6ee;
+        border: 1px solid #c2e6cf;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .was .tag {
+        color: #b04141;
+      }
+      .now .tag {
+        color: #1f8a4c;
+      }
+      ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f0f2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.92rem;
+      }
+      td,
+      th {
+        border: 1px solid #e3e8ee;
+        padding: 6px 10px;
+        text-align: left;
+      }
+      th {
+        background: #f6f7f9;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#307 · Analytics: "by manager/product" breakdown + enriched export</h1>
+      <p>
+        A follow-up on top of the merged <b>#348</b> (which added the chart period and tooltips).
+        We're only adding the unique value: the <b>"Breakdown"</b> switcher (<code>?view=</code>)
+        and export of the whole analytics view under the selected breakdown. The period and tooltips
+        from #348 are untouched.
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>Context</h2>
+        <p>
+          Issue #307 ("bring analytics buttons/charts to life") was closed by the parallel PR
+          <b>#348</b>: the dead period button → a working <code>PeriodSelect</code> (<code
+            >?period=</code
+          >
+          4/6/12&nbsp;mo/all), charts got native <code>title</code>
+          tooltips, a basic export (by&nbsp;manager, from&nbsp;#313/#343). This PR
+          <b>does not duplicate or revert</b> #348 — it adds on top what's missing there.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>What's added on top of #348</h2>
+        <ul>
+          <li>
+            <b>"Breakdown: …"</b> — a dropdown switcher for the revenue breakdown (by&nbsp;manager /
+            by&nbsp;product). Changes <code>?view=</code> in the URL; the server page re-reads the
+            param (SSR) and rearranges the breakdown cards: the selected breakdown becomes the
+            "large" card (avatars/shares), the other one becomes a complementary bar. Labeled
+            "Breakdown:" so it isn't confused with their "View:" (period).
+          </li>
+          <li>
+            <b>Enriched "Export"</b> —
+            <b>reuses the shared <code>ExportButton</code></b> (#313/#343, the CSV format/download
+            isn't duplicated): only the <code>headers</code>/ <code>rows</code> props were replaced.
+            It now exports the breakdown rows (revenue + share) under the selected
+            <code>?view=</code> plus the month-by-month trend for the visible window
+            <code>?period=</code>. The filename reflects the breakdown and period.
+          </li>
+        </ul>
+        <p>
+          Their <code>PeriodSelect</code>, <code>?period=</code>, and chart <code>title</code>
+          tooltips are left as-is — my period switcher and popup tooltips from the PR #347 draft
+          were removed to avoid duplicates.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Before (after #348) → after</h2>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>Revenue breakdown fixed: a managers card + a products card.</p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              The "Breakdown" switcher changes <code>?view=</code>; the selected breakdown is large,
+              the other one is a bar.
+            </p>
+          </div>
+        </div>
+        <div class="ba">
+          <div class="was">
+            <div class="tag">Before</div>
+            <p>Export only gave revenue by manager.</p>
+          </div>
+          <div class="now">
+            <div class="tag">After</div>
+            <p>
+              CSV: the selected breakdown's rows + the month-by-month trend for the visible period
+              window.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Files</h2>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Role</th>
+          </tr>
+          <tr>
+            <td><code>src/app/analytics/analytics-view.ts</code></td>
+            <td>
+              pure breakdown helpers: <code>resolveView</code>, <code>VIEW_LABELS</code>,
+              <code>buildAnalyticsCsv</code> (breakdown + sliced months),
+              <code>exportFilename</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>src/app/analytics/_components/view-switcher.tsx</code></td>
+            <td>
+              client dropdown switcher → pushes <code>?view=</code> to the URL (the
+              <code>OpsFilters</code> pattern)
+            </td>
+          </tr>
+          <tr>
+            <td><code>src/app/analytics/page.tsx</code></td>
+            <td>
+              on top of the #348 base: reads <code>?view=</code>, splits the G/H cards by breakdown,
+              export via <code>buildAnalyticsCsv</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>*.test.ts(x)</code></td>
+            <td>
+              unit tests: breakdown selection by param, CSV building, pushing/clearing
+              <code>?view=</code>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open <code>/analytics</code> as Head of sales.</li>
+          <li>
+            In the header — a "Breakdown: by manager ▾" button. Click → pick "by product" → the URL
+            gets <code>?view=products</code>, the breakdown cards swap places (products becomes the
+            large one).
+          </li>
+          <li>
+            Click "Export" → downloads <code>analytics-products-4.csv</code> (4 — the current period
+            from #348): product revenue rows + the month-by-month trend. Opens in Excel (BOM +
+            <code>;</code>).
+          </li>
+          <li>
+            Change the period to "View: Last 12 months" (the #348 component) → "Export" again →
+            <code>analytics-products-12.csv</code> with 12 months of trend data.
+          </li>
+          <li>The period/tooltips from #348 keep working as before (we didn't touch them).</li>
+          <li>
+            Verified with unit tests (we didn't run a browser in the worktree): breakdown selection
+            by param, CSV assembly from data, pushing/clearing <code>?view=</code>.
+            <code>npm run verify</code> + build — green.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </body>
+</html>

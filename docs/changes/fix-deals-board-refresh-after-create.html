@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A new process appears on the board immediately — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      .bad {
+        color: var(--no);
+        font-weight: 600;
+      }
+      .good {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>A new process appears on the board immediately</h1>
+      <p>Create a process → the card shows up on the "Processes" board without a page reload</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            After creating a process ("New process" → "Create process"), the card now
+            <strong>appears on the board right away</strong> in the "Qualification" column.
+            Previously it was invisible until you refreshed the page manually (F5) — it looked like
+            the interface had "frozen".
+          </li>
+          <li>
+            Cause: the board kept its process list in local state, captured once when the page
+            opened, and didn't pick up fresh data from the server after a create. Now
+            <strong>the board syncs with the server</strong> on every update (creating a process, a
+            confirmed card move between stages).
+          </li>
+          <li>
+            Dragging cards between stages still works as before (the optimistic update isn't
+            needlessly reset).
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table>
+            <tr>
+              <th>Step</th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+            <tr>
+              <td>Created a new process</td>
+              <td class="bad">The board doesn't change, no new card</td>
+              <td class="good">The card is immediately in the "Qualification" column</td>
+            </tr>
+            <tr>
+              <td>To see the process</td>
+              <td class="bad">Refresh the page manually (F5)</td>
+              <td class="good">Nothing to do</td>
+            </tr>
+            <tr>
+              <td>Feel</td>
+              <td class="bad">"The screen froze"</td>
+              <td class="good">Instant feedback</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open the <span class="kbd">Processes</span> section.</li>
+            <li>Click <span class="kbd">+ New process</span>.</li>
+            <li>
+              Pick a client <strong>from the dropdown list</strong> (start typing a name and click
+              the suggestion, or "+ Create client "…""), fill in "Process name", click
+              <span class="kbd">Create process</span>.
+            </li>
+            <li>
+              Confirm: the modal closed and <strong>the new card is immediately visible</strong> in
+              the "Qualification" column — <strong>without</strong> reloading the page.
+            </li>
+            <li>
+              Edge case: drag a card to the neighboring stage — the move persists, the board doesn't
+              "jump".
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · A new process appears on the board immediately</footer>
+  </body>
+</html>

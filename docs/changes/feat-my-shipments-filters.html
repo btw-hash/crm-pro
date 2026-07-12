@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · My shipments — filters and cancellation (feat/my-shipments-filters)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .ba > div {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .ba .lab {
+        font: 700 11px Arial;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 6px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      ol {
+        margin: 8px 0 0;
+        padding-left: 22px;
+      }
+      li {
+        margin: 0 0 6px;
+      }
+      img.shot {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>My shipments — client filter, date picker, order cancellation</h1>
+      <p class="sub">feat/my-shipments-filters · Closes #433 · designer's video comment + §10.</p>
+
+      <div class="card">
+        <h2>1. Client filter</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>The client column could only be sorted by clicking it — you couldn't pick one.</p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>
+              An "All clients" dropdown → picking one leaves only that client's shipments in the
+              table.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. Date — a calendar instead of preset buttons</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>Preset buttons: Today / Yesterday / Week / Month.</p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>Pick a specific date on a calendar → shipments for exactly that delivery date.</p>
+          </div>
+        </div>
+        <p class="note">A "Reset" button clears the client and date filters.</p>
+      </div>
+
+      <div class="card">
+        <h2>3. "Canceled" status + order cancellation</h2>
+        <div class="ba">
+          <div>
+            <p class="lab">Before</p>
+            <p>
+              A shipment could not be canceled, and there were no canceled orders in the system at
+              all.
+            </p>
+          </div>
+          <div>
+            <p class="lab">After</p>
+            <p>
+              An active order has a "Cancel" button (owner-only, before delivery). A canceled order
+              gets a gray "Canceled" badge (no progress bar) and shows up under the "Canceled"
+              filter chip.
+            </p>
+          </div>
+        </div>
+        <p class="note">
+          A delivered shipment cannot be canceled. Neither can someone else's (the owner boundary,
+          same as on "My shipments").
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>How to see it</h2>
+        <img class="shot" src="feat-my-shipments-filters.png" alt="My shipments" />
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open "My shipments" (on localhost — the head of sales role by default).</li>
+          <li>
+            The "Canceled" chip → the canceled order stays in the list (a gray badge, no progress
+            bar).
+          </li>
+          <li>
+            Pick a client from the dropdown and/or a date on the calendar → the table narrows.
+          </li>
+          <li>On an active order, click "Cancel" → it moves to "Canceled".</li>
+          <li>"Reset" clears the client/date filters.</li>
+        </ol>
+      </div>
+    </div>
+  </body>
+</html>

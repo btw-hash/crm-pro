@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#397 · Customer order → Shipment — showcase</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 2.2rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.55rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 0.8rem;
+      }
+      ul {
+        margin: 0;
+        padding-left: 1.4rem;
+      }
+      li {
+        margin-bottom: 0.35rem;
+      }
+      .badge {
+        display: inline-block;
+        background: #e7f0fd;
+        color: #1a56c4;
+        border-radius: 6px;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .badge.green {
+        background: #e4f7ec;
+        color: #1a7a40;
+      }
+      .badge.gray {
+        background: #f0f2f5;
+        color: #5a6472;
+      }
+      .flow {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin: 0.8rem 0;
+      }
+      .arrow {
+        color: #aebccd;
+        font-size: 1.2rem;
+      }
+      code {
+        background: #f5f7fa;
+        border: 1px solid #e3e8ee;
+        border-radius: 4px;
+        padding: 0.1rem 0.4rem;
+        font-size: 0.88rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid #eee;
+      }
+      th {
+        background: #f5f7fa;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>#397 · Customer order → Shipment</h1>
+      <p>
+        Once an order is placed in the ERP, a Shipment record is created automatically and its
+        status is visible on the process card
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="card">
+        <h2>Flow</h2>
+        <div class="flow">
+          <span class="badge">"Won" process</span>
+          <span class="arrow">→</span>
+          <span class="badge">placeCustomerOrder</span>
+          <span class="arrow">→</span>
+          <span class="badge">ERP: createCustomerOrder</span>
+          <span class="arrow">→</span>
+          <span class="badge green">Shipment (placed)</span>
+          <span class="arrow">+</span>
+          <span class="badge green">DealEvent order_placed</span>
+        </div>
+        <p style="color: #5a6472; margin: 0">
+          Idempotency: a repeated call with the same <code>dealId</code> doesn't create a second
+          Shipment (key <code>order:&lt;dealId&gt;</code> in the ERP).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Process card — "Customer order (ERP)" section</h2>
+        <table>
+          <tr>
+            <th>Before</th>
+            <th>After</th>
+          </tr>
+          <tr>
+            <td>"OrderComposer" form / placeholder "Placed after the deal is won"</td>
+            <td>
+              If a Shipment already exists — a status block: "Order No. CO-0001 placed. Shipment
+              status: <strong>Accepted</strong>. Date: 2026-07-01 · address: Portland, OR"
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              The OrderComposer form is hidden after the order is placed — a duplicate order can't
+              be created through the UI
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Changes by layer</h2>
+        <ul>
+          <li>
+            <strong>Domain</strong>: <code>Shipment.dealId: string | null</code>,
+            <code>DealEventType.order_placed</code>
+          </li>
+          <li>
+            <strong>Application ports</strong>: <code>ShipmentRepository.findByDealId()</code>,
+            <code>DealWorkspace.shipment</code>
+          </li>
+          <li>
+            <strong>Application use cases</strong>: <code>makePlaceCustomerOrder</code> — creates
+            the Shipment + DealEvent; <code>makeGetDealWorkspace</code> — includes the linked
+            shipment
+          </li>
+          <li>
+            <strong>Infrastructure</strong>: <code>InMemoryShipmentRepository.findByDealId</code>,
+            <code>PrismaShipmentRepository.findByDealId</code> + upsert with <code>dealId</code>
+          </li>
+          <li>
+            <strong>Migration</strong>: <code>20260629000000_add_shipment_dealid</code> — additive,
+            nullable
+          </li>
+          <li>
+            <strong>UI</strong>: <code>deals/[id]/page.tsx</code> — conditional render of the
+            shipment status
+          </li>
+          <li>
+            <strong>Server action</strong>: <code>placeOrderAction</code> passes
+            <code>actorId</code> + <code>revalidatePath(/shipments, /my-shipments)</code>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Tests (new cases)</h2>
+        <ul>
+          <li>
+            Placing an order creates a Shipment with <code>dealId</code>,
+            <code>status=placed</code>, <code>managerId</code>
+          </li>
+          <li>An idempotent retry doesn't create a second Shipment</li>
+          <li>
+            A <code>DealEvent</code> of type <code>order_placed</code> is recorded on placement
+          </li>
+          <li><code>getDealWorkspace</code> returns the linked shipment</li>
+        </ul>
+        <p style="margin: 0.5rem 0 0">
+          <span class="badge green">137 files / 845 tests — all green</span>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Not included in this branch</h2>
+        <ul>
+          <li>Auto-advancing the deal to the next stage after a Shipment is created</li>
+          <li>Real OData integration with the ERP (uses StubErpGateway)</li>
+          <li>Updating Shipment status from the ERP (webhooks / polling)</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

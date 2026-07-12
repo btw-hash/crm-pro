@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>5 reference end-to-end deals — showcase (#305)</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+        --warn: #c98a18;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+        display: flex;
+        align-items: baseline;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.18rem;
+      }
+      .card__head .meta {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 0.72rem;
+        padding: 0.1rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      .pill--won {
+        background: #e9f6ee;
+        color: var(--ok);
+        border-color: #bfe3cc;
+      }
+      .pill--lost {
+        background: #fbecec;
+        color: var(--no);
+        border-color: #eccaca;
+      }
+      .pill--active {
+        background: #e8f4fc;
+        color: var(--accent-strong);
+        border-color: #c3e2f5;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.8rem;
+      }
+      td.stage {
+        white-space: nowrap;
+        font-weight: 600;
+      }
+      .done {
+        color: var(--ok);
+      }
+      .cur {
+        color: var(--accent-strong);
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .nums {
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+      }
+      .num {
+        flex: 1 1 150px;
+        text-align: center;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 0.6rem;
+        background: #fafcfe;
+      }
+      .num b {
+        display: block;
+        font-size: 1.7rem;
+        color: var(--accent-strong);
+      }
+      .num span {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+      code {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>5 reference end-to-end deals</h1>
+      <p>
+        At every stage you can see real intermediate artifacts — audit, samples, test act, proposal,
+        order, history, tech requests, notifications · #305
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done</h2>
+        <ul>
+          <li>
+            Added <b>5 curated end-to-end deals</b> (<code>deal-ref-1 … deal-ref-5</code>) for
+            demoing to leadership. Open a deal → every <b>completed</b> stage shows filled-in data
+            instead of "not done".
+          </li>
+          <li>
+            Together they cover <b>every stage</b> of the new pipeline (#357):
+            <span class="kbd"
+              >qualification → audit → test_requested → testing → quote → completed</span
+            >
+            — and <b>both outcomes</b> (<span class="pill pill--won">Won</span>
+            <span class="pill pill--lost">Lost</span>).
+          </li>
+          <li>
+            Per-stage artifacts: an <b>audit</b> checklist (equipment/pain points/decision-maker), a
+            <b>sample request</b> (product, quantity, assigned technologist), a
+            <b>test act</b> (product/dosage/result), a rich <b>feed</b> (calls/visits/notes/tasks +
+            system events for stage changes), a <b>tech request</b> in the shared queue
+            <span class="kbd">/tech-queue</span>, a <b>next step</b>, and <b>notifications</b>.
+          </li>
+          <li>
+            The data is <b>realistic and connected</b>: our bakery/confectionery clients from the
+            directory, our ingredient products, prices and stock — from the catalog/mock ERP (the
+            proposal is computed live using each client's individual prices). Everything is
+            <b>deterministic</b> (no <span class="kbd">Date.now</span>/<span class="kbd"
+              >Math.random</span
+            >), with no real PII (passes the guardrail).
+          </li>
+          <li>
+            The 25 existing demo deals were left untouched — they continue to intentionally show
+            gaps ("no next step", "audit not done"). The reference deals are separate "golden"
+            stories.
+          </li>
+        </ul>
+        <div class="nums">
+          <div class="num"><b>5</b><span>end-to-end deals</span></div>
+          <div class="num"><b>5</b><span>audits</span></div>
+          <div class="num"><b>4</b><span>test acts</span></div>
+          <div class="num"><b>5</b><span>sample requests</span></div>
+          <div class="num"><b>2</b><span>tech requests</span></div>
+          <div class="num"><b>17</b><span>new tests</span></div>
+        </div>
+      </div>
+
+      <!-- REF-1 -->
+      <section class="card">
+        <div class="card__head">
+          <h2>REF-1 · Sunrise Bakery Co. — Belcolade rollout to the matrix</h2>
+          <span class="pill pill--won">Completed · Won</span>
+          <span class="meta">Rep: Daniel Owens · product: Belcolade Noir Selection chocolate</span>
+        </div>
+        <div class="card__body">
+          <p>
+            The "won" reference case: the deal went all the way through to a customer order in the
+            ERP.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>What you see on the card</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="stage done">✓ Qualification</td>
+                <td>The initial call with the head technologist (feed entry "Call").</td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Audit</td>
+                <td>
+                  The audit card: equipment (Selmi tempering machine, enrobing line, Miwe oven),
+                  pain points (unstable shine, long tempering time), decision-maker.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Test request</td>
+                <td>
+                  A 5 kg Belcolade sample is reserved, the test is assigned to technologist Maria.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Testing</td>
+                <td>
+                  Test act: dosage 80 g/unit, tempering at 31°C — result
+                  <b>successful</b>, no bloom.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Proposal</td>
+                <td>
+                  The proposal is computed live using the bakery's individual ERP price (Belcolade =
+                  $8.25/kg); the stage transition is logged in the feed.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Completed (Won)</td>
+                <td>
+                  The "Customer order (ERP)" section is open; a notification goes to the head of
+                  sales about the win.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- REF-2 -->
+      <section class="card">
+        <div class="card__head">
+          <h2>REF-2 · Sweet World Confections — heat-stable Topfil filling</h2>
+          <span class="pill pill--active">Current stage: Proposal</span>
+          <span class="meta">Rep: Foster · product: Topfil Lingonberry filling</span>
+        </div>
+        <div class="card__body">
+          <p>
+            An active deal at the proposal stage — every earlier stage is completed and filled in.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>What you see on the card</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="stage done">✓ Qualification / Audit</td>
+                <td>
+                  Audit: Miwe oven, tunnel line; pain point — the filling leaks during baking.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Test request</td>
+                <td>A 13 kg Topfil sample is reserved (technologist Maria).</td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Testing</td>
+                <td>
+                  Test act: 25 g per unit, baked at 200°C/18 min — <b>successful</b>, shape held.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage cur">→ Proposal (current)</td>
+                <td>
+                  The proposal calculator is open (Topfil price for Sweet World Confections =
+                  $3.70/kg from the ERP) + an AI email draft. Next step: "Send the proposal", due
+                  Jun 30. A reminder notification goes to the sales rep.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- REF-3 -->
+      <section class="card">
+        <div class="card__head">
+          <h2>REF-3 · Warm Bread Bakery — Sapore starter</h2>
+          <span class="pill pill--active">Current stage: Testing</span>
+          <span class="meta">Rep: Reed · product: Sapore Lievito starter</span>
+        </div>
+        <div class="card__body">
+          <p>
+            An active deal in testing: the tech request is in progress, the test act is already
+            recorded.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>What you see on the card</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="stage done">✓ Qualification / Audit</td>
+                <td>Audit: deck oven, spiral mixer; pain point — inconsistent flavor.</td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Test request</td>
+                <td>A 1 kg Sapore sample is reserved (technologist Derek).</td>
+              </tr>
+              <tr>
+                <td class="stage cur">→ Testing (current)</td>
+                <td>
+                  In the <span class="kbd">/tech-queue</span> — the tech request "site visit to the
+                  plant" is <b>in progress</b> with Derek. Test act: 3% of flour weight, 90 min
+                  proofing — <b>successful</b>. A notification goes to the sales rep that the test
+                  is done. Next step: "Get the test act and move to the proposal".
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- REF-4 -->
+      <section class="card">
+        <div class="card__head">
+          <h2>REF-4 · ConfiLux Confectionery — premium Belcolade</h2>
+          <span class="pill pill--active">Current stage: Test request</span>
+          <span class="meta">Rep: Walsh · product: Belcolade Noir Selection chocolate</span>
+        </div>
+        <div class="card__body">
+          <p>
+            An early-stage active deal: the audit is done, samples are reserved, the tech request is
+            open.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>What you see on the card</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="stage done">✓ Qualification</td>
+                <td>
+                  A premium chocolate demo, the head pastry chef is interested (feed entry "Visit").
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Audit</td>
+                <td>Audit: Selmi tempering machine, blast freezer; pain point — unstable shine.</td>
+              </tr>
+              <tr>
+                <td class="stage cur">→ Test request (current)</td>
+                <td>
+                  A 5 kg Belcolade sample is reserved (technologist Maria). In the
+                  <span class="kbd">/tech-queue</span> — the tech request "tempering consultation"
+                  is <b>open</b>. A notification goes to the technologist about the new request.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- REF-5 -->
+      <section class="card">
+        <div class="card__head">
+          <h2>REF-5 · Baltic Trading Co. — Carat Cover, no tempering</h2>
+          <span class="pill pill--lost">Completed · Lost</span>
+          <span class="meta">Rep: Bishop · product: Carat Cover coating</span>
+        </div>
+        <div class="card__body">
+          <p>
+            The "lost" reference case: the full path was completed, but the test failed — and the
+            outcome is backed by an <b>unsuccessful</b> test act (not an empty "lost").
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>What you see on the card</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="stage done">✓ Qualification / Audit</td>
+                <td>
+                  Audit: enrobing line, cooling tunnel; pain point — downtime during tempering.
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Test request</td>
+                <td>A 10 kg Carat Cover sample is reserved (technologist Derek).</td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Testing</td>
+                <td>
+                  Test act: no tempering, tunnel at 6°C — result
+                  <b>unsuccessful</b> (hairline cracks in the coating).
+                </td>
+              </tr>
+              <tr>
+                <td class="stage done">✓ Completed (Lost)</td>
+                <td>The feed closes with a note: "we'll revisit once the tunnel is upgraded".</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to view it in the browser</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Sign in as the head of sales (<span class="kbd">alexander</span>) — they see every
+              deal in the department.
+            </li>
+            <li>Open the <span class="kbd">/deals</span> section (the pipeline board).</li>
+            <li>
+              Find any of the reference deals by the name "<b>Reference: …</b>" (Sunrise Bakery Co.,
+              Sweet World Confections, Warm Bread Bakery, ConfiLux Confectionery, Baltic Trading
+              Co.).
+            </li>
+            <li>
+              Open the card and walk through the pipeline track: every <b>completed</b> stage's
+              section shows filled-in data (audit / samples / test act / proposal), and the current
+              stage shows its actions. The "Activities" tab has a rich feed + the next step.
+            </li>
+            <li>
+              Open <span class="kbd">/tech-queue</span> — the tech requests for REF-3 (in progress)
+              and REF-4 (open) are visible there.
+            </li>
+            <li>
+              The notification bell: REF-1 (win notification to the head of sales), REF-2 (proposal
+              reminder), REF-3 (test completed), REF-4 (new tech request).
+            </li>
+          </ol>
+          <p class="meta">
+            Note: the proposal and prices/stock are pulled live from the catalog/mock ERP using the
+            client's individual prices — the numbers aren't made up and aren't stored in the seed.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>CRM Pro · change showcase · #305 · branch feat/305-reference-deals</footer>
+  </body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — deal card by stage (#207)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 820px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 3px solid #f4b400;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .box {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+      }
+      .was {
+        background: #fff5f5;
+      }
+      .now {
+        background: #f3fbf4;
+      }
+      code {
+        background: #f0f0f0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #f4b400;
+        color: #000;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Deal card — fields for the current stage only</h1>
+    <p>
+      <span class="tag">#207</span> &middot; branch <code>feat/deal-stage-sections</code> &middot;
+      epic #204 (2026-06-25 demo review)
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        The deal card ("Overview" tab) no longer
+        <strong>shows every field at once in one long sheet</strong>. Sections expand based on the
+        deal's stage.
+      </li>
+      <li>
+        <strong>The current stage</strong> — the section is active (forms and actions are
+        available).
+      </li>
+      <li>
+        <strong>Past stages</strong> — read-only: filled-in data is visible (audit, samples, test
+        act), marked with a "completed" badge, no forms.
+      </li>
+      <li>
+        <strong>Future stages</strong> — collapsed into a hint "🔒 … — unlocks at the '…' stage".
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <div class="grid">
+      <div class="box was">
+        <strong>Before</strong>
+        <p>
+          Audit, samples, technologist request, test act, proposal, letter, order — all at once, in
+          a long scroll regardless of stage. The manager drowned in irrelevant fields.
+        </p>
+      </div>
+      <div class="box now">
+        <strong>After</strong>
+        <p>
+          Only the current stage's section is visible + a brief past (read-only). The future is
+          collapsed. Exactly one active section per stage.
+        </p>
+      </div>
+    </div>
+
+    <h2>Stage → active section mapping</h2>
+    <ul>
+      <li><code>Production audit</code> → the "Production audit" section (audit form)</li>
+      <li><code>Test request</code> → "Test batch / samples" (sample reservation)</li>
+      <li><code>Testing</code> → "Technologist request and test act"</li>
+      <li><code>Proposal calculation</code> → "Proposal and letter"</li>
+      <li><code>Won</code> → "Customer order (ERP)"</li>
+    </ul>
+    <p class="muted">
+      A technologist (with no access to commerce) still doesn't see the proposal/order sections —
+      same as before.
+    </p>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Open <code>http://localhost:3003/deals</code> (logged in as the head of sales).</li>
+      <li>
+        Open a deal at an <strong>early</strong> stage (e.g. "Qualification"/"Audit") — future
+        sections are collapsed into "🔒 unlocks at stage…", only the current stage's section is
+        active.
+      </li>
+      <li>
+        Open a deal at the <strong>"Testing"</strong> stage — "Technologist request and test act" is
+        active; audit and samples above show a "completed" badge (read-only).
+      </li>
+      <li>
+        Open a <strong>won</strong> deal — every section shows "completed", "Customer order (ERP)"
+        is active.
+      </li>
+      <li>
+        Expand any collapsed future section — it only shows a caption inside, no forms (it unlocks
+        when the deal reaches that stage).
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li><code>npm run verify</code> green — typecheck + lint + format + 512 tests.</li>
+      <li>
+        The <code>sectionVisibility</code> domain is covered by tests (active/readonly/locked, won,
+        lost, first stage).
+      </li>
+      <li>
+        Verified live (dev :3003) across 12 deals in every stage: exactly one active section per
+        deal (audit → tech → proposal → order), early ones — everything locked, won — everything
+        completed + the order active.
+      </li>
+    </ul>
+  </body>
+</html>

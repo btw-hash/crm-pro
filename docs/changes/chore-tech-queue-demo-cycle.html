@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>chore: close the tech queue loop — manager notification (#311)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a1a;
+      }
+      h1 {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+      }
+      h2 {
+        margin-top: 2rem;
+        color: #374151;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      td,
+      th {
+        border: 1px solid #d1d5db;
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
+      .new {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .changed {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      ol li {
+        margin: 0.5rem 0;
+      }
+      .path {
+        color: #6366f1;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>chore: close the "tech queue" loop — manager notification (Closes #311)</h1>
+    <p>
+      When a technologist completes a tech request, the responsible manager now gets a notification
+      in the <code>/notifications</code> feed. The deal stage is left untouched — this is purely
+      informational.
+    </p>
+
+    <h2>Changed and added files</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Status</th>
+          <th>What was done</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code class="path">src/application/use-cases/complete-tech-request.ts</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            Dependencies extended: added <code>deals: DealRepository</code> and
+            <code>notifier: Notifier</code>. After saving the <code>done</code> status, it looks up
+            the deal and notifies <code>responsibleManagerId</code>. If the deal isn't found — the
+            notification is skipped, completion isn't interrupted.
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/infrastructure/composition-root.ts</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            The <code>completeTechRequest</code> wiring now takes <code>deals</code> and
+            <code>notifier</code> arguments (both were already in the same scope).
+          </td>
+        </tr>
+        <tr>
+          <td><code class="path">src/app/tech-queue/actions.ts</code></td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            Added <code>revalidatePath("/notifications")</code> to
+            <code>completeTechRequestAction</code> — the manager's notification feed refreshes right
+            after the request is completed.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code class="path">src/application/use-cases/take-complete-tech-request.test.ts</code>
+          </td>
+          <td><span class="badge changed">changed</span></td>
+          <td>
+            All <code>completeTechRequest</code> tests switched to a fake <code>deals</code> + fake
+            <code>notifier</code>. Two new tests added: a notification is sent to the responsible
+            manager; when the deal isn't found — completion still succeeds, no notification.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code class="path">docs/changes/chore-tech-queue-demo-cycle.html</code>
+          </td>
+          <td><span class="badge new">new</span></td>
+          <td>Showcase (#311).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Before → after</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Before</th>
+          <th>After</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            The technologist clicked "Done" → the request moved to <code>done</code>, and the
+            manager never found out. The loop had to be closed manually (a phone call / checking a
+            list).
+          </td>
+          <td>
+            The technologist clicks "Done" → the responsible sales rep instantly sees a notification
+            in the <code>/notifications</code> feed: "The technologist completed the request for
+            deal '…'. Review the result and plan the next step."
+          </td>
+        </tr>
+        <tr>
+          <td>The deal stage didn't change.</td>
+          <td>
+            The deal stage still doesn't change automatically — the manager makes that call
+            themselves.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>
+        Sign in as the technologist (<code>kent / demo1234</code>). Go to the
+        <strong>Tech Queue</strong> (<code>/tech-queue</code>).
+      </li>
+      <li>
+        Take the request into work with the <strong>"Take into work"</strong> button — the status
+        changes to "in progress".
+      </li>
+      <li>Click <strong>"Done"</strong> — the request disappears from the active queue.</li>
+      <li>
+        Sign out and sign in as that deal's responsible manager (e.g.
+        <code>owens / demo1234</code>).
+      </li>
+      <li>
+        Go to <strong>Notifications</strong> (<code>/notifications</code>) — a notification has
+        appeared in the feed: "The technologist completed the request for deal '…'. Review the
+        result and plan the next step."
+      </li>
+    </ol>
+
+    <h2>Tests</h2>
+    <p>
+      <code>npm run verify</code>: all tests green. New tests in
+      <code>take-complete-tech-request.test.ts</code>: "notifies the responsible manager when a
+      request is completed" and "completes without a notification if the deal isn't found".
+    </p>
+  </body>
+</html>

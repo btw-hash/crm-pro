@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — showcase · deal-360-audit-quote</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: #2c3138;
+        background: #eef1f5;
+      }
+      header.top {
+        background: #2a3543;
+        color: #fff;
+        padding: 18px 32px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      header.top h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header.top .badge {
+        background: #e74c3c;
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      main {
+        max-width: 860px;
+        margin: 32px auto;
+        padding: 0 24px 64px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 28px 0 10px;
+        border-bottom: 2px solid #e3e8ee;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+      code {
+        background: #f3f6f9;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 13px;
+      }
+      ol,
+      ul {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>CRM Pro — change showcase</h1>
+      <span class="badge">deal-360-audit-quote</span>
+    </header>
+    <main>
+      <h2>360 deal card — "Audit" and "Proposal" workspaces (PR6, step 6e)</h2>
+      <div class="card">
+        <p>
+          The final two stages of the 360 deal card have been brought in line with the unified bento
+          style (like Qualification/Testing). No reference mockup exists for these stages — they
+          were designed following the approved pattern used by the other workspaces.
+        </p>
+        <p>
+          <strong>Before:</strong> the "Production audit" and "Proposal" sections were bare forms
+          with no framing, out of step with the rest of the card.
+        </p>
+        <p>
+          <strong>After:</strong>
+        </p>
+        <ul>
+          <li>
+            <strong>Audit</strong> — a bento workspace: an intro ("record the equipment and client
+            pain points"), the audit form in a glass card; once the stage is passed, the filled-in
+            values become read-only.
+          </li>
+          <li>
+            <strong>Proposal</strong> — a bento workspace: a "Proposal" card (deterministic
+            calculation + AI-assisted drafting) and a "Client letter" card, both in glass; once the
+            stage is passed — "Proposal stage completed".
+          </li>
+        </ul>
+        <p>
+          These are presentational wrappers around existing forms (AuditForm / ProposalComposer /
+          ClientMessageComposer) — domain logic, calculations, and RBAC were not changed.
+        </p>
+      </div>
+
+      <h2>Verification</h2>
+      <div class="card">
+        <ol>
+          <li>
+            Open a deal at the "Audit" stage → the "Production audit" section shows the intro and
+            form in a glass card.
+          </li>
+          <li>Open a deal at the "Proposal" stage → two cards: Proposal and "Client letter".</li>
+          <li>
+            Open a completed deal → "Production audit · completed" (read-only values) and "Proposal
+            · completed".
+          </li>
+        </ol>
+        <p>
+          <code>npm run verify</code> (934) + <code>npm run ci:local</code> (build + postgres-smoke)
+          — all green. Headed: deal-6 (completed) — both sections render in the new workspaces, the
+          page is intact. Active "Audit"/"Proposal" stages aren't present in the demo seed —
+          verified via the read-only path and reuse of already-working forms.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

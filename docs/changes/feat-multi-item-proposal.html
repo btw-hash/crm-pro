@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRM Pro — change showcase · multi-item proposal</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        flex: 1;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      .ba {
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+      .ba h3 {
+        margin: 0 0 0.25rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ba p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .ba--was {
+        background: #f6f8fa;
+      }
+      .ba--was h3 {
+        color: var(--muted);
+      }
+      .ba--now {
+        background: #eef9f0;
+      }
+      .ba--now h3 {
+        color: #1f8a4c;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.45rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Multi-item proposal</h1>
+      <p>
+        Branch <span class="tag">feat/multi-item-proposal</span> · a proposal now covers several
+        product line items
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            A proposal is assembled from <b>several product line items</b> (previously — one).
+            Matches the distributor's real process: 20–30 line items in one proposal.
+          </li>
+          <li>
+            Line items can be <b>added and removed</b>; a <b>total across all line items</b> is
+            calculated.
+          </li>
+          <li>PDF export and saving to the deal feed are now <b>multi-item</b>.</li>
+          <li>
+            Clean architecture is respected (domain → application → infrastructure → app),
+            <b>197 tests green</b>, typecheck + lint + format clean. The numbers are deterministic
+            (the ERP's price × quantity), AI never invents them.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Before → after</h2>
+        </div>
+        <div class="card__body">
+          <div class="ba ba--was">
+            <h3>Before</h3>
+            <p>
+              A proposal = one line item: one product + a quantity. The calculation and the PDF
+              covered only a single product. Didn't fit a real proposal with dozens of line items.
+            </p>
+          </div>
+          <div class="ba ba--now">
+            <h3>After</h3>
+            <p>
+              A proposal = a list of line items (product + quantity for each). A "+ Add line item"
+              button and row deletion. The total = the sum across line items that have an ERP price.
+              The preview table, the PDF, and the feed summary — all cover every line item.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Repro steps</h2>
+        </div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Start the app: <span class="kbd">npm run dev</span> → open
+              <span class="kbd">http://localhost:3000</span>.
+            </li>
+            <li>
+              Go to <span class="kbd">/deals</span>, open any deal (the card
+              <span class="kbd">/deals/[id]</span>).
+            </li>
+            <li>
+              Find the proposal-building block (a form with a product picker and a "Build proposal
+              (AI)" button).
+            </li>
+            <li>Pick a product and enter a quantity for the first line item.</li>
+            <li>
+              Click <b>"+ Add line item"</b> → add a second product with a quantity. Repeat for 3–4
+              line items.
+            </li>
+            <li>
+              Remove one line item with the <b>"✕"</b> button — the row disappears, the rest stay.
+            </li>
+            <li>
+              Fill in the monthly output and defect rate before/after, click
+              <b>"Build proposal (AI)"</b>.
+            </li>
+            <li>
+              See the proposal card: <b>a table with a row per line item</b> (product, quantity,
+              price, line total) + a <b>"Total"</b> row across every line item.
+            </li>
+            <li>
+              Click <b>"📄 Export to PDF"</b> → the same multi-item table with the total is in the
+              PDF.
+            </li>
+            <li>
+              Click <b>"💾 Save to deal"</b> → a note listing every line item appears in the deal's
+              feed.
+            </li>
+          </ol>
+          <p class="note">
+            Edge case: a product with no individual price in the ERP — its row shows "—" and isn't
+            included in the total; if no line item has a price, the total is empty (not 0).
+          </p>
+          <p class="note">
+            Screenshots — to be added after a browser run (golden path + the edge case above).
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>
+      CRM Pro · change showcase · a sample of the "HTML changelog for every PR" format
+    </footer>
+  </body>
+</html>

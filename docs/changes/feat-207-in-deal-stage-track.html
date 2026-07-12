@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Move a deal along the pipeline from the card — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #1b8fd6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      .warn {
+        color: #9a6a00;
+        background: #fdf4dd;
+        border: 1px solid #f0e0b0;
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Move a deal along the pipeline — right from the card</h1>
+      <p>+ a reminder if the current stage's action hasn't been completed</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (#207)</h2>
+        <ul>
+          <li>
+            The deal card now shows a <b>pipeline track</b> (completed / current stage) and
+            transition buttons — a deal can now be moved without going through the board.
+          </li>
+          <li>
+            The buttons only show <b>valid</b> transitions and rollbacks; after clicking, the card
+            updates immediately and the new stage's section <b>unlocks</b>.
+          </li>
+          <li>
+            If the current stage's action hasn't been completed —
+            <span class="warn">⚠ a reminder</span> (audit not done / samples not requested / test
+            act not recorded). This is a <b>hint, not a block</b> — the decision is up to the
+            person.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Moving between stages</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Where you can move from</td>
+                <td class="was">Only from the board (kanban)</td>
+                <td>+ right from the deal card</td>
+              </tr>
+              <tr>
+                <td>Step control</td>
+                <td class="was">—</td>
+                <td>A reminder if the stage's action hasn't been completed</td>
+              </tr>
+              <tr>
+                <td>After a transition</td>
+                <td class="was">The card didn't refresh (bug, now fixed)</td>
+                <td>The new stage's section opens right away</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open a deal at the "Audit" stage (e.g. <b>deal-4</b>).</li>
+            <li>
+              Under the heading — the track (Qualification ✓ → <b>Audit</b> → …) and a reminder "⚠
+              Audit hasn't been done yet".
+            </li>
+            <li>
+              Click <b>"→ Request a test"</b> — the stage changes, the "Test batch / samples"
+              section opens, and the reminder switches to "Samples haven't been requested yet".
+            </li>
+            <li>The <b>"↩ Audit"</b> button rolls back to the previous stage.</li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>
+      Change showcase · docs/changes · move a deal along the pipeline from the card (#207)
+    </footer>
+  </body>
+</html>

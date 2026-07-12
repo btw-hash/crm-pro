@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assistant: conversation history (backend) — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #2f7a4d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .card {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 1.4rem;
+      }
+      .card h3 {
+        margin: 0 0 0.8rem;
+        font-size: 1.05rem;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.78rem;
+        background: #eaf4ee;
+        color: var(--accent);
+        border-radius: 999px;
+        padding: 0.1rem 0.6rem;
+        margin-left: 0.4rem;
+        vertical-align: middle;
+      }
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        margin: 0.6rem 0;
+      }
+      .ba > div {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        background: #fafbfc;
+      }
+      .ba .was h4,
+      .ba .now h4 {
+        margin: 0 0 0.3rem;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--muted);
+      }
+      .ba .now {
+        border-color: #cfe6d9;
+        background: #f4faf6;
+      }
+      ol {
+        margin: 0.4rem 0;
+        padding-left: 1.3rem;
+      }
+      li {
+        margin: 0.3rem 0;
+      }
+      code {
+        background: #eef1f5;
+        border-radius: 4px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.92em;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Head of sales assistant: conversation history — backend</h1>
+      <p>PR1 of 2 · Issue #338 · UI (on-screen history) — separate PR2</p>
+    </header>
+
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <p>
+          Backend for the head of sales AI assistant's memory: (A) the assistant now understands
+          dialogue context — follow-ups like "any links?" / "any other options?" are now interpreted
+          relative to the previous answer; (B) conversation persistence was added — saving, listing,
+          opening, and searching history, private to the owner (RBAC). The assistant's system prompt
+          was also strengthened — answers are now on-point and framed in Millbrook Foods' business
+          context.
+        </p>
+        <p class="muted">
+          This is the server layer (domain/port/adapters/schema/use-cases/agent context). There's no
+          visible history screen here — it's wired up in PR2.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Dialogue context in the agent <span class="tag">AI behavior</span></h3>
+        <div class="ba">
+          <div class="was">
+            <h4>Before</h4>
+            "Find bakeries in Denver" → a list. "Any links?" — the assistant didn't understand what
+            this referred to, and answered as if it were a new, isolated question.
+          </div>
+          <div class="now">
+            <h4>After</h4>
+            Previous dialogue turns are passed to the AI (a "PREVIOUS DIALOGUE" section in the
+            prompt). "Any links?" is interpreted as a follow-up to the earlier answer about
+            bakeries.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Conversation persistence <span class="tag">data</span></h3>
+        <div class="ba">
+          <div class="was">
+            <h4>Before</h4>
+            A conversation lived only in the current session and disappeared — you couldn't reopen
+            the history or find a past answer.
+          </div>
+          <div class="now">
+            <h4>After</h4>
+            Every "question → answer" exchange is saved. Available: a list of conversations (newest
+            first, with a preview), opening a full conversation, searching message text. Other
+            people's conversations are inaccessible (tied to the owner).
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Business context and answer style <span class="tag">AI behavior</span></h3>
+        <div class="ba">
+          <div class="was">
+            <h4>Before</h4>
+            On "find clients / bakeries in the market," the assistant could drift into generic
+            marketing advice and would paste raw links directly into the text.
+          </div>
+          <div class="now">
+            <h4>After</h4>
+            The prompt now hard-codes: Millbrook Foods is an ingredients distributor, our clients
+            are bakeries / confectioneries / HoReCa that we sell to. "Find clients" = searching for
+            lead companies of that kind. The answer is specific found companies with a short
+            relevance line, no raw URLs in the text.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>How to verify (backend)</h3>
+        <ol>
+          <li>
+            From the project root, run <code>npm run verify</code> — typecheck + lint + format +
+            tests should all be green.
+          </li>
+          <li>
+            Dialogue context: the test
+            <code>src/application/use-cases/ask-manager-assistant.test.ts</code> → the "(e) dialogue
+            context" scenario checks that previous turns reach the AI planner.
+          </li>
+          <li>
+            Persistence + RBAC: the tests
+            <code>in-memory-assistant-conversation-repository.test.ts</code> and
+            <code>assistant-conversations.test.ts</code> — creating a conversation from a question,
+            <code>updatedAt</code> increasing, list sorting, substring search, and that a different
+            owner gets <code>null</code> / an empty list.
+          </li>
+          <li>
+            Strengthened prompt: <code>ASSISTANT_PLAN_SYSTEM</code> in
+            <code>src/infrastructure/ai/llm-ai-gateway.ts</code> — Millbrook Foods' business context
+            and answer style rules.
+          </li>
+        </ol>
+        <p class="muted">
+          The on-screen conversation history (list / open / search in the assistant UI) — in PR2.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

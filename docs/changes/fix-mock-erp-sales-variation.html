@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live month-by-month sales history in the Mock ERP — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #c1121f;
+        --good: #2e7d32;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      /* Mini "chart": before and after, pure CSS bars */
+      .chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 150px;
+        padding: 0.6rem 0.4rem 0;
+        border-bottom: 2px solid var(--border);
+      }
+      .chart .col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .chart .col > .bar {
+        width: 70%;
+        border-radius: 3px 3px 0 0;
+        background: linear-gradient(180deg, #4f6c8a, #2a3543);
+      }
+      .chart.flat .col > .bar {
+        background: linear-gradient(180deg, #e0635f, var(--accent));
+      }
+      .chart .col > .lbl {
+        font-size: 0.65rem;
+        color: var(--muted);
+      }
+      .legend {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0.5rem 0 0;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 0.78rem;
+        padding: 0.05rem 0.5rem;
+        border-radius: 999px;
+        background: #eef3f9;
+        color: var(--dark);
+      }
+      .pill.good {
+        background: #e7f4e9;
+        color: var(--good);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Live month-by-month sales history in the Mock ERP</h1>
+      <p>The "Revenue by month" chart now shows a curve, not equal-height red bars</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was done (closes #350)</h2>
+        <ul>
+          <li>
+            The synthetic sales-history generator in <b>the Mock ERP</b> (`tools/mock-erp/data.mjs`,
+            the `salesHistory()` and `purchaseHistory()` functions) now produces
+            <b>different revenue per month</b>, instead of the same amount every month.
+          </li>
+          <li>
+            The period was extended from <b>6 to 12 months</b> (2025-07 .. 2026-06) — the
+            <b>"Year"</b> and <b>"Half-year"</b> breakdowns on the chart now show a proper curve.
+          </li>
+          <li>
+            The data now encodes <b>trend storylines</b> (stable / growing / decline to zero / a
+            departed SKU / a new SKU) — the same data is read by "Assortment", "Recommendations",
+            and "Procurement", so <b>all the AI analytics</b> get richer, not just one chart.
+          </li>
+          <li>
+            Everything is <b>deterministic</b> (no `Date.now` / `Math.random`) — the demo is stable
+            across runs. The ERP's OData document format is untouched (Ref_Key / Number / Date / the
+            table section / units) — only the amounts / quantities / dates vary by month.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after (revenue dynamics)</h2></div>
+        <div class="card__body">
+          <p class="legend">
+            Before: <span class="pill">every month equal</span> → bars of the same height, a "peak",
+            white labels invisible on a white background.
+          </p>
+          <div class="chart flat">
+            <div class="col">
+              <div class="bar" style="height: 92%"></div>
+              <span class="lbl">07</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 92%"></div>
+              <span class="lbl">08</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 92%"></div>
+              <span class="lbl">09</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 92%"></div>
+              <span class="lbl">10</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 92%"></div>
+              <span class="lbl">11</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 92%"></div>
+              <span class="lbl">12</span>
+            </div>
+          </div>
+
+          <p class="legend" style="margin-top: 1.4rem">
+            After: <span class="pill good">a live 12-month curve</span> — $16,800 → $21,000,
+            month-to-month swings + an upward trend (growing clients outweigh the declining one).
+          </p>
+          <div class="chart">
+            <div class="col">
+              <div class="bar" style="height: 80%"></div>
+              <span class="lbl">07</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 84%"></div>
+              <span class="lbl">08</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 88%"></div>
+              <span class="lbl">09</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 83%"></div>
+              <span class="lbl">10</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 87%"></div>
+              <span class="lbl">11</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 91%"></div>
+              <span class="lbl">12</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 86%"></div>
+              <span class="lbl">01</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 91%"></div>
+              <span class="lbl">02</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 96%"></div>
+              <span class="lbl">03</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 90%"></div>
+              <span class="lbl">04</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 95%"></div>
+              <span class="lbl">05</span>
+            </div>
+            <div class="col">
+              <div class="bar" style="height: 100%"></div>
+              <span class="lbl">06</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>What storylines are encoded (by client / product)</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Client · product</th>
+                <th>Trend</th>
+                <th>What's visible in the demo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  Union Grocery Wholesale · Belcolade<br />Victoria Wholesale Market · Belcolade
+                </td>
+                <td>stable (A-client)</td>
+                <td>
+                  A large, even revenue base (~$4,000 / ~$3,300/month, a light &plusmn;4%
+                  "breathing")
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Sunrise Bakery Co. · Belcolade<br />Baltic Trading Co. · Belcolade<br />Savor
+                  Restaurant Group · Tegral Muffin Mix
+                </td>
+                <td>growing</td>
+                <td>An upward curve: e.g. Baltic Trading Co. $3,000 → $5,000 over the year</td>
+              </tr>
+              <tr>
+                <td>Golden Grain Industries · S500 Dough Improver</td>
+                <td>decline to zero</td>
+                <td>
+                  $600 → $120, then a cutoff starting in January — losing the client (a reason for a
+                  reminder)
+                </td>
+              </tr>
+              <tr>
+                <td>Sweet Tooth Market · Topfil Lingonberry Filling</td>
+                <td>departed SKU (out-by)</td>
+                <td>
+                  Purchases run for six months, then the SKU disappears from orders — a dropped line
+                  item
+                </td>
+              </tr>
+              <tr>
+                <td>Meringue Confectionery · Miroir Neutral Glaze Gel</td>
+                <td>new SKU (in-from)</td>
+                <td>
+                  Appears from the second half of the period onward — a newcomer picking up momentum
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="legend">
+            Procurement (`purchaseHistory()`) is aligned: Belcolade / Carat — stable, the dough
+            improver — declining (mirroring the declining sales), the margarine — increasing (to
+            match rising demand).
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Open <b>/analytics</b> (the "Sales Analytics" section).</li>
+            <li>
+              The <b>"Revenue by month"</b> block — now shows bars of <b>different heights</b>
+              with a readable curve, not 4-6 identical "peaks".
+            </li>
+            <li>
+              Switch the breakdown to <b>"Year" / "Half-year"</b> — 12 / 6 months are visible with
+              an upward trend and month-to-month swings.
+            </li>
+            <li>
+              Check <b>"Assortment"</b> / <b>"Recommendations"</b> / <b>"Procurement"</b> — the
+              storylines (S500 decline, new Miroir, departed Topfil) make the hints more meaningful.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>
+      Change showcase &middot; docs/changes &middot; live month-by-month sales history in the Mock
+      ERP (#350)
+    </footer>
+  </body>
+</html>

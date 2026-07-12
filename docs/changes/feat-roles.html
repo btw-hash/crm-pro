@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Roles and access control — showcase</title>
+    <style>
+      :root {
+        --accent: #2aabee;
+        --accent-strong: #1b8fd6;
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --ok: #1f8a4c;
+        --no: #b04141;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        background: #f3f6f9;
+        font-size: 0.82rem;
+      }
+      td.c,
+      th.c {
+        text-align: center;
+      }
+      .y {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .n {
+        color: var(--no);
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      .kbd {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        background: #f3f6f9;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.4rem;
+      }
+      .tag {
+        display: inline-block;
+        background: #eef4fb;
+        color: var(--accent-strong);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 0.6rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Roles and access control</h1>
+      <p>Unified model · 4 roles · based on roles-rbac + category manager and section guards</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What was built</h2>
+        <ul>
+          <li>
+            <b>4 roles</b>: Head of sales, Manager, Technologist,
+            <b>Category manager/Procurement</b>.
+          </li>
+          <li>
+            <b>Data access</b> — enforced directly in use cases: a Manager only sees their own
+            portfolio, the head of sales sees the whole department; a technologist doesn't see
+            margin/prices at all.
+          </li>
+          <li>
+            <b>Section access</b> — the sidebar is filtered by role, pages are guarded (no access →
+            redirect to home): <span class="tag">/procurement</span> — category manager/head of
+            sales, <span class="tag">/tech-queue</span> — technologist/head of sales,
+            <span class="tag">/analytics</span> and <span class="tag">/assistant</span> — by
+            permission.
+          </li>
+          <li>
+            Numbers are deterministic, AI doesn't invent them. Clean architecture is preserved.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Access matrix</h2></div>
+        <div class="card__body" style="overflow-x: auto">
+          <table>
+            <tr>
+              <th>Section / data</th>
+              <th class="c">Head of sales</th>
+              <th class="c">Manager</th>
+              <th class="c">Technologist</th>
+              <th class="c">Category manager</th>
+            </tr>
+            <tr>
+              <td>Clients / deals</td>
+              <td class="c y">whole department</td>
+              <td class="c y">own portfolio</td>
+              <td class="c">read-only</td>
+              <td class="c">read-only</td>
+            </tr>
+            <tr>
+              <td>Margin / prices / AR</td>
+              <td class="c y">✓</td>
+              <td class="c y">✓</td>
+              <td class="c n">hidden</td>
+              <td class="c y">✓</td>
+            </tr>
+            <tr>
+              <td>Analytics</td>
+              <td class="c y">department</td>
+              <td class="c y">personal</td>
+              <td class="c n">—</td>
+              <td class="c n">—</td>
+            </tr>
+            <tr>
+              <td>Head of sales AI assistant</td>
+              <td class="c y">✓</td>
+              <td class="c n">—</td>
+              <td class="c n">—</td>
+              <td class="c n">—</td>
+            </tr>
+            <tr>
+              <td>Procurement (quotas/deficit)</td>
+              <td class="c y">✓</td>
+              <td class="c n">—</td>
+              <td class="c n">—</td>
+              <td class="c y">✓</td>
+            </tr>
+            <tr>
+              <td>Tech queue</td>
+              <td class="c y">✓</td>
+              <td class="c n">—</td>
+              <td class="c y">✓</td>
+              <td class="c n">—</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Repro steps</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              Run the app: <span class="kbd">npm run dev</span> → open the address printed to the
+              console (default <span class="kbd">http://localhost:3000</span>).
+            </li>
+            <li>Open <span class="kbd">/login</span> — it has quick sign-in buttons per role.</li>
+            <li>
+              <b>Head of sales</b> (alexander) → the sidebar shows EVERYTHING: clients, deals,
+              analytics, assistant, procurement, tech queue.
+            </li>
+            <li>
+              <b>Manager</b> (owens) → clients, deals (own portfolio), analytics, notifications.
+              Procurement, tech queue, and the assistant are NOT in the menu.
+            </li>
+            <li>
+              <b>Technologist</b> (kent) → tech queue + deals; doesn't see margin/prices or
+              analytics.
+            </li>
+            <li>
+              <b>Category manager</b> (buyer) → the "Procurement" section (quotas/deficit) + deals;
+              no personal sales analytics or assistant.
+            </li>
+            <li>
+              Guard check by URL: logged in as a Manager, open
+              <span class="kbd">/procurement</span> or <span class="kbd">/tech-queue</span>
+              directly → redirected to home (no access). Logged in as a category manager —
+              <span class="kbd">/procurement</span> opens.
+            </li>
+          </ol>
+          <p class="note">
+            The demo password for everyone is <span class="kbd">demo1234</span>. Names/access are
+            synthetic.
+          </p>
+        </div>
+      </section>
+    </div>
+    <footer>CRM Pro · change showcase · roles and access control</footer>
+  </body>
+</html>

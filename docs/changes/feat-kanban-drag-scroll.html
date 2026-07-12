@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Horizontal board pan (feat/kanban-drag-scroll)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 25px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 26px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+        box-shadow: 0 6px 18px rgba(45, 38, 32, 0.06);
+      }
+      .card h2 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+      code {
+        background: #f0ece5;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      ol,
+      ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .ok {
+        color: #197a48;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>The "Tasks" board: drag-to-scroll horizontally</h1>
+      <p class="sub">branch <code>feat/kanban-drag-scroll</code> · requested by the client</p>
+
+      <div class="card">
+        <h2>What was added</h2>
+        <p>
+          On the deals board (kanban) you can now
+          <b>scroll the columns sideways by grabbing an empty spot</b> (the board background, a
+          column body, a stage header) and dragging — like the "hand" tool in maps/Figma. The cursor
+          on the board is a "hand" (<code>grab</code> / <code>grabbing</code> while dragging).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Card drag-and-drop is NOT broken</h2>
+        <p>The two gestures are split by what you grab:</p>
+        <ul>
+          <li>grabbed an <b>empty spot</b> (not a card) → the board <b>pan-scrolls</b>;</li>
+          <li>
+            grabbed a <b>card</b> → the existing <b>drag-and-drop</b> between stages (native, no
+            changes).
+          </li>
+        </ul>
+        <p class="note">
+          Under the hood: a <code>mousedown</code> on the board starts the pan only if the target
+          isn't <code>[draggable]</code>/a button/a link/a control (otherwise — it bails out,
+          staying out of the way of DnD/clicks/opening a card). The move is tracked on
+          <code>window</code> (the pan doesn't "drop" when the cursor leaves the board).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>Open <code>/deals</code> ("Tasks").</li>
+          <li>
+            Hover an empty spot on the board (background/stage header) — the cursor is a "hand".
+          </li>
+          <li>Hold the left mouse button and drag sideways — the columns scroll horizontally.</li>
+          <li>Grab a card and drag it to another stage — the move works as before.</li>
+          <li>Click a card's title — the side panel opens (as before).</li>
+        </ol>
+        <p class="note" style="margin-top: 10px">
+          <span class="ok">Verified in the browser:</span> panning on an empty spot moved
+          <code>scrollLeft</code> 0→180; a <code>mousedown</code> on a card left
+          <code>scrollLeft=0</code> (DnD wasn't hijacked); cards remain <code>draggable</code>.
+          <code>npm run verify</code> green (789 tests).
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

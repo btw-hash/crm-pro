@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase · Collect remaining onboarding documents (feat/onboarding-collect-docs)</title>
+    <style>
+      :root {
+        --fg: #16181d;
+        --muted: #6e6a66;
+        --accent: #bf322b;
+        --success: #197a48;
+        --bg: #f6f1ea;
+        --card: #fffdfb;
+        --border: #e8e1d9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        padding: 32px 20px 60px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 26px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 16px;
+        box-shadow: 0 6px 18px rgba(45, 38, 32, 0.06);
+      }
+      .card h2 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+      .ba {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin: 8px 0 4px;
+      }
+      .col {
+        flex: 1;
+        min-width: 240px;
+      }
+      .col b {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 12px;
+        margin: 2px;
+      }
+      .pill--on {
+        border: 1px solid rgba(31, 158, 108, 0.35);
+        background: rgba(31, 158, 108, 0.1);
+        color: var(--success);
+      }
+      .pill--off {
+        border: 1px solid rgba(120, 130, 150, 0.3);
+        background: #fff;
+        color: var(--muted);
+      }
+      code {
+        background: #f0ece5;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      ol {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Onboarding: collect remaining documents for an existing package</h1>
+      <p class="sub">
+        branch <code>feat/onboarding-collect-docs</code> · following the client's question "how do
+        we collect the rest of the documents?"
+      </p>
+
+      <div class="card">
+        <h2>Problem</h2>
+        <p>
+          Package documents could <b>only be set when onboarding was created</b>. If it was started
+          with 3 out of 6, there was no way to mark the rest: the list row showed static text
+          <code>✓/✗</code>, and the "Send to legal" button only appeared once all 6 were collected —
+          the package would get stuck.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>After</h2>
+        <p>
+          Documents in the row are now <b>interactive toggle pills</b> (for the "Collecting" and
+          "Rework" statuses). A click marks/unmarks a document; the "N/6" counter updates; once all
+          6 are collected, "Send to legal →" appears.
+        </p>
+        <div class="ba">
+          <div class="col">
+            <b>Before (read-only, dead end)</b>
+            <div>✓ Company card · ✗ Power of attorney · ✗ Bank details</div>
+          </div>
+          <div class="col">
+            <b>After (clickable)</b>
+            <span class="pill pill--on">✓ Company card</span>
+            <span class="pill pill--off">○ Power of attorney</span>
+            <span class="pill pill--off">○ Bank details</span>
+          </div>
+        </div>
+        <p class="note">
+          After it's sent to legal (<code>Under review</code>) and approved, the package is
+          read-only — documents can no longer be edited.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>How it's built (clean architecture)</h2>
+        <ol>
+          <li>
+            domain <code>setDocumentCollected</code> — immutable, only in
+            <code>collecting</code>/<code>rejected</code>, validates that the document belongs to
+            the package;
+          </li>
+          <li>
+            use-case <code>makeSetOnboardingDoc</code> wired into <code>composition-root</code>;
+          </li>
+          <li>
+            server action <code>setOnboardingDocAction</code> (RBAC for the sales role, catches the
+            domain error);
+          </li>
+          <li>
+            UI: a form + server action per document (works without JS),
+            <code>revalidatePath</code>.
+          </li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Repro steps</h2>
+        <ol>
+          <li>
+            Log in as a <b>Manager</b> (or head of sales) → the <code>/onboarding</code> section.
+          </li>
+          <li>
+            On an onboarding record at "Collecting documents", click document pills — the counter
+            increases (e.g. 4/6 → 5/6 → 6/6).
+          </li>
+          <li>Once all 6 are marked, the <b>"Send to legal →"</b> button appears.</li>
+          <li>
+            Clicking an already-collected item (✓) unmarks it again. Refresh the page — the state
+            persists.
+          </li>
+        </ol>
+        <p class="note" style="margin-top: 10px">
+          Verified live (as Manager): 4/6 → 5/6 → 6/6 (the send button appeared) → unmarked back to
+          5/6 → all of it survived F5. <code>npm run verify</code> is green (789 tests, +8 new).
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

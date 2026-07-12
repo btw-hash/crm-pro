@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Head of sales Assistant: PII pseudonymization + 3 fixes — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+        --accent: #1b8fd6;
+        --bad: #c0392b;
+        --good: #1e8e5a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .lead li {
+        margin: 0.45rem 0;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--bad);
+      }
+      .now {
+        color: var(--good);
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        background: #eaf4fb;
+        color: var(--accent);
+        margin-left: 0.4rem;
+        vertical-align: middle;
+      }
+      code {
+        background: #f3f5f8;
+        padding: 0.05rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.86em;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Head of sales Assistant: client names no longer go to the LLM in plain text</h1>
+      <p>
+        PII pseudonymization wired in for every request (GDPR/CCPA-style) + 3 assistant behavior
+        fixes
+      </p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            <b>PII pseudonymization wired in<span class="tag">Closes #282 / #296</span></b> — the
+            <code>pseudonymize</code> masking mechanism existed, but the provider was built with
+            <span class="was">empty lists</span> → client/manager/technologist names and company
+            names went to the LLM <span class="was">in plain text</span>. Now the assistant
+            <span class="now">collects them from the CRM snapshot on every request</span> and masks
+            them before sending to the model; the originals are restored in the response. Known Tax
+            IDs are excluded from phone-number detection (#296).
+          </li>
+          <li>
+            <b>Outgoing web query cleanup<span class="tag">#282</span></b> — previously only
+            <span class="was">phone numbers</span> were stripped from the public search query. Now
+            <span class="now">known client names</span> are stripped too (in case the model still
+            inserts them into the search string).
+          </li>
+          <li>
+            <b>Step limit no longer loses data<span class="tag">#14</span></b> — when the ReAct loop
+            hit its limit, the assistant <span class="was">returned an empty stub</span> and lost
+            the collected snapshot/web data. Now it
+            <span class="now">synthesizes an answer from the data already collected</span>, and the
+            source stays in the response.
+          </li>
+          <li>
+            <b>Web sources persist in history<span class="tag">#15</span></b> — opening a
+            conversation from history made the clickable links <span class="was">disappear</span>.
+            Now they <span class="now">are saved with the response and restored</span> on reopen.
+          </li>
+          <li>
+            <b>Empty turns no longer break follow-ups<span class="tag">#16</span></b> — empty
+            assistant responses leaked into the follow-up context, so clarifications like "and the
+            links?" were interpreted incorrectly. Now
+            <span class="now">empty turns are filtered out</span>.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A question about a client/manager by name</td>
+                <td class="was">Names and company names go to the LLM as-is</td>
+                <td class="now">
+                  Masked as <code>[CONTACT_N]</code>, original restored in the response
+                </td>
+              </tr>
+              <tr>
+                <td>A company's Tax ID in text</td>
+                <td class="was">10 digits falsely masked as <code>[PHONE]</code></td>
+                <td class="now">A known Tax ID goes to the model unmodified</td>
+              </tr>
+              <tr>
+                <td>A client name ends up in the web query</td>
+                <td class="was">Only phone numbers were stripped</td>
+                <td class="now">Known names are stripped too</td>
+              </tr>
+              <tr>
+                <td>The agent hits the step limit</td>
+                <td class="was">"Could not build an answer" — data lost</td>
+                <td class="now">Answer built from the data collected, source preserved</td>
+              </tr>
+              <tr>
+                <td>Open a conversation with web search from history</td>
+                <td class="was">Source links disappeared</td>
+                <td class="now">Clickable sources restored</td>
+              </tr>
+              <tr>
+                <td>Follow-up after an empty response</td>
+                <td class="was">Empty turn broke the follow-up interpretation</td>
+                <td class="now">Empty turns don't reach the context</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>How to verify (main scenarios)</h2></div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>Log in as <b>Alan (Head of sales)</b> → open <b>"Assistant"</b> in the sidebar.</li>
+            <li>
+              <b>Pseudonymization (#282/#296):</b> on the live LLM (AI_MODE=live), ask about a
+              specific client/manager by name. The answer is correct (names in place), but
+              placeholders went to the LLM — this behavior is covered by
+              <code>pseudonymize.test.ts</code> and <code>ask-manager-assistant.test.ts</code>
+              (names from the CRM are collected into scope).
+            </li>
+            <li>
+              <b>Web sources in history (#15):</b> ask "Find new ingredient suppliers" → wait for a
+              response with links → start a "New conversation" → open the previous conversation from
+              the "History" panel → <b>the source links are still there</b>.
+            </li>
+            <li>
+              <b>Follow-up (#16):</b> in a conversation, ask a clarification "and the links?" after
+              a substantive answer — it's interpreted relative to the real previous answer.
+            </li>
+            <li>
+              <b>Step limit (#14):</b> reproduced in the test "step limit … → synthesis from
+              collected data" — the answer isn't empty, the snapshot stays in the source.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+    <footer>
+      Change showcase · docs/changes · assistant: PII pseudonymization (#282/#296) + #14/#15/#16
+    </footer>
+  </body>
+</html>

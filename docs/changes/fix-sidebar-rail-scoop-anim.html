@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — fix/sidebar-rail-scoop-anim</title>
+    <style>
+      body {
+        font:
+          15px/1.55 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #1c1f27;
+        max-width: 760px;
+        margin: 32px auto;
+        padding: 0 18px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 17px;
+        margin-top: 28px;
+      }
+      .pill {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 12px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        border: 1px solid #e3ded8;
+        padding: 7px 10px;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background: #f8f3ef;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      code {
+        background: #f8f3ef;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      <span class="pill">fix(ui)</span> Collapsed rail: bring back the cream "scoop" for the active
+      item on the slim strip
+    </h1>
+
+    <h2>What changed</h2>
+    <p>
+      In the previous fix (the slim strip), the active item was left without a "scoop" — the disc
+      simply stuck out with a round edge. The cream "scoop" cut-out is restored (reference design
+      "CRM Pro UI"): a cream S-curve in the background color is cut into the right edge of the dark
+      slim capsule, and the dark disc pops out of it. The scoop, disc, and glyph move vertically
+      together when switching between menu items (a CSS transition on
+      <code>transform</code>), so the active-indicator animation is preserved.
+    </p>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Element</th>
+        <th>Before (slim, no scoop)</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>Active-item indicator</td>
+        <td>Dark disc with a round edge on the strip's straight edge</td>
+        <td>Cream "scoop" cut-out + dark disc popping out of it</td>
+      </tr>
+      <tr>
+        <td>Animation between items</td>
+        <td>Only the disc moves</td>
+        <td>Scoop + disc + glyph move together (smooth indicator travel)</td>
+      </tr>
+    </table>
+    <p>The dark strip and its width were untouched — only the cream cut-out layer was restored.</p>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li>Sign in as Head of Sales or Manager (in dev, localhost opens as Head of Sales).</li>
+      <li>Collapse the side menu into the rail (hamburger icon at the top of the sidebar).</li>
+      <li>
+        On the active item ("Home") see the <b>cream "scoop" cut-out</b> at the edge of the strip,
+        with the dark disc bearing the house icon popping out of it.
+      </li>
+      <li>
+        Click another section on the rail → the scoop and disc <b>smoothly travel</b> to the new
+        item.
+      </li>
+    </ol>
+  </body>
+</html>

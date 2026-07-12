@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — "Head of Sales" quick login (#270)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>"Head of Sales" quick login works again</h1>
+    <p>
+      <span class="tag">fix(auth)</span> &middot; PR <code>#270</code> &middot; closes
+      <code>#268</code> &middot; branch <code>fix/login-pill-nested-forms</code>
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        Login via the <strong>"Head of Sales"</strong> pill on <code>/login</code> failed with
+        "invalid username or password", even though the password was correct. The other roles
+        (Manager/Technologist/Procurement) worked.
+      </li>
+      <li>
+        <strong>Cause — invalid HTML, not the password.</strong> The quick-login pills (each its own
+        <code>&lt;form&gt;</code>) sat <em>inside</em> the login card's main
+        <code>&lt;form&gt;</code>. When parsing, the browser merged the first nested form (Head of
+        Sales) into the parent → the card ended up with two <code>username</code> fields (an empty
+        visible one + a hidden <code>alexander</code>), and
+        <code>formData.get("username")</code> took the first one = empty → InvalidCredentials. It
+        was exactly the first pill that failed.
+      </li>
+      <li>
+        <strong>Fix:</strong> the login card is now a <code>&lt;div&gt;</code>, not a
+        <code>&lt;form&gt;</code>. The email/password fields live in their own
+        <code>&lt;form&gt;</code>, and each quick-login pill is a sibling form. No more nested
+        forms.
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Scenario</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>The "Head of Sales" pill (alexander)</td>
+        <td class="was">"Invalid username or password" → stays on <code>/login</code></td>
+        <td class="now">Signed in → redirect to <code>/</code></td>
+      </tr>
+      <tr>
+        <td>Login card markup</td>
+        <td class="was">
+          Nested <code>&lt;form&gt;</code> (invalid HTML, a second username field)
+        </td>
+        <td class="now">5 non-nested sibling forms (<code>nestedInForm:false</code> for all)</td>
+      </tr>
+      <tr>
+        <td>Other roles (Manager/Technologist/Procurement)</td>
+        <td>Worked (their pills happened to end up as separate forms)</td>
+        <td class="now">Still work as before</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li><code>npm run dev</code> → open <code>http://localhost:3000/login</code>.</li>
+      <li>
+        Click the quick-login pill <strong>"Head of Sales"</strong> (at the bottom of the card).
+      </li>
+      <li>
+        Result: signed in, redirected to <strong>Home</strong> as the head of sales (previously an
+        "invalid login" error popped up here).
+      </li>
+      <li>
+        Check the other pills (Manager/Technologist/Procurement) — all lead to <code>/</code> in
+        their own role.
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>DOM inspection: 5 non-nested forms, all with <code>nestedInForm:false</code>.</li>
+      <li>
+        All role pills → <code>/</code>; before the fix "Head of Sales" → <code>/login</code>.
+      </li>
+      <li><code>npm run verify</code> <span class="ok">green</span> (108 files, 582 tests).</li>
+    </ul>
+  </body>
+</html>

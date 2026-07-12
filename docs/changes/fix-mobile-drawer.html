@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase &middot; mobile menu (drawer)</title>
+    <style>
+      body {
+        font:
+          15px/1.6 -apple-system,
+          Segoe UI,
+          Arial,
+          sans-serif;
+        color: #16181d;
+        background: #f8f3ef;
+        margin: 0;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 820px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.4px;
+      }
+      h2 {
+        font-size: 18px;
+        margin-top: 32px;
+        border-bottom: 1px solid #e8e1d9;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e8e1d9;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 14px 0;
+      }
+      .was {
+        color: #9a3b35;
+      }
+      .now {
+        color: #1f7a4d;
+      }
+      code {
+        background: #f1ebe4;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+      .muted {
+        color: #9a9ea8;
+        font-size: 13px;
+      }
+      ol li,
+      ul li {
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Mobile menu: an off-canvas drawer instead of a narrow rail</h1>
+      <p class="muted">Branch <code>fix/mobile-drawer</code> &middot; desktop view untouched.</p>
+
+      <h2>What changed</h2>
+      <div class="card">
+        <p>
+          On a phone, the side menu collapsed into a narrow icon strip, and the decorative
+          active-item indicator (sized for a wide menu) stuck out as a "drop" over the content. The
+          menu was replaced with a standard off-canvas drawer.
+        </p>
+        <p>
+          <span class="was">Before → </span> a narrow icon rail, a clipped circular indicator
+          sticking out over the content, the menu ate into the width.
+        </p>
+        <p>
+          <span class="now">After → </span> the menu is hidden behind a hamburger button (top left);
+          a tap opens the full menu over the content with a dim overlay; the content uses the full
+          width; no more artifact.
+        </p>
+      </div>
+
+      <h2>Repro steps</h2>
+      <ol>
+        <li>Open the app on a phone (or narrow the window to &asymp;390px).</li>
+        <li>You'll see: full-width content, a hamburger button top left, no side menu.</li>
+        <li>
+          Tap the hamburger → the full menu slides in from the left, the background behind it dims.
+        </li>
+        <li>Tap the dimmed overlay or a menu item → the menu closes.</li>
+        <li>
+          On desktop (&gt;768px) the menu works as before — a side panel, the hamburger is hidden.
+        </li>
+      </ol>
+
+      <h2>How it was built</h2>
+      <ul>
+        <li>
+          A <code>mobileOpen</code> state in the sidebar; always off on desktop (hamburger hidden).
+        </li>
+        <li>
+          <code>@media (max-width: 768px)</code>: the sidebar is taken out of flow (<code
+            >position: fixed</code
+          >, <code>translateX(-110%)</code>), sliding in when opened; a hamburger and a dim overlay
+          were added; the content auto-expands to the full width.
+        </li>
+        <li>
+          The drawer shows the expanded panel with labels; the decorative rail indicator isn't
+          rendered on mobile at all &mdash; the "drop" artifact is excluded in principle.
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

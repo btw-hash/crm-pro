@@ -1,0 +1,476 @@
+// Prisma schema — CRM persistence layer.
+// Enums stored as TEXT (string) to avoid coupling Prisma enum migrations to domain union changes.
+// Money/price/stock come from ErpGateway (not repos) — not modelled here.
+// Connection URL is configured in prisma.config.ts (Prisma 7 requirement).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Client {
+  id                   String  @id
+  name                 String
+  type                 String
+  category             String
+  responsibleManagerId String
+  ein                  String?
+
+  deals Deal[]
+
+  @@map("clients")
+}
+
+model Product {
+  id        String  @id
+  sku       String  @unique
+  name      String
+  unit      String
+  barcode   String?
+  // From the ERP catalog (shelf life, packaging). Filled by the sync job
+  // (makeSyncNomenclature) / the seed. null — if not set in the ERP.
+  shelfLife String?
+  packaging String?
+
+  // Sales Kit (#105) — commercial CRM enrichment (not from the ERP). Optional:
+  // synced ERP catalog items have no kit. kit.shelfLife reuses the shelfLife
+  // column above. RSP price is stored in cents (Money.amountMinor).
+  kitCategory      String?
+  kitBenefits      String[] @default([])
+  kitMarginPercent Int?
+  kitRspMinor      Int?
+
+  sampleRequests SampleRequest[]
+
+  @@map("products")
+}
+
+model Deal {
+  id                   String  @id
+  clientId             String
+  title                String
+  stage                String
+  responsibleManagerId String
+  goal                 String?
+  type                 String?
+  outcome              String?
+  comment              String?
+  deletedAt            String?
+
+  client         Client              @relation(fields: [clientId], references: [id])
+  activities     Activity[]
+  audits         ProductionAudit[]
+  testActs       TestAct[]
+  sampleRequests SampleRequest[]
+  events         DealEvent[]
+  qualification  DealQualification?
+  proposal       Proposal?
+
+  @@map("deals")
+}
+
+model DealQualification {
+  id               String  @id
+  dealId           String  @unique
+  segment          String?
+  productionScale  String?
+  needTask         String?
+  targetProduct    String?
+  volumeHint       String?
+  urgency          String?
+  decisionMaker    String?
+  contactPerson    String?
+  volumePerMonth   String?
+  revenuePotential String?
+  paymentTerms     String?
+  creditLimitHint  String?
+  savedAt          DateTime
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@map("deal_qualifications")
+}
+
+// Saved proposal: one record per process (@unique dealId).
+// Line items (lines) — Json (like Shipment/AdditionalOrder); prices are manual, in dollars.
+// Assembled at "Negotiation", read at "Completed" (document + order prefill).
+model Proposal {
+  id       String   @id
+  dealId   String   @unique
+  clientId String?
+  revision Int      @default(1)
+  lines    Json
+  prose    String
+  status   String
+  savedAt  DateTime
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@map("proposals")
+}
+
+model Activity {
+  id        String   @id
+  dealId    String?
+  clientId  String?
+  kind      String
+  text      String
+  author    String
+  createdAt DateTime
+  dueDate   String?
+  done      Boolean  @default(false)
+
+  deal Deal? @relation(fields: [dealId], references: [id])
+
+  @@index([dealId])
+  @@index([clientId])
+  @@map("activities")
+}
+
+model ProductionAudit {
+  id             String   @id
+  dealId         String   @unique
+  clientId       String
+  equipment      String[]
+  painPoints     String[]
+  decisionMakers Json
+  notes          String?
+  createdBy      String
+  createdAt      DateTime
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@map("production_audits")
+}
+
+model TestAct {
+  id                  String   @id
+  dealId              String
+  techRequestId       String?
+  actKind             String   @default("workup")
+  clientName          String?
+  equipment           String?
+  productName         String?
+  dosage              String?
+  processParams       String?
+  recommendation      String?
+  auditChecked        String?
+  auditRemarks        String?
+  auditRecommendation String?
+  result              String
+  comment             String?
+  confirmedBy         String
+  confirmedAt         DateTime
+  sentAt              DateTime?
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@index([dealId])
+  @@index([techRequestId])
+  @@map("test_acts")
+}
+
+model SampleRequest {
+  id                     String   @id
+  dealId                 String
+  productId              String
+  quantity               Float
+  unit                   String
+  requestedBy            String
+  assignedTechnologistId String
+  requestedAt            DateTime
+
+  deal    Deal    @relation(fields: [dealId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([dealId])
+  @@map("sample_requests")
+}
+
+model DealEvent {
+  id        String   @id
+  dealId    String
+  type      String
+  summary   String
+  actor     String
+  createdAt DateTime
+  fromStage String?
+  toStage   String?
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@index([dealId])
+  @@map("deal_events")
+}
+
+model Notification {
+  id          String   @id
+  recipientId String
+  message     String
+  dealId      String?
+  createdAt   DateTime
+  read        Boolean  @default(false)
+  important   Boolean  @default(false)
+
+  @@index([recipientId])
+  @@map("notifications")
+}
+
+model Contact {
+  id       String  @id
+  clientId String
+  name     String
+  position String
+  role     String
+  phone    String?
+  email    String?
+
+  @@index([clientId])
+  @@map("contacts")
+}
+
+model ProductDescription {
+  productId String  @id
+  text      String
+  sourceUrl String?
+
+  @@map("product_descriptions")
+}
+
+model Quota {
+  id             String @id
+  mopId          String
+  productId      String
+  periodYear     Int
+  periodQuarter  Int
+  plannedVolume  Float
+  reservedVolume Float
+  soldVolume     Float
+
+  @@index([mopId])
+  @@map("quotas")
+}
+
+// --- Wave B (#248): status-flow operational entities ---
+// status/reason stored as String (decoupled from domain unions);
+// nested arrays (lines/documents) stored as Json; createdAt as DateTime.
+
+model AdditionalOrder {
+  id                String   @id
+  clientId          String
+  parentOrderNumber String
+  lines             Json
+  shipmentDate      String
+  recordedBy        String
+  createdAt         DateTime
+  note              String?
+
+  @@index([shipmentDate])
+  @@index([parentOrderNumber])
+  @@map("additional_orders")
+}
+
+model Onboarding {
+  id          String   @id
+  clientName  String
+  ein         String?
+  status      String
+  documents   Json
+  requestedBy String
+  legalNote   String?
+  createdAt   DateTime
+
+  @@map("onboardings")
+}
+
+model PackingRequest {
+  id          String   @id
+  clientId    String?
+  productName String
+  sourcePack  String
+  targetPack  String
+  quantity    Float
+  unit        String
+  status      String
+  requestedBy String
+  createdAt   DateTime
+  note        String?
+
+  @@map("packing_requests")
+}
+
+model DefectItem {
+  id          String   @id
+  productName String
+  quantity    Float
+  unit        String
+  reason      String
+  status      String
+  createdBy   String
+  createdAt   DateTime
+  note        String?
+
+  @@map("defect_items")
+}
+
+model ReturnClaim {
+  id          String   @id
+  clientId    String
+  dealId      String?
+  productName String
+  quantity    Float
+  unit        String
+  reason      String
+  comment     String?
+  status      String
+  createdBy   String
+  createdAt   DateTime
+
+  @@index([clientId])
+  @@map("return_claims")
+}
+
+// --- Wave D (#248): authentication (user + session) ---
+// passwordHash is opaque (scrypt saltHex:keyHex); username is stored lowercased
+// (@unique — login lookup). Sessions are created at runtime (no seeds).
+
+model User {
+  id           String @id
+  username     String @unique
+  name         String
+  role         String
+  passwordHash String
+
+  @@map("users")
+}
+
+model Session {
+  token     String   @id
+  userId    String
+  expiresAt DateTime
+
+  @@map("sessions")
+}
+
+// --- Wave C (#248): ops loop (shipment + tech-request) ---
+// shipment.lines (array of line items) — Json; driver nullable; no createdAt.
+// tech-request: productId/assignedTo nullable; createdAt — DateTime (FIFO queue).
+
+model Shipment {
+  id            String  @id
+  clientId      String
+  managerId     String
+  orderNumber   String
+  address       String
+  lines         Json
+  driver        String?
+  scheduledDate String
+  status        String
+  dealId        String?
+
+  @@index([managerId])
+  @@index([status])
+  @@index([dealId])
+  @@map("shipments")
+}
+
+model TechRequest {
+  id            String   @id
+  dealId        String
+  clientId      String
+  productId     String?
+  kind          String
+  note          String
+  status        String
+  requestedBy   String
+  assignedTo    String?
+  createdAt     DateTime
+  deadline      String?
+  consultFormat String?
+  demoLocation  String?
+  demoAddress   String?
+  demoProducts  String?
+  auditFocus    String?
+
+  @@index([status])
+  @@index([assignedTo])
+  @@index([dealId])
+  @@map("tech_requests")
+}
+
+// --- Head-of-sales assistant history: conversations + messages ---
+// ownerId — owner id (RBAC: we don't return other people's conversations). updatedAt
+// advances when a message is added (sorts the history list). kind on messages is the
+// source of the assistant's answer (crm/web/mixed), String (decoupled from the domain
+// union); null for questions.
+
+model AssistantConversation {
+  id        String   @id
+  ownerId   String
+  title     String
+  createdAt DateTime
+  updatedAt DateTime
+
+  messages AssistantMessage[]
+
+  @@index([ownerId])
+  @@index([updatedAt])
+  @@map("assistant_conversations")
+}
+
+model AssistantMessage {
+  id             String   @id
+  conversationId String
+  role           String
+  text           String
+  kind           String?
+  // Web sources for the answer (JSON array [{title,url}]) — so clickable links don't
+  // disappear when reopening a conversation from history (#15). Nullable → additive.
+  webResults     String?
+  createdAt      DateTime
+
+  conversation AssistantConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("assistant_messages")
+}
+
+// --- LLM token usage tracking (#216): raw log + daily aggregates ---
+// GDPR/CCPA-style: numeric counters + enum labels only, NOT A SINGLE BYTE of request/response body.
+// feature/provider/model — String (decoupled from the domain union, like kind/status elsewhere).
+// costMinor is NOT stored — derived from tokens at read time (the rate can change).
+
+model UsageRecord {
+  id           String   @id
+  feature      String
+  provider     String
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  cachedTokens Int      @default(0)
+  estimated    Boolean  @default(false)
+  ownerId      String? // surrogate employee id (GDPR/CCPA-style: not name/email); null — outside a session
+  createdAt    DateTime
+
+  @@index([createdAt]) // date-based rotation + range report
+  @@index([feature, createdAt]) // per-feature report over a period
+  @@map("usage_records")
+}
+
+model UsageDaily {
+  day          String // 'YYYY-MM-DD'
+  feature      String
+  model        String
+  calls        Int    @default(0)
+  inputTokens  Int    @default(0)
+  outputTokens Int    @default(0)
+  cachedTokens Int    @default(0)
+
+  @@id([day, feature, model]) // upsert key for the increment
+  @@index([day])
+  @@map("usage_daily")
+}

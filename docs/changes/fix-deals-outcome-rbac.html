@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Change showcase — won/lost outcome + conversion + deal RBAC (#370)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 880px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        color: #16181d;
+        background: #f8f3ef;
+      }
+      h1 {
+        border-bottom: 3px solid #bf322b;
+        padding-bottom: 0.4rem;
+      }
+      h2 {
+        margin-top: 2rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e8e1d9;
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+        font-size: 0.95rem;
+      }
+      th {
+        background: #f6e7e2;
+      }
+      code {
+        background: #ede7e0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      ol li,
+      ul li {
+        margin: 0.3rem 0;
+      }
+      .tag {
+        display: inline-block;
+        background: #bf322b;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+      }
+      .ok {
+        color: #1f9e6c;
+        font-weight: 700;
+      }
+      .was {
+        color: #c0392b;
+      }
+      .now {
+        color: #1f9e6c;
+      }
+      .pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 0.1rem 0.6rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .won {
+        background: #e7f5ee;
+        color: #197a48;
+      }
+      .lost {
+        background: #f7e4e2;
+        color: #bf322b;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Deals: Won/Lost outcome, conversion, and RBAC</h1>
+    <p>
+      <span class="tag">fix(deals)</span> &middot; closes <code>#370</code> &middot; refs
+      <code>#317</code> &middot; branch <code>fix/deals-outcome-rbac</code>
+    </p>
+    <p>
+      A group of demo bugs from the QA audit in the <strong>deals</strong> area: "Funnel conversion"
+      = 0%, the outcome of completed deals is nowhere visible, several role-access holes, and minor
+      glitches in stage progress and tech requests. Only files in the <code>deals</code> area and
+      <code>prisma/seed.ts</code> are affected.
+    </p>
+
+    <h2>What changed</h2>
+    <ul>
+      <li>
+        <strong>Conversion 0% → real.</strong> <code>prisma/seed.ts</code> seeded a deal
+        <em>without</em> the <code>outcome</code> field → on the postgres demo every completed deal
+        had <code>outcome = NULL</code> → win-rate/"Funnel conversion" = 0. Now
+        <code>outcome</code> is written in both the <code>create</code> and
+        <code>update</code> upsert (the won/lost values were already in <code>seed/deals.ts</code>).
+      </li>
+      <li>
+        <strong>Outcome visible everywhere.</strong> A <span class="pill won">Won</span> /
+        <span class="pill lost">Lost</span> badge on the deal card, on the kanban board, and in the
+        board's side drawer (single source <code>DEAL_OUTCOME_LABELS</code>).
+      </li>
+      <li>
+        <strong>RBAC #7.</strong> Accountant/logistics/technologist/category manager could see the
+        entire deal portfolio. The <code>/deals</code> section and the <code>/deals/[id]</code> card
+        are now available only to sales roles (head of sales + manager); everyone else → 404.
+      </li>
+      <li>
+        <strong>RBAC #10.</strong> The client dropdown in the deal create/edit forms gave the
+        manager the entire counterparty base → narrowed to the manager's own owner scope.
+      </li>
+      <li>
+        <strong>RBAC #27.</strong> A manager could assign a deal to another manager → server-side
+        validation (a manager can only assign to themselves, the head of sales can assign to anyone)
+        in <code>createDealAction</code>/<code>updateDealAction</code>/<code
+          >inlineUpdateDealAction</code
+        >
+        + narrowed the owner dropdown in the UI.
+      </li>
+      <li>
+        <strong>RBAC #8.</strong> <code>requestTechAction</code> (tech request) didn't check deal
+        access → added the same owner boundary (<code>dealAccess</code>) as the other actions.
+      </li>
+      <li>
+        <strong>#28.</strong> The "Proposal calculation" section was marked "done" for the lost
+        REF-5 deal, even though that stage was <em>skipped</em> (the deal was closed bypassing it).
+        For lost deals, skipped stages are no longer marked as done.
+      </li>
+      <li>
+        <strong>#29.</strong> Seeded tech requests (tr-ref-4, tr-ref-3) weren't shown on the deal
+        card → now they render with a status (Open/In progress).
+      </li>
+    </ul>
+
+    <h2>Before → after</h2>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+      <tr>
+        <td>"Funnel conversion" / win-rate on the postgres demo</td>
+        <td class="was">0% — every completed deal has outcome = NULL</td>
+        <td class="now">Real share (won/lost are seeded in the DB)</td>
+      </tr>
+      <tr>
+        <td>Outcome of a completed deal (card / kanban / drawer)</td>
+        <td class="was">Not shown anywhere</td>
+        <td class="now">A "Won" badge (green) / "Lost" (accent)</td>
+      </tr>
+      <tr>
+        <td>Accountant/logistics access to /deals</td>
+        <td class="was">See the entire deal portfolio</td>
+        <td class="now">404 — the section is sales-roles only</td>
+      </tr>
+      <tr>
+        <td>Client dropdown for a manager in the deal form</td>
+        <td class="was">The department's entire counterparty base</td>
+        <td class="now">Only their own portfolio</td>
+      </tr>
+      <tr>
+        <td>Owner assignment by a manager</td>
+        <td class="was">Could assign to any manager</td>
+        <td class="now">Only to themselves (validated server-side)</td>
+      </tr>
+      <tr>
+        <td>Tech request (<code>requestTechAction</code>)</td>
+        <td class="was">No deal-access check</td>
+        <td class="now">Owner boundary — same as the other actions</td>
+      </tr>
+      <tr>
+        <td>"Proposal calculation" section for the lost REF-5 (stage skipped)</td>
+        <td class="was">Marked "done"</td>
+        <td class="now">Not marked as done</td>
+      </tr>
+      <tr>
+        <td>Tech requests tr-ref-3/tr-ref-4 on the card</td>
+        <td class="was">Weren't rendered</td>
+        <td class="now">Visible with status and assignee</td>
+      </tr>
+    </table>
+
+    <h2>Repro steps</h2>
+    <ol>
+      <li><code>npm run dev</code>.</li>
+      <li>
+        <strong>Conversion:</strong> on the postgres demo run <code>npm run db:seed</code>, open
+        <strong>Analytics</strong> — "Funnel conversion" isn't 0%, it reflects won/lost.
+      </li>
+      <li>
+        <strong>Outcome on the kanban:</strong> open <strong>Tasks</strong> (<code>/deals</code>) as
+        the head of sales — completed deals (the "Completed" column) show a
+        <span class="pill won">Won</span> / <span class="pill lost">Lost</span> badge.
+      </li>
+      <li>
+        <strong>Outcome in the drawer and on the card:</strong> click a completed deal (e.g.
+        "Reference: ... Sunrise Bakery Co." — won, "Reference: Carat Cover ... Baltic" — lost) → the
+        side drawer and the full card show the "Outcome" badge.
+      </li>
+      <li>
+        <strong>#28:</strong> open the lost REF-5 — the "Proposal calculation" section is NOT marked
+        as done (the stage was skipped), "Testing" — done.
+      </li>
+      <li>
+        <strong>#29:</strong> on the REF-4 card (test request) and REF-3 (testing), the
+        "Technologist request" section shows requests with status "Open" / "In progress".
+      </li>
+      <li>
+        <strong>RBAC #7:</strong> log in as accountant/logistics (<code>/login</code>) and open
+        <code>/deals</code> or a direct deal link — 404 page.
+      </li>
+      <li>
+        <strong>RBAC #10/#27:</strong> log in as a manager, click "New task" — the client list shows
+        only their own portfolio, and "Owner" shows only themselves.
+      </li>
+    </ol>
+
+    <h2>Verified</h2>
+    <ul>
+      <li>
+        TDD on the affected logic: <code>deal-access</code> (RBAC access guard + assignment
+        validation), <code>deal-outcome</code> (outcome-to-badge mapping + stage progress for lost
+        deals), plus UI tests for the badge on the kanban and in the drawer.
+      </li>
+      <li><code>npm run verify</code> <span class="ok">green</span> — 737 tests.</li>
+      <li><code>npm run build</code> <span class="ok">green</span>.</li>
+      <li>
+        Browser testing wasn't run (per the task) — behavior is covered by tests; the steps above
+        are for the client to visually verify.
+      </li>
+    </ul>
+
+    <p>
+      <strong>This area doesn't overlap</strong> with a teammate's open PRs (#367
+      tech-queue/composition-root, #368 ops DataTable) or with #369
+      (clients/notifications/onboarding/analytics): only <code>src/app/deals/**</code> and
+      <code>prisma/seed.ts</code> are touched.
+    </p>
+  </body>
+</html>
