@@ -21,6 +21,12 @@ describe("assertProviderCompliant", () => {
     expect(() => assertProviderCompliant({ ...base, provider: "openai" })).not.toThrow();
   });
 
+  it("openrouter is treated as a global LLM too (proxies to third-party model hosts)", () => {
+    expect(() => assertProviderCompliant({ ...base, provider: "openrouter" })).toThrow(
+      GlobalLlmInProductionError,
+    );
+  });
+
   it("outside production a global LLM is not blocked (dev/demo)", () => {
     expect(() => assertProviderCompliant({ ...base, isProduction: false })).not.toThrow();
   });

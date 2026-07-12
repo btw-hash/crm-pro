@@ -4,10 +4,11 @@ By default the AI layer runs on a **stub** (`AI_MODE=stub`) — the demo works w
 keys and no network. To show production behavior (free-form speech → AI-parsed
 report), switch **live** on for one of the providers behind the `LlmProvider` port:
 
-| Provider                 | When                               | Data policy                                                 |
-| ------------------------ | ---------------------------------- | ----------------------------------------------------------- |
-| **OpenAI** (`openai`)    | real/production customer data      | ✅ the approved compliant provider — safe for real PII      |
-| **Claude** (`anthropic`) | code / anonymized / synthetic data | ⚠ a global model — non-PII only (see `docs/DATA_POLICY.md`) |
+| Provider                      | When                                | Data policy                                                          |
+| ----------------------------- | ----------------------------------- | -------------------------------------------------------------------- |
+| **OpenAI** (`openai`)         | real/production customer data       | ✅ the approved compliant provider — safe for real PII               |
+| **Claude** (`anthropic`)      | code / anonymized / synthetic data  | ⚠ a global model — non-PII only (see `docs/DATA_POLICY.md`)          |
+| **OpenRouter** (`openrouter`) | the **public demo deployment** only | ⚠ a global model, same contour as Claude; hard-capped, budget-capped |
 
 > For a demo, keep the data **synthetic/anonymized** regardless of provider — that's
 > good practice independent of which LLM you point at.
@@ -91,6 +92,72 @@ Restart `npm run dev`. The endpoint and model are hardcoded in the adapter.
 
 ---
 
+## OpenRouter (demo-safe, budget-capped) — for the public deployment
+
+The public demo needs a _real_ LLM behind a _shared, unattended_ key — no billing
+surprises, no crash if the key is ever removed. `AI_PROVIDER=openrouter` is built for
+exactly that: a separate key from `AI_API_KEY`, a hard 1024-output-token cap on every
+call (`OpenRouterLlmProvider`), and an in-memory 200-calls/UTC-day budget
+(`BudgetCappedAiGateway`) that — once spent — serves the deterministic stub instead,
+prefixed with an honest note ("Demo AI budget exhausted for today…") rather than
+failing the request. If `OPENROUTER_API_KEY` isn't set at all, the app behaves exactly
+like `AI_MODE=stub`, even with `AI_MODE=live` — it never crashes on a missing key.
+
+**1. API key.** **<https://openrouter.ai/keys>** → Create key. This is `OPENROUTER_API_KEY`.
+
+**2. `.env`:**
+
+```dotenv
+AI_MODE=live
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=<your OpenRouter key>
+# OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free   # default -- zero marginal cost
+```
+
+**3. Restart `npm run dev`** (or the container, in prod) — same singleton-caching
+caveat as the other providers.
+
+**4. Verify the key BEFORE the demo** (independent of the app):
+
+```bash
+curl -s https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"meta-llama/llama-3.3-70b-instruct:free","max_tokens":50,"messages":[{"role":"user","content":"Say hello"}]}'
+```
+
+Text comes back in `choices[0].message.content` → the key/model works, the app will
+boot too.
+
+### 3 scripted demo scenarios
+
+Each exercises a different call shape (`extractJson` = structured tool call,
+`completeText` = free text) and a different page:
+
+1. **Voice-to-act extraction** (`extractJson`) — open any deal → the test-act composer
+   already has a sample transcript loaded (Sweet World Confections, a Miwe oven, Carat
+   Cover glaze, 12% dosage, 180°C/15min) → **"AI recognize → draft report"**. The model
+   should fill in client/equipment/product/dosage/process-params/result from the
+   transcript, nothing invented.
+2. **Head-of-sales assistant** (`extractJson` for tool routing + `completeText` for the
+   answer) — log in as the head of sales (`a.peterson` / `demo1234`) → `/assistant` →
+   ask _"Which deals are stalled?"_ or _"Who is over their credit limit?"_. The model
+   routes to the deterministic CRM snapshot (never invents numbers) and phrases the
+   answer.
+3. **Draft client follow-up** (`extractJson`, `{subject, body}`) — on a deal card →
+   "Draft client message" → the model writes a follow-up email from the deal's stage
+   and recent activity; a human edits and sends it, nothing is auto-sent.
+
+**Verification status of this section:** the `OpenRouterLlmProvider` adapter and the
+`BudgetCappedAiGateway` fallback are covered by unit tests (mocked `fetch`, injected
+clock — see their `.test.ts` files) and `npm run verify` is green end-to-end. The 3
+scenarios above were **not** run against the real OpenRouter API — no
+`OPENROUTER_API_KEY` was available in the environment this PR was built in. Before
+relying on this in the live demo, run the curl check above and click through the 3
+scenarios once with a real key.
+
+---
+
 ## How to demo it
 
 Open a deal → **"🎤 Record"** → describe the outcome **in your own words, not from a
@@ -113,3 +180,10 @@ model fills in the fields → the technologist reviews it in ~30 seconds and
   to the client). Only the provider name and status are logged, never the request/response
   body.
 - Actual per-token pricing changes — check the current pricing page rather than hardcoding it.
+- **OpenRouter free models can 503/rotate.** `:free`-suffixed models (like the default
+  `meta-llama/llama-3.3-70b-instruct:free`) are shared, best-effort capacity — an
+  occasional 503 surfaces as `LlmError`, same as any other provider outage. `OPENROUTER_MODEL`
+  can point at any paid OpenRouter model instead if reliability matters more than $0 cost.
+- **OpenRouter's own free-tier limit is 200 requests/day per account** (independent of
+  our app-level `BudgetCappedAiGateway`, which caps the same number for a different
+  reason: protecting a shared demo key from ever running up a real bill on a paid model).

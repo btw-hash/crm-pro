@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenRouter live AI provider — showcase</title>
+    <style>
+      :root {
+        --bg: #eef1f5;
+        --fg: #2c3138;
+        --muted: #828c99;
+        --border: #e3e8ee;
+        --dark: #2a3543;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.55 -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      header.top {
+        background: var(--dark);
+        color: #fff;
+        padding: 2.4rem 2rem;
+      }
+      header.top h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.7rem;
+      }
+      header.top p {
+        margin: 0;
+        color: #aebccd;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .lead,
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 40, 60, 0.08);
+      }
+      .lead {
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2rem;
+      }
+      .lead h2 {
+        margin: 0.2rem 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .lead ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .card {
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .card__head {
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: #fafcfe;
+      }
+      .card__head h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .card__body {
+        padding: 1.4rem;
+      }
+      ol.steps {
+        margin: 0.4rem 0 0;
+        padding-left: 1.3rem;
+      }
+      ol.steps li {
+        margin: 0.5rem 0;
+      }
+      table.contrast {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.4rem;
+      }
+      table.contrast th,
+      table.contrast td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.contrast th {
+        background: #fafcfe;
+        font-size: 0.9rem;
+      }
+      .was {
+        color: var(--muted);
+      }
+      code {
+        background: #f3f5f8;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.05rem 0.35rem;
+        font-size: 0.9em;
+      }
+      .badge {
+        display: inline-block;
+        background: #fff3cd;
+        color: #7a5c00;
+        border: 1px solid #f0dca0;
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <h1>A real, budget-safe LLM for the public demo</h1>
+      <p>OpenRouter behind the existing LlmProvider port — never crashes, never runs up a bill</p>
+    </header>
+    <div class="wrap">
+      <div class="lead">
+        <h2>What changed</h2>
+        <ul>
+          <li>
+            New <code>OpenRouterLlmProvider</code> implements the existing
+            <code>LlmProvider</code> port (<code>AI_PROVIDER=openrouter</code>) — same contract as
+            the Claude/OpenAI adapters, over plain <code>fetch</code>, no SDK.
+          </li>
+          <li>
+            Every call is hard-capped at <b>1024 output tokens</b>, regardless of what the caller
+            asks for.
+          </li>
+          <li>
+            New <code>BudgetCappedAiGateway</code> decorator: after <b>200 calls in a UTC day</b>,
+            further requests are served by the deterministic stub instead of the real model, with an
+            honest <i>"Demo AI budget exhausted for today"</i> note — never a failed request, never
+            an unbounded bill.
+          </li>
+          <li>
+            A missing <code>OPENROUTER_API_KEY</code> degrades to exactly the current stub behavior,
+            even with <code>AI_MODE=live</code> — <b>never crashes</b> the app.
+          </li>
+          <li>
+            Treated as a global-contour provider (same as Claude) under ADR-0007 — the existing
+            <code>ContourGuardLlmProvider</code
+            >/<code>PseudonymizingLlmProvider</code>/usage-tracking pipeline applies unchanged.
+          </li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <div class="card__head"><h2>Before → after</h2></div>
+        <div class="card__body">
+          <table class="contrast">
+            <thead>
+              <tr>
+                <th>Public demo AI</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Live LLM on the public deployment</td>
+                <td class="was">Not available without exposing the compliant OpenAI key</td>
+                <td>A dedicated, budget-capped key behind <code>AI_PROVIDER=openrouter</code></td>
+              </tr>
+              <tr>
+                <td>Cost risk</td>
+                <td class="was">—</td>
+                <td>Capped at 1024 tokens/call and 200 calls/day, enforced in code</td>
+              </tr>
+              <tr>
+                <td>Missing/removed key</td>
+                <td class="was">
+                  Other providers throw <code>AI_MODE=live requires AI_API_KEY</code> at startup
+                </td>
+                <td>Silently falls back to the stub — the demo keeps working</td>
+              </tr>
+              <tr>
+                <td>Budget spent for the day</td>
+                <td class="was">—</td>
+                <td>Falls back to the stub with an honest on-screen note, not an error</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>How to verify</h2>
+          <span class="badge">see caveat below</span>
+        </div>
+        <div class="card__body">
+          <ol class="steps">
+            <li>
+              <code>.env</code>: <code>AI_MODE=live</code>, <code>AI_PROVIDER=openrouter</code>,
+              <code>OPENROUTER_API_KEY=&lt;key&gt;</code>. Restart <code>npm run dev</code>.
+            </li>
+            <li>
+              Open any deal → the voice-to-act composer has a sample transcript loaded → "AI
+              recognize → draft report" — a structured (<code>extractJson</code>) call.
+            </li>
+            <li>
+              Log in as the head of sales (<code>a.peterson</code> / <code>demo1234</code>) →
+              <code>/assistant</code> → ask "Which deals are stalled?" — routes through the CRM
+              snapshot, phrased as free text (<code>completeText</code>).
+            </li>
+            <li>
+              Remove <code>OPENROUTER_API_KEY</code> and restart — the app must keep working exactly
+              as it does with <code>AI_MODE=stub</code>, no crash.
+            </li>
+          </ol>
+          <p class="was">
+            ⚠ <b>Not run against the real OpenRouter API</b> — no
+            <code>OPENROUTER_API_KEY</code> was available in the environment this PR was built in.
+            The adapter and the budget fallback are covered by unit tests (mocked
+            <code>fetch</code>, injected clock); the 4 steps above still need a real key run once
+            before this ships to the live demo. See <code>docs/LLM_SETUP.md</code>.
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h2>Under the hood (for developers)</h2></div>
+        <div class="card__body">
+          <ul>
+            <li>
+              <code>src/infrastructure/ai/llm/openrouter-llm-provider.ts</code> — the
+              <code>LlmProvider</code> adapter (OpenAI-Chat-Completions-compatible request/response
+              shape, same as <code>OpenAiLlmProvider</code>);
+              <code>src/infrastructure/ai/budget-capped-ai-gateway.ts</code> — the
+              <code>AiGateway</code> decorator with the daily counter.
+            </li>
+            <li>
+              Wired in <code>composition-root.ts</code>:
+              <code>buildOpenRouterAiGateway</code> short-circuits to the stub on a missing key,
+              otherwise builds the same Pseudonymizing → ContourGuard → UsageTracking chain as the
+              other providers, then wraps the result in <code>BudgetCappedAiGateway</code>.
+            </li>
+            <li>
+              Default model <code>meta-llama/llama-3.3-70b-instruct:free</code> — zero marginal
+              cost; override with <code>OPENROUTER_MODEL</code>.
+            </li>
+            <li>
+              14 new unit tests (provider + gateway) plus env-parsing and
+              <code>assertProviderCompliant</code> coverage — 1031/1031 total,
+              <code>npm run verify</code> and <code>npm run build</code> green.
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <footer>Change showcase · docs/changes · feat/live-llm-provider</footer>
+  </body>
+</html>

@@ -289,6 +289,8 @@ import { LlmAiGateway } from "./ai/llm-ai-gateway";
 import { AnthropicLlmProvider } from "./ai/llm/anthropic-llm-provider";
 import type { LlmProvider } from "./ai/llm/llm-provider";
 import { OpenAiLlmProvider } from "./ai/llm/openai-llm-provider";
+import { OpenRouterLlmProvider } from "./ai/llm/openrouter-llm-provider";
+import { BudgetCappedAiGateway } from "./ai/budget-capped-ai-gateway";
 import { PseudonymizingLlmProvider } from "./ai/pseudonymizing-llm-provider";
 import { AsyncLocalStoragePseudonymScope } from "./ai/pseudonym-scope";
 import type { PseudonymScope } from "@/application/ports/pseudonym-scope";
@@ -524,10 +526,31 @@ const globalForContainer = globalThis as unknown as {
 const CONTAINER_BUILD_ID = Symbol("crm-pro-container-build");
 const IS_DEV = process.env.NODE_ENV !== "production";
 
+/** OpenRouter free-tier model: capable, zero marginal cost -- a safe default for a
+ * public demo (see docs/LLM_SETUP.md). */
+const OPENROUTER_DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+/** Max real (non-stub) OpenRouter calls per UTC day on the public demo (see
+ * BudgetCappedAiGateway) -- keeps a shared demo key from ever running up a bill. */
+const OPENROUTER_DAILY_CALL_BUDGET = 200;
+
+/** The calling employee's id, for usage-spend attribution (#216). Outside a request
+ * context (background jobs, tests) -> null; a dynamic import breaks the
+ * current-user <-> composition-root cycle. */
+async function resolveCurrentUserId(): Promise<string | null> {
+  try {
+    const { resolveViewer } = await import("./config/current-user");
+    return (await resolveViewer())?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * AI gateway selection by env. `stub` -- a placeholder (demo). `live` -- a real LLM
- * behind the abstract `LlmProvider`. The Claude adapter goes over fetch (no SDK); the
- * OpenAI adapter behind the same port.
+ * behind the abstract `LlmProvider`. The Claude/OpenAI adapters go over fetch (no SDK).
+ * `openrouter` is demo-only: a separate key, a hard per-call token cap, and a daily
+ * call budget that degrades to the stub instead of ever failing the request (see
+ * `buildOpenRouterAiGateway`).
  */
 function buildAiGateway(
   env: Env,
@@ -538,6 +561,9 @@ function buildAiGateway(
 ): AiGateway {
   if (env.AI_MODE !== "live") {
     return new StubAiGateway();
+  }
+  if (env.AI_PROVIDER === "openrouter") {
+    return buildOpenRouterAiGateway(env, logger, pseudonymScope, featureScope, usageSink);
   }
   if (!env.AI_API_KEY) {
     throw new Error("AI_MODE=live requires AI_API_KEY");
@@ -568,21 +594,62 @@ function buildAiGateway(
       provider: env.AI_PROVIDER,
       model: env.AI_MODEL ?? (env.AI_PROVIDER === "openai" ? "gpt-4o" : "claude-opus-4-8"),
       now: () => new Date().toISOString(),
-      // ownerId -- from the current session. A dynamic import breaks the
-      // current-user <-> composition-root cycle; outside a request context -> null.
-      resolveOwnerId: async () => {
-        try {
-          const { resolveViewer } = await import("./config/current-user");
-          return (await resolveViewer())?.id ?? null;
-        } catch {
-          return null;
-        }
-      },
+      resolveOwnerId: resolveCurrentUserId,
     });
   }
   // featureScope is always passed to the gateway: its wrappers are harmless even
   // without the tracking decorator.
   return new LlmAiGateway(provider, featureScope);
+}
+
+/**
+ * OpenRouter wiring: demo-safe and budget-capped, so the public deployment can run a
+ * real LLM without a way to run up a bill or crash on misconfiguration.
+ * - Missing `OPENROUTER_API_KEY` -> falls back to the stub, exactly like `AI_MODE=stub`
+ *   (never throws -- unlike the other providers above, which fail loud on a missing key).
+ * - Same compliance/PII/usage-tracking pipeline as the other providers (ADR-0007: a
+ *   global model, so `ContourGuardLlmProvider` applies via `buildLlmProvider`).
+ * - Wrapped in `BudgetCappedAiGateway`: after `OPENROUTER_DAILY_CALL_BUDGET` calls in a
+ *   UTC day, further calls degrade to the stub with an honest note instead of paying
+ *   for (or rate-limiting into failure) unlimited demo traffic.
+ */
+function buildOpenRouterAiGateway(
+  env: Env,
+  logger: Logger,
+  pseudonymScope: PseudonymScope,
+  featureScope: LlmFeatureScope,
+  usageSink: LlmUsageSink,
+): AiGateway {
+  if (!env.OPENROUTER_API_KEY) {
+    return new StubAiGateway();
+  }
+  assertProviderCompliant({
+    mode: env.AI_MODE,
+    provider: env.AI_PROVIDER,
+    isProduction: process.env.NODE_ENV === "production",
+    allowGlobal: env.ALLOW_GLOBAL_LLM === "true",
+  });
+  let provider: LlmProvider = new PseudonymizingLlmProvider(
+    buildLlmProvider(env, env.OPENROUTER_API_KEY, logger),
+    { scope: pseudonymScope },
+  );
+  if (env.USAGE_TRACKING === "on") {
+    provider = new UsageTrackingLlmProvider(provider, {
+      sink: usageSink,
+      featureScope,
+      provider: env.AI_PROVIDER,
+      model: env.OPENROUTER_MODEL ?? OPENROUTER_DEFAULT_MODEL,
+      now: () => new Date().toISOString(),
+      resolveOwnerId: resolveCurrentUserId,
+    });
+  }
+  const live: AiGateway = new LlmAiGateway(provider, featureScope);
+  return new BudgetCappedAiGateway({
+    live,
+    stub: new StubAiGateway(),
+    dailyLimit: OPENROUTER_DAILY_CALL_BUDGET,
+    logger,
+  });
 }
 
 function buildLlmProvider(env: Env, apiKey: string, logger: Logger): LlmProvider {
@@ -613,8 +680,22 @@ function buildLlmProvider(env: Env, apiKey: string, logger: Logger): LlmProvider
       ),
     );
   }
+  if (env.AI_PROVIDER === "openrouter") {
+    // A global model too (proxies to third-party model hosts) -- same data-contour
+    // guard as anthropic (DATA_POLICY/ADR-0007).
+    return new ContourGuardLlmProvider(
+      new OpenRouterLlmProvider(
+        {
+          apiKey,
+          model: env.OPENROUTER_MODEL ?? OPENROUTER_DEFAULT_MODEL,
+          baseUrl: env.AI_BASE_URL ?? "https://openrouter.ai/api/v1",
+        },
+        logger,
+      ),
+    );
+  }
   throw new Error(
-    `AI_PROVIDER=${env.AI_PROVIDER} is not implemented yet -- use openai, anthropic or AI_MODE=stub.`,
+    `AI_PROVIDER=${env.AI_PROVIDER} is not implemented yet -- use openai, anthropic, openrouter, or AI_MODE=stub.`,
   );
 }
 

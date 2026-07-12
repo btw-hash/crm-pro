@@ -14,10 +14,19 @@ const EnvSchema = z.object({
    */
   ERP_UI_URL: z.string().optional(),
   AI_MODE: z.enum(["stub", "live"]).default("stub"),
-  AI_PROVIDER: z.enum(["anthropic", "openai"]).default("anthropic"),
+  AI_PROVIDER: z.enum(["anthropic", "openai", "openrouter"]).default("anthropic"),
   AI_API_KEY: z.string().optional(),
   AI_MODEL: z.string().optional(),
   AI_BASE_URL: z.string().optional(),
+  /**
+   * OpenRouter (AI_PROVIDER=openrouter): a separate key so the public demo can run a
+   * real, budget-capped LLM without exposing the main AI_API_KEY. Absent -> the demo
+   * behaves exactly like AI_MODE=stub, even if AI_MODE=live -- never crashes on a
+   * missing key.
+   */
+  OPENROUTER_API_KEY: z.string().optional(),
+  /** Defaults to a free-tier model (see composition-root) when unset. */
+  OPENROUTER_MODEL: z.string().optional(),
   /** Web search for the assistant: stub -- deterministic placeholder (default); live -- real API. */
   WEB_SEARCH_MODE: z.enum(["stub", "live"]).default("stub"),
   WEB_SEARCH_PROVIDER: z.enum(["brave"]).default("brave"),
@@ -60,6 +69,8 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     AI_API_KEY: v(source.AI_API_KEY),
     AI_MODEL: v(source.AI_MODEL),
     AI_BASE_URL: v(source.AI_BASE_URL),
+    OPENROUTER_API_KEY: v(source.OPENROUTER_API_KEY),
+    OPENROUTER_MODEL: v(source.OPENROUTER_MODEL),
     WEB_SEARCH_MODE: v(source.WEB_SEARCH_MODE),
     WEB_SEARCH_PROVIDER: v(source.WEB_SEARCH_PROVIDER),
     WEB_SEARCH_API_KEY: v(source.WEB_SEARCH_API_KEY),

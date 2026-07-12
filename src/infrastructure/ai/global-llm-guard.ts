@@ -7,7 +7,7 @@
  */
 
 /** Providers outside the compliant contour. The approved provider (openai) is not in it. */
-const GLOBAL_LLM_PROVIDERS = new Set(["anthropic"]);
+const GLOBAL_LLM_PROVIDERS = new Set(["anthropic", "openrouter"]);
 
 export class GlobalLlmInProductionError extends Error {
   constructor(provider: string) {
