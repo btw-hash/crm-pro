@@ -36,8 +36,9 @@ approved, compliant hosting environment.
    anonymization pipeline.
 6. **Two-tier LLM policy.** Real PII/trade secrets → only the approved compliant
    provider (inside the approved environment). Code, anonymized and non-sensitive data →
-   global models (Claude) with no restriction. Sending real PII to a global-only
-   provider (OpenAI/Anthropic outside the approved contour) is treated as an
+   global models (Claude, OpenRouter — it proxies to third-party model hosts, same
+   contour as Claude) with no restriction. Sending real PII to a global-only provider
+   (OpenAI/Anthropic/OpenRouter outside the approved contour) is treated as an
    unauthorized cross-border transfer.
 7. **Dev/prod boundary.** dev = anonymized data + any international tooling
    (GitHub/Figma/Linear/Claude). prod = real PII + approved environment only + restricted

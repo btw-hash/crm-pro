@@ -21,4 +21,21 @@ describe("loadEnv", () => {
     expect(env.AI_PROVIDER).toBe("openai");
     expect(env.AI_API_KEY).toBe("k");
   });
+
+  it("accepts AI_PROVIDER=openrouter with its own key/model", () => {
+    const env = loadEnv({
+      AI_MODE: "live",
+      AI_PROVIDER: "openrouter",
+      OPENROUTER_API_KEY: "or-k",
+      OPENROUTER_MODEL: "meta-llama/llama-3.3-70b-instruct:free",
+    });
+    expect(env.AI_PROVIDER).toBe("openrouter");
+    expect(env.OPENROUTER_API_KEY).toBe("or-k");
+    expect(env.OPENROUTER_MODEL).toBe("meta-llama/llama-3.3-70b-instruct:free");
+  });
+
+  it("an empty OPENROUTER_API_KEY is treated as not set", () => {
+    const env = loadEnv({ OPENROUTER_API_KEY: "" });
+    expect(env.OPENROUTER_API_KEY).toBeUndefined();
+  });
 });
