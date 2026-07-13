@@ -148,13 +148,27 @@ Each exercises a different call shape (`extractJson` = structured tool call,
    "Draft client message" → the model writes a follow-up email from the deal's stage
    and recent activity; a human edits and sends it, nothing is auto-sent.
 
-**Verification status of this section:** the `OpenRouterLlmProvider` adapter and the
-`BudgetCappedAiGateway` fallback are covered by unit tests (mocked `fetch`, injected
-clock — see their `.test.ts` files) and `npm run verify` is green end-to-end. The 3
-scenarios above were **not** run against the real OpenRouter API — no
-`OPENROUTER_API_KEY` was available in the environment this PR was built in. Before
-relying on this in the live demo, run the curl check above and click through the 3
-scenarios once with a real key.
+**Verification status of this section** (live smoke against the public deployment,
+headless Chromium, real `OPENROUTER_API_KEY`, 2026-07-13):
+
+- **Scenario-1-class flows work live.** Voice transcript → `extractJson` draft
+  (the "Dictate a task (AI)" composer on a deal page) round-trips through the real
+  OpenRouter API and fills the draft — verified twice on
+  `OPENROUTER_MODEL=openai/gpt-oss-120b:free`.
+- **Scenarios 2 and 3 cannot run on the OpenRouter contour — by design.** Their
+  prompts embed ERP data (the assistant's CRM snapshot carries prices; the client
+  email draft carries the counterparty), and the ADR-0007 runtime data-contour guard
+  (`ContourGuardLlmProvider`) blocks prices/counterparties/PII from reaching any
+  global model **regardless of `ALLOW_GLOBAL_LLM`** (that flag only clears the
+  startup gate). To demo those two flows, point the deploy at the compliant provider
+  (`AI_PROVIDER=openai`). The guard firing on the public demo is itself the
+  data-residency story working as specified.
+- **Free-model reality.** `:free` variants rate-limit upstream (429 on
+  `meta-llama/llama-3.3-70b-instruct:free` and `qwen/qwen3-next-80b-a3b-instruct:free`
+  during the smoke), and free hosts inconsistently honor `tool_choice` — the
+  assistant's web-search routing (`extractJson` tool call) failed on a host that
+  ignored it. `OPENROUTER_MODEL` is deploy-time configurable; pick a tools-capable
+  model and expect occasional upstream throttling.
 
 ---
 
