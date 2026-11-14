@@ -34,7 +34,7 @@ function input(): RecordTestActInput {
   return {
     id: makeId<"TestActId">("t1"),
     dealId,
-    productName: "Carat Cover Glaze",
+    productName: "Coverlux Cover Glaze",
     dosage: "12%",
     result: "success",
     confirmedBy: "tech-1",

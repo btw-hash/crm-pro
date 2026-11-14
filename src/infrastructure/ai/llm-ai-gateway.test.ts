@@ -43,7 +43,7 @@ describe("LlmAiGateway", () => {
     const provider = new FakeProvider({
       clientName: "Sweet World Confections",
       equipment: "Miwe Rotary Oven",
-      productName: "Carat Cover Glaze",
+      productName: "Coverlux Cover Glaze",
       dosage: "12%",
       processParams: "180 °C, bake 15 min",
       result: "success",
@@ -53,7 +53,7 @@ describe("LlmAiGateway", () => {
 
     const draft = await gateway.parseVoiceToActDraft({ transcript: "...report..." });
 
-    expect(draft.productName).toBe("Carat Cover Glaze");
+    expect(draft.productName).toBe("Coverlux Cover Glaze");
     expect(draft.result).toBe("success");
     expect(draft.missingFields).toEqual([]);
     expect(provider.lastExtract?.toolName).toBe("record_test_act_draft");
@@ -106,14 +106,14 @@ describe("LlmAiGateway", () => {
 
     const text = await gateway.draftProposalText({
       clientName: "Sunrise Bakery Co.",
-      productName: "Belcolade",
+      productName: "Noirelle",
       savingsPerMonth: "$1,500.00",
       defectReductionPercent: 3,
     });
 
     expect(text).toBe("Dear partner! …");
     expect(provider.lastText?.user).toContain("Sunrise Bakery Co.");
-    expect(provider.lastText?.user).toContain("Belcolade");
+    expect(provider.lastText?.user).toContain("Noirelle");
     // #462 §4.5: the client's economics (defect-rate reduction / monthly savings) aren't passed into the letter.
     expect(provider.lastText?.user).not.toContain("$1,500.00");
     expect(provider.lastText?.user).not.toContain("3%");

@@ -13,7 +13,7 @@ function makeTestAct(overrides: Partial<TestAct> = {}): TestAct {
     actKind: "workup",
     clientName: "Sweet World Confections",
     equipment: "Miwe",
-    productName: "Carat Cover Glaze",
+    productName: "Coverlux Cover Glaze",
     dosage: "12%",
     processParams: "180°C, 15 min",
     recommendation: null,

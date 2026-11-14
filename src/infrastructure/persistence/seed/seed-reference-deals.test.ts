@@ -187,11 +187,11 @@ describe("reference deals (#305): global id uniqueness in the seed", () => {
   });
   it("reference clients exist (bakeries/confectioneries from refs)", () => {
     for (const cid of [
-      clientIds.hlebozavod,
-      clientIds.sladkiyMir,
-      clientIds.teplyHleb,
-      clientIds.kondiLux,
-      clientIds.tdPribaltiysky,
+      clientIds.breadWorks,
+      clientIds.sweetWorld,
+      clientIds.warmBread,
+      clientIds.confiLux,
+      clientIds.lakesideTrading,
     ]) {
       expect(clientIdSet.has(cid)).toBe(true);
     }

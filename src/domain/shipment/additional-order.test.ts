@@ -16,7 +16,7 @@ function validInput() {
     id: makeId<"AdditionalOrderId">("ao-1") as AdditionalOrderId,
     clientId,
     parentOrderNumber: "ORD-2026-0006",
-    lines: [{ productName: "Belcolade chocolate", quantity: 50, unit: "kg" }],
+    lines: [{ productName: "Noirelle chocolate", quantity: 50, unit: "kg" }],
     shipmentDate: "2026-06-25",
     recordedBy: "manager-smith",
     createdAt: "2026-06-24T22:30:00Z",

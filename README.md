@@ -1,8 +1,7 @@
 # CRM Pro
 
-A portfolio/demo CRM for **Millbrook Foods**, a fictional US B2B flour & bakery-
-ingredients producer — a sanitized public twin of a real NDA client build. Same clean
-architecture, role model, and AI layer; company, data, and business docs are synthetic.
+A demo CRM for **Millbrook Foods**, a fictional US B2B flour & bakery-ingredients
+producer. The company, data, and business docs are synthetic.
 
 **Live demo:** [crm-pro.btwstudio.dev](https://crm-pro.btwstudio.dev)
 

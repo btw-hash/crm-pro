@@ -22,7 +22,7 @@ describe("AnthropicLlmProvider", () => {
   it("extractJson forces a tool call and returns its arguments", async () => {
     const fetchMock = mockFetch({
       ok: true,
-      body: { content: [{ type: "tool_use", name: "draft", input: { productName: "Carat" } }] },
+      body: { content: [{ type: "tool_use", name: "draft", input: { productName: "Coverlux" } }] },
     });
     const provider = new AnthropicLlmProvider(config, logger);
 
@@ -34,7 +34,7 @@ describe("AnthropicLlmProvider", () => {
       schema: { type: "object" },
     });
 
-    expect(result).toEqual({ productName: "Carat" });
+    expect(result).toEqual({ productName: "Coverlux" });
     const call = fetchMock.mock.calls[0];
     if (!call) throw new Error("fetch was not called");
     const [url, init] = call;

@@ -32,7 +32,7 @@ describe("pseudonymize", () => {
   });
 
   it("returns the text unchanged when there's no PII", () => {
-    const input = "The Carat Cover glaze didn't run, the test succeeded.";
+    const input = "The Coverlux Cover glaze didn't run, the test succeeded.";
     expect(pseudonymize(input).text).toBe(input);
   });
 

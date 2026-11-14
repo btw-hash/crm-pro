@@ -24,7 +24,7 @@ function client(): Client {
 }
 
 function product(): Product {
-  return { id: productId, sku: "SKU-1", name: "Belcolade", unit: "kg" };
+  return { id: productId, sku: "SKU-1", name: "Noirelle", unit: "kg" };
 }
 
 function build() {
@@ -58,7 +58,7 @@ describe("createShipment", () => {
     expect(created.status).toBe("placed");
     expect(created.address).toBe("Portland");
     expect(created.lines).toEqual([
-      { productName: "Belcolade", quantity: 5, unit: "kg", weightKg: 5 },
+      { productName: "Noirelle", quantity: 5, unit: "kg", weightKg: 5 },
     ]);
     expect(await shipments.listByManager("manager-owens")).toHaveLength(1);
   });

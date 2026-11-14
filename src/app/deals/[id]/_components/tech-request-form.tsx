@@ -375,8 +375,8 @@ const KINDS: {
 // integration the catalog would come from the ERP here (see UPDATE-2026-07 §2,
 // "catalog auto-suggestions").
 const DEMO_PRODUCT_SUGGESTIONS: { name: string; cat: string }[] = [
-  { name: "Belcolade Noir 55% Chocolate", cat: "Chocolate" },
-  { name: "Carat Cover Dark Glaze", cat: "Glazes" },
+  { name: "Noirelle Noir 55% Chocolate", cat: "Chocolate" },
+  { name: "Coverlux Cover Dark Glaze", cat: "Glazes" },
   { name: "Cocoa Butter", cat: "Fats" },
   { name: "Pralin Hazelnut Paste", cat: "Fillings" },
   { name: "Cremodan SE 30 Stabilizer", cat: "Stabilizers" },

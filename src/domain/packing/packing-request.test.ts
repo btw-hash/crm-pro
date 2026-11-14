@@ -10,7 +10,7 @@ import {
 
 const base: CreatePackingRequestInput = {
   id: makeId<"PackingRequestId">("p1"),
-  productName: "Belcolade chocolate",
+  productName: "Noirelle chocolate",
   sourcePack: "1 kg",
   targetPack: "10 x 100 g",
   quantity: 50,

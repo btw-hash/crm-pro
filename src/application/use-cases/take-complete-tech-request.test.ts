@@ -13,7 +13,7 @@ const dealId = makeId<"DealId">("d1");
 const deal: Deal = {
   id: dealId,
   clientId: makeId<"ClientId">("c1"),
-  title: "Belcolade chocolate introduction",
+  title: "Noirelle chocolate introduction",
   stage: "testing",
   responsibleManagerId: "manager-x",
 };

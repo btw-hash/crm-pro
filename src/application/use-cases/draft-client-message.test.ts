@@ -21,7 +21,7 @@ const client: Client = {
 const deal: Deal = {
   id: dealId,
   clientId,
-  title: "Sapore Sourdough Starter",
+  title: "Levara Sourdough Starter",
   stage: "quote",
   responsibleManagerId: "m1",
   goal: "order",

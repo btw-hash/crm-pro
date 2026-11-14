@@ -623,7 +623,7 @@ export default async function ClientCardPage({ params }: { params: Promise<{ id:
         <input type="hidden" name="clientId" value={clientId} />
         <label>
           Product
-          <input name="productName" required placeholder="E.g. Belcolade chocolate" />
+          <input name="productName" required placeholder="E.g. Noirelle chocolate" />
         </label>
         <label>
           Quantity

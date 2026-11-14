@@ -135,7 +135,7 @@ Each exercises a different call shape (`extractJson` = structured tool call,
 `completeText` = free text) and a different page:
 
 1. **Voice-to-act extraction** (`extractJson`) — open any deal → the test-act composer
-   already has a sample transcript loaded (Sweet World Confections, a Miwe oven, Carat
+   already has a sample transcript loaded (Sweet World Confections, a Miwe oven, Coverlux
    Cover glaze, 12% dosage, 180°C/15min) → **"AI recognize → draft report"**. The model
    should fill in client/equipment/product/dosage/process-params/result from the
    transcript, nothing invented.

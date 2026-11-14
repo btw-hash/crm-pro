@@ -17,7 +17,7 @@ function shipment(status: ShipmentStatus): Shipment {
     managerId: "manager-smith",
     orderNumber: "ORD-2026-0001",
     address: "123 Oak St, Portland, OR",
-    lines: [{ productName: "Belcolade", quantity: 2, unit: "bag", weightKg: 50 }],
+    lines: [{ productName: "Noirelle", quantity: 2, unit: "bag", weightKg: 50 }],
     driver: null,
     scheduledDate: "2026-06-25",
     status,

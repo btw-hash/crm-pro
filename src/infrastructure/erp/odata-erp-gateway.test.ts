@@ -9,7 +9,7 @@ import { ODataErpGateway } from "./odata-erp-gateway";
 const logger: Logger = { info: () => {}, warn: () => {}, error: () => {}, debug: () => {} };
 const config = { baseUrl: "http://erp.test", username: "u", password: "p" };
 const clientId = makeId<"ClientId">("client-bakery-plant-1") as ClientId;
-const productId = makeId<"ProductId">("product-belcolade-nv") as ProductId;
+const productId = makeId<"ProductId">("product-noirelle-nv") as ProductId;
 
 function odataRes(value: unknown[], status = 200): Response {
   return {
@@ -65,7 +65,7 @@ describe("ODataErpGateway reads", () => {
 
   it("getStockLevel: maps the free balance and unit", async () => {
     mockFetch().mockResolvedValueOnce(
-      odataRes([{ Product_Key: "product-belcolade-nv", FreeBalance: 150, Unit: "kg" }]),
+      odataRes([{ Product_Key: "product-noirelle-nv", FreeBalance: 150, Unit: "kg" }]),
     );
     const erp = new ODataErpGateway(config, logger);
     const stock = await erp.getStockLevel(productId);
@@ -89,7 +89,7 @@ describe("ODataErpGateway reads", () => {
           Manager: "manager-owens",
           DocumentTotal: 150000,
           Date: "2026-01-15T00:00:00",
-          Lines: [{ Product_Key: "product-belcolade-nv", Quantity: 214, Amount: 150000 }],
+          Lines: [{ Product_Key: "product-noirelle-nv", Quantity: 214, Amount: 150000 }],
         },
       ]),
     );

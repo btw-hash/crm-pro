@@ -11,10 +11,10 @@ const p = (sku: string, name: string): Product => ({
 });
 
 const catalog: readonly Product[] = [
-  p("BEL-NV-811", "Belcolade Noir Chocolate"),
-  p("CAR-COV-01", "Carat Cover Icing"),
-  p("IMP-S500", "S500 Improver"),
-  p("TOP-BRU-02", "Topfil Lingonberry Filling"),
+  p("BEL-NV-811", "Noirelle Noir Chocolate"),
+  p("CAR-COV-01", "Coverlux Cover Icing"),
+  p("IMP-P500", "P500 Improver"),
+  p("TOP-BRU-02", "Fruitfil Lingonberry Filling"),
 ];
 
 describe("searchProducts", () => {
@@ -30,9 +30,9 @@ describe("searchProducts", () => {
   });
 
   it("searches by SKU", () => {
-    const result = searchProducts(catalog, "s500");
+    const result = searchProducts(catalog, "p500");
     expect(result).toHaveLength(1);
-    expect(result[0]!.name).toContain("S500");
+    expect(result[0]!.name).toContain("P500");
   });
 
   it("returns multiple matches", () => {
