@@ -25,7 +25,7 @@ function productUnit(productId: ProductId): string {
 const DEMO_SUPPLIERS = [
   "Cargill",
   "ADM",
-  "Barry Callebaut",
+  "Kestrel Cocoa",
   "Bunge",
   "Solvay",
   "Puratos",

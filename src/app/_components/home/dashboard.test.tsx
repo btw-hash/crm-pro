@@ -58,7 +58,7 @@ const HEAD: HeadVM = {
   attentionCritical: 2,
   attentionClients: [
     {
-      client: "Barry Callebaut",
+      client: "Kestrel Cocoa",
       context: "Technologist's response · Reed",
       status: { text: "no step in 16d", bg: "#f7e4e2", color: "#BF322B" },
     },
@@ -87,7 +87,7 @@ describe("HomeScreen — head of sales' interactive bento dashboard (#300)", () 
     expect(screen.getByText("Decisions on you")).toBeInTheDocument();
     expect(screen.getByText("Needs attention")).toBeInTheDocument();
     // The "Needs attention" client list + the "4 waiting" chip in "Decisions".
-    expect(screen.getByText("Barry Callebaut")).toBeInTheDocument();
+    expect(screen.getByText("Kestrel Cocoa")).toBeInTheDocument();
     expect(screen.getByText("4 waiting")).toBeInTheDocument();
     expect(screen.getByText("2 critical")).toBeInTheDocument();
   });
@@ -144,7 +144,7 @@ const TECH: TechVM = {
   events: [
     {
       time: "10:00",
-      title: "Barry Callebaut — glaze test",
+      title: "Kestrel Cocoa — glaze test",
       typeLabel: "test",
       typeChip: { bg: "#fbf1d6", color: "#9a6a00" },
       place: "Millbrook Foods showroom",
@@ -169,7 +169,7 @@ const TECH: TechVM = {
   queue: [
     {
       kind: "test",
-      title: "Barry Callebaut — Coverlux Cover Glaze test",
+      title: "Kestrel Cocoa — Coverlux Cover Glaze test",
       context: "test · sample reserved",
       due: "by Jul 2",
       status: { text: "urgent", bg: "#f7e4e2", color: "#BF322B" },
@@ -178,7 +178,7 @@ const TECH: TechVM = {
   samples: [
     {
       product: "Coverlux Cover Glaze",
-      context: "Barry Callebaut · 2 kg",
+      context: "Kestrel Cocoa · 2 kg",
       status: { text: "reserved", bg: "#e7f5ee", color: "#1f9e6c" },
     },
   ],
@@ -275,7 +275,7 @@ const MOP: MopVM = {
   todayCount: 5,
   hero: [
     {
-      client: "Barry Callebaut",
+      client: "Kestrel Cocoa",
       action: "call about test results",
       context: "test finished 16 days ago · cocoa mass",
       status: { text: "overdue", bg: "#f7e4e2", color: "#BF322B" },
@@ -308,7 +308,7 @@ const MOP: MopVM = {
   ],
   hot: [
     {
-      client: "Barry Callebaut",
+      client: "Kestrel Cocoa",
       status: { text: "no step in 16d", bg: "#f7e4e2", color: "#BF322B" },
     },
   ],

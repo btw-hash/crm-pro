@@ -17,18 +17,18 @@ describe("normalizeClientQuery", () => {
 
 describe("matchesClientQuery", () => {
   it("empty query passes everyone", () => {
-    expect(matchesClientQuery("Barry Callebaut", "")).toBe(true);
+    expect(matchesClientQuery("Kestrel Cocoa", "")).toBe(true);
     expect(matchesClientQuery("", "")).toBe(true);
   });
 
   it("substring match, case-insensitive", () => {
-    expect(matchesClientQuery("Barry Callebaut", "barry")).toBe(true);
-    expect(matchesClientQuery("Barry Callebaut", "calleba")).toBe(true);
+    expect(matchesClientQuery("Kestrel Cocoa", "kestrel")).toBe(true);
+    expect(matchesClientQuery("Kestrel Cocoa", "coco")).toBe(true);
     expect(matchesClientQuery("Victoria LLC", "victoria")).toBe(true);
   });
 
   it("no match → false", () => {
-    expect(matchesClientQuery("Barry Callebaut", "sweettooth")).toBe(false);
+    expect(matchesClientQuery("Kestrel Cocoa", "sweettooth")).toBe(false);
   });
 
   it("the query is expected to be normalized (name case is honored, query's is not)", () => {

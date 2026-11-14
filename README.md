@@ -5,7 +5,11 @@ producer. The company, data, and business docs are synthetic.
 
 **Live demo:** [crm-pro.btwstudio.dev](https://crm-pro.btwstudio.dev)
 
-![CRM Pro: head of sales dashboard with team load, AI insight and sales plan](docs/assets/dashboard.webp)
+![CRM Pro walkthrough: dashboard, deal board, deal card, analytics, catalog and clients](docs/assets/tour.gif)
+
+| Head of sales dashboard                                                       | Deal board                                                | Sales analytics                                                               |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| ![Dashboard with team load, AI insight and sales plan](docs/assets/home.webp) | ![Kanban board of deals by stage](docs/assets/deals.webp) | ![Revenue trend, win rate and revenue by product](docs/assets/analytics.webp) |
 
 ## Demo access
 
