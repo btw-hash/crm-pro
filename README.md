@@ -6,6 +6,8 @@ architecture, role model, and AI layer; company, data, and business docs are syn
 
 **Live demo:** [crm-pro.btwstudio.dev](https://crm-pro.btwstudio.dev)
 
+![CRM Pro: head of sales dashboard with team load, AI insight and sales plan](docs/assets/dashboard.webp)
+
 ## Demo access
 
 Open `/login` and pick a role card — username and the shared password `demo1234` are
