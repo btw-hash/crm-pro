@@ -13,7 +13,7 @@ import {
 const base: CreateReturnClaimInput = {
   id: makeId<"ReturnClaimId">("r1"),
   clientId: makeId<"ClientId">("c1") as ClientId,
-  productName: "Belcolade chocolate",
+  productName: "Noirelle chocolate",
   quantity: 20,
   unit: "kg",
   reason: "defect",

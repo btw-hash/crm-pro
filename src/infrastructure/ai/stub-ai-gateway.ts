@@ -284,13 +284,13 @@ const CLIENTS: readonly Lexeme[] = [
 ];
 
 const PRODUCTS: readonly Lexeme[] = [
-  { match: /carat|glaze/i, value: "Carat Cover Glaze" },
-  { match: /belcolade|chocolate/i, value: "Belcolade Noir Selection Chocolate" },
-  { match: /topfil|filling/i, value: "Topfil Lingonberry Filling" },
-  { match: /sapore|sourdough|starter/i, value: "Sapore Lievito Sourdough Starter" },
-  { match: /s\s?500|improver/i, value: "S500 Dough Improver" },
-  { match: /mimetic|margarine/i, value: "Mimetic Puff Pastry Margarine" },
-  { match: /tegral|muffin/i, value: "Tegral Muffin Mix" },
+  { match: /coverlux|glaze/i, value: "Coverlux Cover Glaze" },
+  { match: /noirelle|chocolate/i, value: "Noirelle Noir Selection Chocolate" },
+  { match: /fruitfil|filling/i, value: "Fruitfil Lingonberry Filling" },
+  { match: /levara|sourdough|starter/i, value: "Levara Lievito Sourdough Starter" },
+  { match: /s\s?500|improver/i, value: "P500 Dough Improver" },
+  { match: /laminor|margarine/i, value: "Laminor Puff Pastry Margarine" },
+  { match: /bakewell|muffin/i, value: "Bakewell Muffin Mix" },
 ];
 
 const EQUIPMENT: readonly Lexeme[] = [

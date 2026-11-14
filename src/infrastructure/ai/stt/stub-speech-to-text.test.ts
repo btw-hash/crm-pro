@@ -8,6 +8,6 @@ describe("StubSpeechToText", () => {
       mimeType: "audio/ogg",
     });
     expect(transcript).toContain("Sweet World Confections");
-    expect(transcript).toContain("Carat Cover");
+    expect(transcript).toContain("Coverlux Cover");
   });
 });

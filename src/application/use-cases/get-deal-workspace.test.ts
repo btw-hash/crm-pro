@@ -97,7 +97,7 @@ describe("getDealWorkspace", () => {
       createTestAct({
         id: makeId<"TestActId">("t1"),
         dealId,
-        productName: "Carat Cover Glaze",
+        productName: "Coverlux Cover Glaze",
         result: "success",
         confirmedBy: "tech-1",
         confirmedAt: "2026-06-21T00:00:00Z",
@@ -107,7 +107,7 @@ describe("getDealWorkspace", () => {
     const workspace = await getDealWorkspace(dealId, owner);
 
     expect(workspace?.audit?.equipment).toEqual(["Miwe rotary oven"]);
-    expect(workspace?.testAct?.productName).toBe("Carat Cover Glaze");
+    expect(workspace?.testAct?.productName).toBe("Coverlux Cover Glaze");
   });
 
   it("returns the activity feed and the 'next step' (nearest open task)", async () => {

@@ -16,12 +16,12 @@ describe("createTestAct", () => {
   it("creates a confirmed act", () => {
     const act = createTestAct({
       ...baseInput(),
-      productName: "Carat Cover glaze",
+      productName: "Coverlux Cover glaze",
       dosage: "12%",
     });
 
     expect(act.result).toBe("success");
-    expect(act.productName).toBe("Carat Cover glaze");
+    expect(act.productName).toBe("Coverlux Cover glaze");
     expect(act.comment).toBeNull();
   });
 

@@ -24,12 +24,12 @@ const client: Client = {
   category: "A",
   responsibleManagerId: "m1",
 };
-const product1: Product = { id: productId1, sku: "CAR", name: "Carat Cover Glaze", unit: "kg" };
-const product2: Product = { id: productId2, sku: "S500", name: "S500 Improver", unit: "kg" };
+const product1: Product = { id: productId1, sku: "CAR", name: "Coverlux Cover Glaze", unit: "kg" };
+const product2: Product = { id: productId2, sku: "P500", name: "P500 Improver", unit: "kg" };
 const product1WithRsp: Product = {
   id: productId1,
   sku: "CAR",
-  name: "Carat Cover Glaze",
+  name: "Coverlux Cover Glaze",
   unit: "kg",
   kit: {
     category: "Glazes",
@@ -80,7 +80,7 @@ describe("buildProposalDraft (multi-item)", () => {
 
     expect(draft.lines).toHaveLength(1);
     const line = draft.lines[0]!;
-    expect(line.productName).toBe("Carat Cover Glaze");
+    expect(line.productName).toBe("Coverlux Cover Glaze");
     expect(line.unitPrice?.amountMinor).toBe(450); // $4.50
     // 4.50 x 3000 = $13,500.00
     expect(line.lineTotal?.amountMinor).toBe(1_350_000);

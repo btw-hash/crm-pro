@@ -8,7 +8,7 @@ import { useServerRecorder } from "./use-server-recorder";
 // Demo transcript sample (per the spec): the technologist dictated a report after a test.
 const SAMPLE =
   "So, this is for Sweet World Confections. We ran a croissant bake today on the Miwe oven. We used " +
-  "Carat Cover glaze, dosage 12% of the mass. Mixing time was 8 minutes, baked at 180 degrees " +
+  "Coverlux Cover glaze, dosage 12% of the mass. Mixing time was 8 minutes, baked at 180 degrees " +
   "for exactly 15 minutes. The dough didn't tear, the glaze didn't boil over or leak onto the " +
   "trays. The technologist, Marina, was happy and signed off on the act.";
 

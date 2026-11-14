@@ -18,7 +18,7 @@ function shipment(over: Partial<Shipment> & Pick<Shipment, "id" | "clientId">): 
     managerId: "mop-test",
     orderNumber: "ORD-1",
     address: "Portland",
-    lines: [{ productName: "Belcolade", quantity: 100, unit: "kg", weightKg: 100 }],
+    lines: [{ productName: "Noirelle", quantity: 100, unit: "kg", weightKg: 100 }],
     driver: "Truck 1 (Smith)",
     scheduledDate: "2026-06-25",
     status: "placed",
@@ -88,7 +88,7 @@ describe("buildDispatchNote (warehouse note)", () => {
     );
     expect(rows.map((r) => r.clientName)).toEqual(["Bulk Pantry Co.", "Sweet Tooth Bakery"]); // by date
     expect(rows[0]?.totalWeightKg).toBe(100);
-    expect(rows[0]?.products).toContain("Belcolade — 100 kg");
+    expect(rows[0]?.products).toContain("Noirelle — 100 kg");
   });
 });
 

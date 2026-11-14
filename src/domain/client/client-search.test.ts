@@ -4,7 +4,7 @@ import { matchesClientQuery, normalizeClientQuery } from "./client-search";
 describe("normalizeClientQuery", () => {
   it("trims whitespace and lowercases", () => {
     expect(normalizeClientQuery("  Barry  ")).toBe("barry");
-    expect(normalizeClientQuery("BELCOLADE")).toBe("belcolade");
+    expect(normalizeClientQuery("NOIRELLE")).toBe("noirelle");
   });
 
   it("empty/whitespace/undefined → empty string", () => {
@@ -33,6 +33,6 @@ describe("matchesClientQuery", () => {
 
   it("the query is expected to be normalized (name case is honored, query's is not)", () => {
     // the name is lowercased internally, so uppercase in the name still matches
-    expect(matchesClientQuery("BELCOLADE", "belcolade")).toBe(true);
+    expect(matchesClientQuery("NOIRELLE", "noirelle")).toBe(true);
   });
 });

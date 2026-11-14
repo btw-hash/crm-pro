@@ -17,7 +17,7 @@ function makeShipment(over: Partial<Shipment> & Pick<Shipment, "id">): Shipment 
     managerId: "mop-a",
     orderNumber: "ORD-1",
     address: "Portland",
-    lines: [{ productName: "Belcolade", quantity: 100, unit: "kg", weightKg: 100 }],
+    lines: [{ productName: "Noirelle", quantity: 100, unit: "kg", weightKg: 100 }],
     driver: "Truck 1",
     scheduledDate: "2026-06-25",
     status: "in_accounting",

@@ -38,7 +38,10 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("OpenAiLlmProvider", () => {
   it("extractJson forces a tool call and returns its arguments", async () => {
-    const fetchMock = mockFetch({ ok: true, body: toolReply("draft", { productName: "Carat" }) });
+    const fetchMock = mockFetch({
+      ok: true,
+      body: toolReply("draft", { productName: "Coverlux" }),
+    });
     const provider = new OpenAiLlmProvider(config, logger);
 
     const result = await provider.extractJson({
@@ -49,7 +52,7 @@ describe("OpenAiLlmProvider", () => {
       schema: { type: "object" },
     });
 
-    expect(result).toEqual({ productName: "Carat" });
+    expect(result).toEqual({ productName: "Coverlux" });
     const call = fetchMock.mock.calls[0];
     if (!call) throw new Error("fetch was not called");
     const [url, init] = call;

@@ -47,11 +47,11 @@ describe("postgres smoke — reading seed data through the Prisma adapters", () 
     // The head-of-sales viewer isn't owner-scoped -> sees all clients.
     const clients = await app.listClients({ id: "smoke-head", role: "head" });
     expect(clients.length).toBeGreaterThan(0);
-    expect(clients.some((c) => c.id === clientIds.hlebozavod)).toBe(true);
+    expect(clients.some((c) => c.id === clientIds.breadWorks)).toBe(true);
   });
 
   it("listClientReturns: nullable FK (dealId=null) + non-null comment + DateTime<->ISO", async () => {
-    const returns = await app.listClientReturns(clientIds.hlebozavod);
+    const returns = await app.listClientReturns(clientIds.breadWorks);
     const ret = returns.find((r) => r.id === "ret-1");
     expect(ret).toBeDefined();
     expect(ret!.dealId).toBeNull(); // nullable FK comes back as null, not undefined
@@ -102,11 +102,11 @@ describe("postgres smoke — WRITE round-trip (additional-order, no seed data)",
   it("createAdditionalOrder -> listByDate: Json lines round-trip + note=null + DateTime", async () => {
     const created = await app.createAdditionalOrder({
       id: orderId,
-      clientId: clientIds.hlebozavod,
+      clientId: clientIds.breadWorks,
       parentOrderNumber,
       lines: [
-        { productName: "Belcolade Chocolate", quantity: 12.5, unit: "kg" },
-        { productName: "Carat Glaze", quantity: 3, unit: "kg" },
+        { productName: "Noirelle Chocolate", quantity: 12.5, unit: "kg" },
+        { productName: "Coverlux Glaze", quantity: 3, unit: "kg" },
       ],
       shipmentDate,
       recordedBy: "smoke",
@@ -121,7 +121,7 @@ describe("postgres smoke — WRITE round-trip (additional-order, no seed data)",
     // ── Json round-trip: lines come back as an array of objects with numbers (Float didn't become a string) ──
     expect(found!.lines).toHaveLength(2);
     expect(found!.lines[0]).toEqual({
-      productName: "Belcolade Chocolate",
+      productName: "Noirelle Chocolate",
       quantity: 12.5,
       unit: "kg",
     });
@@ -172,11 +172,11 @@ describe("postgres smoke — wave C: shipment (Json lines + nullable driver)", (
   it("save -> findById: Json lines round-trip (weightKg as a number) + driver=null", async () => {
     const shipment: Shipment = {
       id: makeId<"ShipmentId">("smoke-shp-1"),
-      clientId: clientIds.hlebozavod,
+      clientId: clientIds.breadWorks,
       managerId: "smoke-mgr",
       orderNumber: "SMOKE-SHP-1",
       address: "Denver, test",
-      lines: [{ productName: "Belcolade Chocolate", quantity: 10, unit: "kg", weightKg: 10 }],
+      lines: [{ productName: "Noirelle Chocolate", quantity: 10, unit: "kg", weightKg: 10 }],
       driver: null,
       scheduledDate: "2026-06-27",
       status: "placed",
@@ -187,7 +187,7 @@ describe("postgres smoke — wave C: shipment (Json lines + nullable driver)", (
     const found = await shipments.findById(shipment.id);
     expect(found).not.toBeNull();
     expect(found!.lines).toEqual([
-      { productName: "Belcolade Chocolate", quantity: 10, unit: "kg", weightKg: 10 },
+      { productName: "Noirelle Chocolate", quantity: 10, unit: "kg", weightKg: 10 },
     ]);
     expect(found!.driver).toBeNull(); // nullable field written and read back as null
     expect(found!.status).toBe("placed");
@@ -211,7 +211,7 @@ describe("postgres smoke — wave C: tech-request (FIFO queue, nullable, DateTim
     const req = createTechRequest({
       id: makeId<"TechRequestId">("smoke-tr-1"),
       dealId: makeId<"DealId">("deal-1"),
-      clientId: clientIds.hlebozavod,
+      clientId: clientIds.breadWorks,
       kind: "consult",
       note: "smoke",
       requestedBy: "smoke",

@@ -25,7 +25,7 @@ function input(overrides: Partial<CreateTechRequestInput> = {}): CreateTechReque
     note: "Question about dosage",
     requestedBy: "manager-owens",
     createdAt: "2026-06-24T10:00:00Z",
-    dealTitle: "Belcolade deal",
+    dealTitle: "Noirelle deal",
     technologistIds: ["tech-kent", "tech-derek"],
     ...overrides,
   };
@@ -51,7 +51,7 @@ describe("createTechRequest use-case", () => {
     expect(sent).toHaveLength(2);
     expect(sent[0]?.recipientId).toBe("tech-kent");
     expect(sent[1]?.recipientId).toBe("tech-derek");
-    expect(sent[0]?.message).toContain("Belcolade");
+    expect(sent[0]?.message).toContain("Noirelle");
   });
 
   it("the notification contains the request kind and the note", async () => {

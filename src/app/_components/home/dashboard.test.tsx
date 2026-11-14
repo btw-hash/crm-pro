@@ -169,7 +169,7 @@ const TECH: TechVM = {
   queue: [
     {
       kind: "test",
-      title: "Barry Callebaut — Carat Cover Glaze test",
+      title: "Barry Callebaut — Coverlux Cover Glaze test",
       context: "test · sample reserved",
       due: "by Jul 2",
       status: { text: "urgent", bg: "#f7e4e2", color: "#BF322B" },
@@ -177,7 +177,7 @@ const TECH: TechVM = {
   ],
   samples: [
     {
-      product: "Carat Cover Glaze",
+      product: "Coverlux Cover Glaze",
       context: "Barry Callebaut · 2 kg",
       status: { text: "reserved", bg: "#e7f5ee", color: "#1f9e6c" },
     },
@@ -202,7 +202,7 @@ describe("HomeScreen — technologist layout (reference)", () => {
     expect(screen.getByRole("button", { name: "Ask the assistant" })).toBeInTheDocument();
     // Queue chips and the sample's product.
     expect(screen.getByText("urgent 1")).toBeInTheDocument();
-    expect(screen.getByText("Carat Cover Glaze")).toBeInTheDocument();
+    expect(screen.getByText("Coverlux Cover Glaze")).toBeInTheDocument();
   });
 
   it('the "Today\'s calendar" row is clickable: a tooltip + navigation to the calendar', () => {

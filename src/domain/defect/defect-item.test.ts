@@ -10,7 +10,7 @@ import {
 
 const base: CreateDefectItemInput = {
   id: makeId<"DefectItemId">("d1"),
-  productName: "Belcolade chocolate",
+  productName: "Noirelle chocolate",
   quantity: 30,
   unit: "kg",
   reason: "wrong_label",

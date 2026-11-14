@@ -134,7 +134,7 @@ const RECOGNIZED_DOC = {
   productionScale: "Mid-size shop, 2 lines",
   needTask:
     "Replace an imported dough improver with a local equivalent without losing dough quality",
-  targetProduct: "Improver S500",
+  targetProduct: "Improver P500",
   volumeHint: "~4 t/mo",
   urgency: "Medium",
   volumePerMonth: "≈ 4 t/mo",

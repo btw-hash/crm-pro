@@ -7,7 +7,7 @@ import { managers, clientIds } from "./refs";
 export const seedClients: readonly Client[] = [
   // ── Owens ──
   {
-    id: clientIds.hlebozavod,
+    id: clientIds.breadWorks,
     name: "Sunrise Bakery Co.",
     type: "industry",
     category: "A",
@@ -16,7 +16,7 @@ export const seedClients: readonly Client[] = [
     city: "Portland",
   },
   {
-    id: clientIds.bakaleyaOpt,
+    id: clientIds.groceryWholesale,
     name: "Pantry Wholesale Trading Co.",
     type: "distributor",
     category: "A",
@@ -25,7 +25,7 @@ export const seedClients: readonly Client[] = [
     city: "Portland",
   },
   {
-    id: clientIds.ipSidorov,
+    id: clientIds.harborBakery,
     name: "T. Reynolds",
     type: "retail",
     category: "C",
@@ -33,7 +33,7 @@ export const seedClients: readonly Client[] = [
     city: "Eugene",
   },
   {
-    id: clientIds.ipKuznetsova,
+    id: clientIds.smithConfections,
     name: "A. Bishop",
     type: "retail",
     category: "C",
@@ -41,7 +41,7 @@ export const seedClients: readonly Client[] = [
     city: "Salem",
   },
   {
-    id: clientIds.shokoStudia,
+    id: clientIds.chocoStudio,
     name: "Choco Studio",
     type: "confectioner",
     category: "B",
@@ -50,7 +50,7 @@ export const seedClients: readonly Client[] = [
   },
   // ── Bennett ──
   {
-    id: clientIds.sladkiyMir,
+    id: clientIds.sweetWorld,
     name: "Sweet World Confections",
     type: "confectioner",
     category: "A",
@@ -59,7 +59,7 @@ export const seedClients: readonly Client[] = [
     city: "Portland",
   },
   {
-    id: clientIds.vkus,
+    id: clientIds.tasteHolding,
     name: "Savor Restaurant Group",
     type: "horeca",
     category: "A",
@@ -76,7 +76,7 @@ export const seedClients: readonly Client[] = [
     city: "Bend",
   },
   {
-    id: clientIds.giperViktoria,
+    id: clientIds.victoriaHypermarket,
     name: "Victoria Wholesale Market",
     type: "distributor",
     category: "A",
@@ -106,7 +106,7 @@ export const seedClients: readonly Client[] = [
   },
   // ── Coleman ──
   {
-    id: clientIds.teplyHleb,
+    id: clientIds.warmBread,
     name: "Warm Hearth Bakery",
     type: "artisan_baker",
     category: "B",
@@ -114,7 +114,7 @@ export const seedClients: readonly Client[] = [
     city: "Astoria",
   },
   {
-    id: clientIds.beze,
+    id: clientIds.meringue,
     name: "Meringue Confectionery",
     type: "confectioner",
     category: "B",
@@ -122,7 +122,7 @@ export const seedClients: readonly Client[] = [
     city: "Newport",
   },
   {
-    id: clientIds.kofemolka,
+    id: clientIds.coffeeMill,
     name: "The Grinder Cafe Co.",
     type: "horeca",
     category: "B",
@@ -144,7 +144,7 @@ export const seedClients: readonly Client[] = [
     ],
   },
   {
-    id: clientIds.hlebprom,
+    id: clientIds.breadIndustries,
     name: "Golden Grain Industries",
     type: "industry",
     category: "A",
@@ -154,7 +154,7 @@ export const seedClients: readonly Client[] = [
   },
   // ── Fischer ──
   {
-    id: clientIds.baltiyskyHleb,
+    id: clientIds.coastalBread,
     name: "Coastal Bakery Works",
     type: "industry",
     category: "B",
@@ -163,7 +163,7 @@ export const seedClients: readonly Client[] = [
     city: "Coos Bay",
   },
   {
-    id: clientIds.tdPribaltiysky,
+    id: clientIds.lakesideTrading,
     name: "Coastal Trading Co.",
     type: "distributor",
     category: "A",
@@ -172,7 +172,7 @@ export const seedClients: readonly Client[] = [
     city: "Portland",
   },
   {
-    id: clientIds.nemanKhp,
+    id: clientIds.riverMills,
     name: "Hood River Grain Co.",
     type: "industry",
     category: "A",
@@ -182,7 +182,7 @@ export const seedClients: readonly Client[] = [
   },
   // ── Nolan ──
   {
-    id: clientIds.morskoyBriz,
+    id: clientIds.seaBreeze,
     name: "Sea Breeze Cafe",
     type: "horeca",
     category: "B",
@@ -190,7 +190,7 @@ export const seedClients: readonly Client[] = [
     city: "Astoria",
   },
   {
-    id: clientIds.kafePrichal,
+    id: clientIds.pierCafe,
     name: "The Pier Cafe",
     type: "horeca",
     category: "C",
@@ -198,7 +198,7 @@ export const seedClients: readonly Client[] = [
     city: "Tillamook",
   },
   {
-    id: clientIds.bistroKenig,
+    id: clientIds.bistroKing,
     name: "Rose City Bistro",
     type: "horeca",
     category: "B",
@@ -207,7 +207,7 @@ export const seedClients: readonly Client[] = [
   },
   // ── Barrett ──
   {
-    id: clientIds.kondiLux,
+    id: clientIds.confiLux,
     name: "Lux Confectionery",
     type: "confectioner",
     category: "A",
@@ -216,7 +216,7 @@ export const seedClients: readonly Client[] = [
     city: "Portland",
   },
   {
-    id: clientIds.kondMarshal,
+    id: clientIds.marshalConfections,
     name: "Maison Marchand Confectionery",
     type: "confectioner",
     category: "A",
@@ -225,7 +225,7 @@ export const seedClients: readonly Client[] = [
     city: "Portland",
   },
   {
-    id: clientIds.ipGoncharova,
+    id: clientIds.potterPastry,
     name: "L. Foster",
     type: "retail",
     category: "C",
@@ -234,7 +234,7 @@ export const seedClients: readonly Client[] = [
   },
   // ── Sawyer ──
   {
-    id: clientIds.pekarnyaYantar,
+    id: clientIds.amberBakery,
     name: "Amber Bakery",
     type: "artisan_baker",
     category: "B",
@@ -242,7 +242,7 @@ export const seedClients: readonly Client[] = [
     city: "Newport",
   },
   {
-    id: clientIds.sladkoezhka,
+    id: clientIds.sweetTooth,
     name: "Sweet Tooth Market",
     type: "retail",
     category: "B",
@@ -266,7 +266,7 @@ export const seedClients: readonly Client[] = [
     ],
   },
   {
-    id: clientIds.pekarGuseva,
+    id: clientIds.gooseBakery,
     name: "Whitman's Bakery",
     type: "artisan_baker",
     category: "C",
@@ -281,7 +281,7 @@ export const seedContacts: readonly Contact[] = [
   // Sunrise Bakery Co.
   {
     id: makeId<"ContactId">("contact-hz-1"),
-    clientId: clientIds.hlebozavod,
+    clientId: clientIds.breadWorks,
     name: "Marcus Lawton",
     position: "Head Technologist",
     role: "influencer",
@@ -290,7 +290,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-hz-2"),
-    clientId: clientIds.hlebozavod,
+    clientId: clientIds.breadWorks,
     name: "Diane Martin",
     position: "Head of Supply",
     role: "decision_maker",
@@ -298,7 +298,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-hz-3"),
-    clientId: clientIds.hlebozavod,
+    clientId: clientIds.breadWorks,
     name: "Gary Bell",
     position: "Director",
     role: "decision_maker",
@@ -306,7 +306,7 @@ export const seedContacts: readonly Contact[] = [
   // Sweet World Confections
   {
     id: makeId<"ContactId">("contact-sm-1"),
-    clientId: clientIds.sladkiyMir,
+    clientId: clientIds.sweetWorld,
     name: "Maria Kent",
     position: "Head Pastry Chef",
     role: "influencer",
@@ -315,7 +315,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-sm-2"),
-    clientId: clientIds.sladkiyMir,
+    clientId: clientIds.sweetWorld,
     name: "Andrew Grover",
     position: "Commercial Director",
     role: "decision_maker",
@@ -324,7 +324,7 @@ export const seedContacts: readonly Contact[] = [
   // Savor Restaurant Group
   {
     id: makeId<"ContactId">("contact-vk-1"),
-    clientId: clientIds.vkus,
+    clientId: clientIds.tasteHolding,
     name: "Derek Sawyer",
     position: "Brand Chef",
     role: "influencer",
@@ -332,7 +332,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-vk-2"),
-    clientId: clientIds.vkus,
+    clientId: clientIds.tasteHolding,
     name: "Ellen Proctor",
     position: "Buyer",
     role: "decision_maker",
@@ -341,7 +341,7 @@ export const seedContacts: readonly Contact[] = [
   // Pantry Wholesale Trading Co.
   {
     id: makeId<"ContactId">("contact-bo-1"),
-    clientId: clientIds.bakaleyaOpt,
+    clientId: clientIds.groceryWholesale,
     name: "Victor Hayes",
     position: "Category Manager",
     role: "decision_maker",
@@ -350,7 +350,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-bo-2"),
-    clientId: clientIds.bakaleyaOpt,
+    clientId: clientIds.groceryWholesale,
     name: "Natalie Sorrell",
     position: "Purchasing Manager",
     role: "influencer",
@@ -374,7 +374,7 @@ export const seedContacts: readonly Contact[] = [
   // Lux Confectionery
   {
     id: makeId<"ContactId">("contact-kl-1"),
-    clientId: clientIds.kondiLux,
+    clientId: clientIds.confiLux,
     name: "Roman Quinn",
     position: "Head Pastry Chef",
     role: "decision_maker",
@@ -383,7 +383,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-kl-2"),
-    clientId: clientIds.kondiLux,
+    clientId: clientIds.confiLux,
     name: "Julia Dennis",
     position: "Sous Chef",
     role: "user",
@@ -391,7 +391,7 @@ export const seedContacts: readonly Contact[] = [
   // Coastal Trading Co.
   {
     id: makeId<"ContactId">("contact-tp-1"),
-    clientId: clientIds.tdPribaltiysky,
+    clientId: clientIds.lakesideTrading,
     name: "Alex Frost",
     position: "Director of Purchasing",
     role: "decision_maker",
@@ -400,7 +400,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-tp-2"),
-    clientId: clientIds.tdPribaltiysky,
+    clientId: clientIds.lakesideTrading,
     name: "Stephanie Gustafson",
     position: "Logistics Coordinator",
     role: "influencer",
@@ -408,7 +408,7 @@ export const seedContacts: readonly Contact[] = [
   // Hood River Grain Co.
   {
     id: makeId<"ContactId">("contact-nk-1"),
-    clientId: clientIds.nemanKhp,
+    clientId: clientIds.riverMills,
     name: "William Owens",
     position: "Head Technologist",
     role: "influencer",
@@ -416,7 +416,7 @@ export const seedContacts: readonly Contact[] = [
   },
   {
     id: makeId<"ContactId">("contact-nk-2"),
-    clientId: clientIds.nemanKhp,
+    clientId: clientIds.riverMills,
     name: "Diana Reeves",
     position: "General Director",
     role: "decision_maker",
@@ -428,9 +428,9 @@ export const seedContacts: readonly Contact[] = [
 export const seedReturnClaims: readonly ReturnClaim[] = [
   {
     id: makeId<"ReturnClaimId">("ret-1"),
-    clientId: clientIds.hlebozavod,
+    clientId: clientIds.breadWorks,
     dealId: null,
-    productName: "Belcolade Noir Selection Chocolate",
+    productName: "Noirelle Noir Selection Chocolate",
     quantity: 25,
     unit: "kg",
     reason: "defect",
@@ -441,9 +441,9 @@ export const seedReturnClaims: readonly ReturnClaim[] = [
   },
   {
     id: makeId<"ReturnClaimId">("ret-2"),
-    clientId: clientIds.bakaleyaOpt,
+    clientId: clientIds.groceryWholesale,
     dealId: null,
-    productName: "S500 Dough Improver",
+    productName: "P500 Dough Improver",
     quantity: 40,
     unit: "kg",
     reason: "shortage",
@@ -454,9 +454,9 @@ export const seedReturnClaims: readonly ReturnClaim[] = [
   },
   {
     id: makeId<"ReturnClaimId">("ret-3"),
-    clientId: clientIds.sladkiyMir,
+    clientId: clientIds.sweetWorld,
     dealId: null,
-    productName: "Carat Cover Glaze",
+    productName: "Coverlux Cover Glaze",
     quantity: 15,
     unit: "kg",
     reason: "expired",
@@ -467,9 +467,9 @@ export const seedReturnClaims: readonly ReturnClaim[] = [
   },
   {
     id: makeId<"ReturnClaimId">("ret-4"),
-    clientId: clientIds.vkus,
+    clientId: clientIds.tasteHolding,
     dealId: null,
-    productName: "Tegral Muffin Mix",
+    productName: "Bakewell Muffin Mix",
     quantity: 10,
     unit: "kg",
     reason: "wrong_item",

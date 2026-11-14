@@ -16,7 +16,7 @@ function shipment(over: Partial<Shipment> & Pick<Shipment, "id" | "clientId">): 
     managerId: "mop-test",
     orderNumber: "ORD-1",
     address: "Portland",
-    lines: [{ productName: "Belcolade", quantity: 100, unit: "kg", weightKg: 100 }],
+    lines: [{ productName: "Noirelle", quantity: 100, unit: "kg", weightKg: 100 }],
     driver: "Truck 1 (Smith)",
     scheduledDate: "2026-06-25",
     status: "placed",

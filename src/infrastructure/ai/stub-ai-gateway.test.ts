@@ -8,7 +8,7 @@ const ai = new StubAiGateway();
 // A canonical example from the tech brief (a technologist's voice report).
 const SAMPLE =
   "Okay, this is for SWEET WORLD BAKERY. We baked a batch of croissants today on the " +
-  "Miwe. Used Carat Cover glaze, went with a 12% dosage by weight. Set the knead time " +
+  "Miwe. Used Coverlux Cover glaze, went with a 12% dosage by weight. Set the knead time " +
   "to 8 minutes, baked at 180 degrees for exactly 15 minutes. The dough didn't tear, " +
   "the glaze inside didn't scorch and didn't run onto the trays at all. The " +
   "technologist, Marina, is satisfied and signed off on the act.";
@@ -19,7 +19,7 @@ describe("StubAiGateway.parseVoiceToActDraft", () => {
 
     expect(draft.clientName).toBe("Sweet World Confections");
     expect(draft.equipment).toBe("Miwe Rotary Oven");
-    expect(draft.productName).toBe("Carat Cover Glaze");
+    expect(draft.productName).toBe("Coverlux Cover Glaze");
     expect(draft.dosage).toBe("12%");
     expect(draft.processParams).toContain("180 °C");
     expect(draft.processParams).toContain("knead 8 min");
@@ -31,7 +31,7 @@ describe("StubAiGateway.parseVoiceToActDraft", () => {
 
   it("takes numbers only from the text, never invents them (no dosage -> the field is empty)", async () => {
     const draft = await ai.parseVoiceToActDraft({
-      transcript: "The Carat Cover glaze test on the Miwe went fine, the client is satisfied.",
+      transcript: "The Coverlux Cover glaze test on the Miwe went fine, the client is satisfied.",
     });
 
     expect(draft.dosage).toBeNull();
@@ -41,7 +41,7 @@ describe("StubAiGateway.parseVoiceToActDraft", () => {
   it("recognizes a failure", async () => {
     const draft = await ai.parseVoiceToActDraft({
       transcript:
-        "The S500 dough improver test at Sunrise Bakery Co. failed, the dough was ruined.",
+        "The P500 dough improver test at Sunrise Bakery Co. failed, the dough was ruined.",
     });
 
     expect(draft.result).toBe("failure");
@@ -50,7 +50,7 @@ describe("StubAiGateway.parseVoiceToActDraft", () => {
   it("understands numbers dictated as words (voice input)", async () => {
     const draft = await ai.parseVoiceToActDraft({
       transcript:
-        "For Sweet World Confections, Carat Cover glaze, dosage twelve percent, baked at " +
+        "For Sweet World Confections, Coverlux Cover glaze, dosage twelve percent, baked at " +
         "one hundred eighty degrees for fifteen minutes, didn't run.",
     });
 
@@ -64,7 +64,7 @@ describe("StubAiGateway.parseVoiceToActDraft", () => {
   it('parses voice with no punctuation: "200°" and the technologist\'s comment', async () => {
     const draft = await ai.parseVoiceToActDraft({
       transcript:
-        "for sweet world bakery we baked a batch of buns on the miwe used carat glaze " +
+        "for sweet world bakery we baked a batch of buns on the miwe used coverlux glaze " +
         "dosage 17% knead time 10 minutes baked at 200° for exactly 10 minutes didn't run " +
         "technologist diane is satisfied signed the act",
     });

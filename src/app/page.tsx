@@ -528,7 +528,7 @@ function techVM(home: TechnologistHome, nowMs: number): TechVM {
       status: chip("on test", CHIP_WARN),
     },
     {
-      product: "Dough Improver S500",
+      product: "Dough Improver P500",
       context: "Sweetwater Bakery · 0.5 kg",
       status: chip("issued", CHIP_TECH_ISSUED),
     },
