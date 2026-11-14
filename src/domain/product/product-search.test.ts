@@ -11,10 +11,10 @@ const p = (sku: string, name: string): Product => ({
 });
 
 const catalog: readonly Product[] = [
-  p("BEL-NV-811", "Noirelle Noir Chocolate"),
-  p("CAR-COV-01", "Coverlux Cover Icing"),
+  p("NOI-NS-811", "Noirelle Noir Chocolate"),
+  p("COV-GLZ-01", "Coverlux Cover Icing"),
   p("IMP-P500", "P500 Improver"),
-  p("TOP-BRU-02", "Fruitfil Lingonberry Filling"),
+  p("FRU-LNG-02", "Fruitfil Lingonberry Filling"),
 ];
 
 describe("searchProducts", () => {
@@ -26,7 +26,7 @@ describe("searchProducts", () => {
   it("searches by part of the name, case-insensitive", () => {
     const result = searchProducts(catalog, "chocolate");
     expect(result).toHaveLength(1);
-    expect(result[0]!.sku).toBe("BEL-NV-811");
+    expect(result[0]!.sku).toBe("NOI-NS-811");
   });
 
   it("searches by SKU", () => {
@@ -36,8 +36,8 @@ describe("searchProducts", () => {
   });
 
   it("returns multiple matches", () => {
-    expect(searchProducts(catalog, "top")).toHaveLength(1);
-    expect(searchProducts(catalog, "car")).toHaveLength(1);
+    expect(searchProducts(catalog, "fru")).toHaveLength(1);
+    expect(searchProducts(catalog, "glz")).toHaveLength(1);
   });
 
   it("no match — empty array", () => {

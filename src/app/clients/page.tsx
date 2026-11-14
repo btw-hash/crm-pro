@@ -31,7 +31,7 @@ const SEGMENT_PILL: Record<ClientPriority, { background: string; color: string }
 
 const GRID_COLUMNS = "2.2fr 1fr 1.1fr 1.1fr 0.9fr 0.6fr";
 
-/** Initials from the first letters of name words (up to two): "Barry Callebaut" → "BC". */
+/** Initials from the first letters of name words (up to two): "Kestrel Cocoa" → "BC". */
 function initials(name: string): string {
   const words = name.split(/\s+/).filter((word) => word.length > 0);
   const letters = words.slice(0, 2).map((word) => word.charAt(0).toUpperCase());

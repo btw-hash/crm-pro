@@ -33,7 +33,7 @@ export class StubWebSearchGateway implements WebSearchGateway {
         results: [
           {
             title: "US food ingredient market — a supplier overview",
-            snippet: "Key food-ingredient suppliers: Puratos, Barry Callebaut, Zeelandia.",
+            snippet: "Key food-ingredient suppliers: Puratos, Kestrel Cocoa, Zeelandia.",
             url: "https://example-market.com/ingredients",
           },
         ],

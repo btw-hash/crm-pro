@@ -447,7 +447,7 @@ export default async function AnalyticsPage({
             AI Assistant <span style={{ color: "var(--accent-bright)" }}>CRM Pro</span>
           </div>
           <div style={{ font: "400 13px/1.5 Arial", color: "rgba(255,255,255,.72)" }}>
-            Cocoa powder is up 18%. I recommend increasing purchases from Barry Callebaut.
+            Cocoa powder is up 18%. I recommend increasing purchases from Kestrel Cocoa.
           </div>
           <div style={{ font: "400 11px Arial", color: "rgba(255,255,255,.45)", marginTop: 6 }}>
             Sample insight. Live analysis of your data is available in the assistant.

@@ -8,7 +8,7 @@ import { clientIds, productIds } from "./refs";
 export const seedProducts: readonly Product[] = [
   {
     id: productIds.noirelle,
-    sku: "BEL-NV-811",
+    sku: "NOI-NS-811",
     name: "Noirelle Noir Selection Chocolate",
     unit: "kg",
     packaging: "5 kg box",
@@ -27,7 +27,7 @@ export const seedProducts: readonly Product[] = [
   },
   {
     id: productIds.coverluxGlaze,
-    sku: "CAR-COV-01",
+    sku: "COV-GLZ-01",
     name: "Coverlux Cover Glaze",
     unit: "kg",
     packaging: "10 kg pail",
@@ -64,7 +64,7 @@ export const seedProducts: readonly Product[] = [
   },
   {
     id: productIds.fruitfil,
-    sku: "TOP-BRU-02",
+    sku: "FRU-LNG-02",
     name: "Fruitfil Lingonberry Filling",
     unit: "kg",
     packaging: "13 kg pail",
@@ -82,7 +82,7 @@ export const seedProducts: readonly Product[] = [
   },
   {
     id: productIds.levara,
-    sku: "SAP-LIV-10",
+    sku: "LEV-STR-10",
     name: "Levara Lievito Sourdough Starter",
     unit: "kg",
     packaging: "1 kg bag",
@@ -101,7 +101,7 @@ export const seedProducts: readonly Product[] = [
   },
   {
     id: productIds.laminor,
-    sku: "MIM-LAM-25",
+    sku: "LAM-MRG-25",
     name: "Laminor Laminating Margarine",
     unit: "kg",
     packaging: "Box of 10 × 2 kg",
@@ -120,7 +120,7 @@ export const seedProducts: readonly Product[] = [
   },
   {
     id: productIds.bakewellMuffin,
-    sku: "TEG-MUF-15",
+    sku: "BAK-MUF-15",
     name: "Bakewell Muffin Mix",
     unit: "kg",
     packaging: "15 kg bag",
@@ -138,7 +138,7 @@ export const seedProducts: readonly Product[] = [
   },
   {
     id: productIds.glazeo,
-    sku: "MIR-NEU-05",
+    sku: "GLZ-NEU-05",
     name: "Glazeo Neutral Glaze Gel",
     unit: "kg",
     packaging: "6 kg pail",
