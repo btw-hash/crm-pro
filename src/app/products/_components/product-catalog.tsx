@@ -436,7 +436,7 @@ export function ProductCatalog({
           Nothing found{query ? ` for "${query}"` : ""}.
         </p>
       ) : (
-        <div style={GLASS_PANEL}>
+        <div className="r-table" style={GLASS_PANEL}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "1000px" }}>
             <thead>
               <tr>

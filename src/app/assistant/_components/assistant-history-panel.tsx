@@ -58,6 +58,7 @@ export function AssistantHistoryPanel({
 
   return (
     <aside
+      className="r-full"
       style={{
         width: 264,
         maxWidth: "100%",

@@ -258,6 +258,7 @@ export default async function ClientCardPage({ params }: { params: Promise<{ id:
 
       <div style={{ font: "600 15px Arial", marginBottom: "15px" }}>Client data</div>
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
@@ -818,6 +819,7 @@ export default async function ClientCardPage({ params }: { params: Promise<{ id:
 
       {/* Metrics row — 4 fixed cards (CRM Pro design reference, lines 1134-1139) */}
       <div
+        className="r-grid-2"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -844,6 +846,7 @@ export default async function ClientCardPage({ params }: { params: Promise<{ id:
 
       {/* Two-column grid: tabs on the left, sidebar on the right */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "1.7fr 1fr",

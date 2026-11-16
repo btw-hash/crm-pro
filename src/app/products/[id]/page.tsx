@@ -131,6 +131,7 @@ export default async function ProductCardPage({ params }: { params: Promise<{ id
 
       {/* ERP metrics row — always 4 cards (per the design reference). */}
       <div
+        className="r-grid-2"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -154,7 +155,10 @@ export default async function ProductCardPage({ params }: { params: Promise<{ id
       </div>
 
       {/* AI description + Sales Kit */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.7fr 1fr", gap: "16px" }}>
+      <div
+        className="r-stack"
+        style={{ display: "grid", gridTemplateColumns: "1.7fr 1fr", gap: "16px" }}
+      >
         <div style={{ ...FROSTED, borderRadius: "22px", padding: "22px" }}>
           <span
             style={{

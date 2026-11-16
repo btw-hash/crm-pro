@@ -477,6 +477,7 @@ function HeadLayout({ d, onAskAssistant }: { d: HeadVM; onAskAssistant: () => vo
     <>
       {/* Row 1: "Team" (span 8) + AI "Head of sales assistant" (span 4). */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -574,6 +575,7 @@ function HeadLayout({ d, onAskAssistant }: { d: HeadVM; onAskAssistant: () => vo
                     aria-hidden
                   >
                     <div
+                      className="mo-bar"
                       style={{
                         height: 6,
                         width: `${m.loadPct}%`,
@@ -680,6 +682,7 @@ function HeadLayout({ d, onAskAssistant }: { d: HeadVM; onAskAssistant: () => vo
 
       {/* Row 2: Team activity · Sales plan · Deals by stage (span 4 each). */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -731,6 +734,7 @@ function HeadLayout({ d, onAskAssistant }: { d: HeadVM; onAskAssistant: () => vo
             </span>
           </div>
           <div
+            className="r-grid-2"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(4, 1fr)",
@@ -809,6 +813,7 @@ function HeadLayout({ d, onAskAssistant }: { d: HeadVM; onAskAssistant: () => vo
             }}
           >
             <div
+              className="mo-bar"
               style={{
                 width: `${d.plan.pct}%`,
                 height: "100%",
@@ -866,7 +871,10 @@ function HeadLayout({ d, onAskAssistant }: { d: HeadVM; onAskAssistant: () => vo
       </div>
 
       {/* Row 3: Decisions on you · Needs attention · Notifications (span 4 each). */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+      <div
+        className="r-stack"
+        style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}
+      >
         {/* Decisions on you — a list of decisions with a status dot and an action link. */}
         <div className="bento-tile" style={bento(5, { ...GLASS, gridColumn: "span 4" })}>
           <div
@@ -1343,6 +1351,7 @@ function SimpleLayout({ d, onAskAssistant }: { d: SimpleVM; onAskAssistant: () =
       {/* Vertical AI at the top — only when the tile is NOT horizontal. */}
       {d.ai && !d.aiHorizontal ? <AiInsightTile ai={d.ai} onAsk={onAskAssistant} /> : null}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: d.aiHorizontal
@@ -1420,6 +1429,7 @@ function MopLayout({ d, onAskAssistant }: { d: MopVM; onAskAssistant: () => void
     <>
       {/* Row 1: "My deals for today" (span 8) + AI "Sales assistant" (span 4). */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -1647,6 +1657,7 @@ function MopLayout({ d, onAskAssistant }: { d: MopVM; onAskAssistant: () => void
 
       {/* Row 2: 3 KPI cards — monthly plan / conversion / deals in progress. */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
@@ -1662,6 +1673,7 @@ function MopLayout({ d, onAskAssistant }: { d: MopVM; onAskAssistant: () => void
           </div>
           <div style={{ height: 8, borderRadius: 5, background: "#eef0f2", overflow: "hidden" }}>
             <div
+              className="mo-bar"
               style={{
                 height: 8,
                 width: `${d.plan.progressPct}%`,
@@ -1736,7 +1748,10 @@ function MopLayout({ d, onAskAssistant }: { d: MopVM; onAskAssistant: () => void
       </div>
 
       {/* Row 3: "My funnel" + "Hot deals" + "Recent activity". */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+      <div
+        className="r-stack"
+        style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}
+      >
         <div className="bento-tile" style={bento(5, GLASS)}>
           <span style={{ font: "600 16px Arial" }}>My funnel</span>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
@@ -1900,6 +1915,7 @@ function TechLayout({ d, onAskAssistant }: { d: TechVM; onAskAssistant: () => vo
     <>
       {/* Row 1: "Today's calendar" (span 8) + AI "Technologist assistant" (span 4). */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -2079,6 +2095,7 @@ function TechLayout({ d, onAskAssistant }: { d: TechVM; onAskAssistant: () => vo
                     </div>
                     <div style={{ flex: "none", display: "flex", alignItems: "center", gap: 9 }}>
                       <span
+                        className="r-hide"
                         style={{ font: "500 12px Arial", color: "#9a9ea8", whiteSpace: "nowrap" }}
                       >
                         {ev.range}
@@ -2112,6 +2129,7 @@ function TechLayout({ d, onAskAssistant }: { d: TechVM; onAskAssistant: () => vo
 
       {/* Row 2: 4 KPI cards (repeat(4,1fr)). */}
       <div
+        className="r-grid-2"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -2125,7 +2143,10 @@ function TechLayout({ d, onAskAssistant }: { d: TechVM; onAskAssistant: () => vo
       </div>
 
       {/* Row 3: "Tech request queue" (span 7) + "Samples for testing" (span 5). */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+      <div
+        className="r-stack"
+        style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}
+      >
         <div
           className="bento-tile"
           style={bento(6, {

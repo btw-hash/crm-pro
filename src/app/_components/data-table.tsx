@@ -110,7 +110,7 @@ export function DataTable({
   }
 
   return (
-    <div style={GLASS_PANEL}>
+    <div className="r-table" style={GLASS_PANEL}>
       <div style={COL_HEAD}>
         {columns.map((col, i) => {
           const sortable = col.sortable !== false;
