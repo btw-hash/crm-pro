@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { DealHealth } from "@/domain/deal/deal-attention";
 import {
   type DealDrawerData,
@@ -171,6 +172,8 @@ export function DealDrawer() {
 
   const [data, setData] = useState<DealDrawerData | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "denied">("idle");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const close = useCallback(() => {
     const params = new URLSearchParams(searchParams);
@@ -217,17 +220,20 @@ export function DealDrawer() {
     return () => window.removeEventListener("keydown", onKey);
   }, [dealId, close]);
 
-  if (!dealId) {
+  if (!dealId || !mounted) {
     return null;
   }
 
-  return (
+  // Portal into body: the page wrapper keeps a transform from its entry animation,
+  // which would trap this overlay's z-index below the fixed mobile menu button.
+  // Mounted only on the client so a deep link to ?deal=<id> hydrates cleanly.
+  return createPortal(
     <div
       onClick={close}
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 850,
+        zIndex: 1150,
         background: "rgba(24,18,14,0.4)",
         backdropFilter: "blur(2px)",
         WebkitBackdropFilter: "blur(2px)",
@@ -635,6 +641,7 @@ export function DealDrawer() {
           </div>
         ) : null}
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -76,8 +76,8 @@ export function StageStepper({ stage }: { stage: DealStage }) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                width: 78,
-                flex: "none",
+                flex: "0 1 78px",
+                minWidth: 0,
               }}
               aria-current={state === "current" ? "step" : undefined}
             >
