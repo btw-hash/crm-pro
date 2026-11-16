@@ -6,6 +6,7 @@ import { getContainer } from "@/infrastructure/composition-root";
 import { MANAGER_LABELS, managerLabel, personLabel } from "@/infrastructure/persistence/seed";
 import { AppSidebar } from "./_components/app-sidebar";
 import { AppTopbar } from "./_components/app-topbar";
+import { CommandPalette } from "./_components/command-palette";
 import { CreateRequestButton } from "./_components/create-request-button";
 import { NotificationBell } from "./_components/notification-bell";
 import { ScreenTransition } from "./_components/screen-transition";
@@ -93,6 +94,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <ScreenTransition>{children}</ScreenTransition>
               </main>
             </div>
+            <CommandPalette />
           </div>
         ) : (
           <main className="app-auth">{children}</main>
