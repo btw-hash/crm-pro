@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { CountUp } from "@/app/_components/count-up";
 import { ExportButton } from "@/app/_components/export-button";
 import { PeriodSelect } from "./_components/period-select";
 import { ViewSwitcher } from "./_components/view-switcher";
@@ -233,6 +234,7 @@ export default async function AnalyticsPage({
 
       {/* row1 — 12-column grid: trend (span 8) is 2:1 wider than the AI card (span 4) */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -268,10 +270,10 @@ export default async function AnalyticsPage({
               {periodLabel} ▾
             </span>
           </div>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 30 }}>
+          <div className="r-col" style={{ display: "flex", alignItems: "flex-start", gap: 30 }}>
             <div>
               <div style={{ font: "700 34px Arial", letterSpacing: "-.5px", margin: "8px 0 4px" }}>
-                {sales.totalRevenue}
+                <CountUp value={sales.totalRevenue} />
               </div>
               <div style={{ font: "400 13px Arial", color: "#9a9ea8", marginBottom: 14 }}>
                 total for the period · {pluralOrders(sales.orderCount)}
@@ -366,6 +368,7 @@ export default async function AnalyticsPage({
                       {row.amount}
                     </div>
                     <div
+                      className="mo-col"
                       title={`${row.month}: ${row.amount}`}
                       style={{
                         width: "100%",
@@ -476,6 +479,7 @@ export default async function AnalyticsPage({
 
       {/* row2 — three span-4 cards on the 12-column grid */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -628,6 +632,7 @@ export default async function AnalyticsPage({
 
       {/* row3 — three span-4 cards on the 12-column grid */}
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -755,6 +760,7 @@ export default async function AnalyticsPage({
                   </div>
                   <div style={{ height: 8, borderRadius: 6, background: "#eef0f2" }}>
                     <div
+                      className="mo-bar"
                       style={{
                         height: 8,
                         width: `${widthPct}%`,
@@ -774,6 +780,7 @@ export default async function AnalyticsPage({
           Demo breakdown from the design reference: there's no real industry breakdown in the data. */}
       {isTeam ? (
         <div
+          className="r-stack"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(12, 1fr)",
@@ -857,6 +864,7 @@ export default async function AnalyticsPage({
                       }}
                     >
                       <div
+                        className="mo-bar"
                         style={{
                           height: 22,
                           width: `${widthPct}%`,

@@ -183,6 +183,7 @@ export default async function UsagePage() {
       ) : (
         <>
           <div
+            className="r-grid-2"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(4,1fr)",
@@ -215,7 +216,10 @@ export default async function UsagePage() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(12,1fr)", gap: 16 }}>
+          <div
+            className="r-stack"
+            style={{ display: "grid", gridTemplateColumns: "repeat(12,1fr)", gap: 16 }}
+          >
             <div style={{ ...glassCard, gridColumn: "span 8" }}>
               <div
                 style={{

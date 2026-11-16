@@ -176,6 +176,7 @@ export function LoginRolePicker({ error }: { error: boolean }) {
         </div>
 
         <div
+          className="r-role-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",

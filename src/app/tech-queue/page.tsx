@@ -114,7 +114,7 @@ export default async function TechQueuePage({
           </span>
         </div>
       ) : (
-        <div style={GLASS_PANEL}>
+        <div className="r-table" style={GLASS_PANEL}>
           <div style={COL_HEAD}>
             {/* Chevron — a decorative navigation column (reference :812, empty header) */}
             <span style={{ flex: "0 0 16px" }} />

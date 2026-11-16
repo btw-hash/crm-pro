@@ -166,7 +166,7 @@ export default async function NotificationsPage({
           </p>
         </div>
       ) : visibleNotifications.length > 0 ? (
-        <div style={GLASS_PANEL}>
+        <div className="r-table" style={GLASS_PANEL}>
           <div style={COL_HEAD}>
             <span style={{ ...COL_LABEL, flex: "none", width: "96px" }}>Status</span>
             <span style={{ ...COL_LABEL, flex: 3 }}>Message</span>

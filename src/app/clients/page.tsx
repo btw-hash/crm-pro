@@ -214,6 +214,7 @@ export default async function ClientsPage({
       </div>
 
       <div
+        className="r-table"
         style={{
           background: "rgba(255,255,255,0.6)",
           backdropFilter: "blur(22px) saturate(1.3)",

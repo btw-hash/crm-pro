@@ -414,6 +414,7 @@ export function QualificationWorkspace({
             }}
           />
           <div
+            className="r-stack"
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11, marginBottom: 11 }}
           >
             <div>
@@ -513,7 +514,10 @@ export function QualificationWorkspace({
         <form action={action}>
           <input type="hidden" name="dealId" value={dealId} />
           {q?.id ? <input type="hidden" name="qualificationId" value={q.id} /> : null}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 }}>
+          <div
+            className="r-stack"
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 }}
+          >
             <div>
               <label style={LABEL_STYLE}>Volume, t/mo</label>
               <input
@@ -552,7 +556,10 @@ export function QualificationWorkspace({
         <form action={action}>
           <input type="hidden" name="dealId" value={dealId} />
           {q?.id ? <input type="hidden" name="qualificationId" value={q.id} /> : null}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 }}>
+          <div
+            className="r-stack"
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 }}
+          >
             <div>
               <label style={LABEL_STYLE}>Payment terms</label>
               <input

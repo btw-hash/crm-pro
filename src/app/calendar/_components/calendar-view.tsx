@@ -413,7 +413,7 @@ export function CalendarView({
         </div>
 
         {/* Header actions: period navigator + view switcher + "Schedule". */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="r-wrap" style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {/* Period navigator (demo stand-in: the current week/today stays active). */}
           <div
             style={{
@@ -590,10 +590,10 @@ export function CalendarView({
       </div>
 
       {/* Two columns: time grid (week/day) on the left, sticky panel on the right. */}
-      <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+      <div className="r-col" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           {view === "week" ? (
-            <div style={{ ...GLASS_PANEL, padding: "10px 10px 6px" }}>
+            <div className="r-table" style={{ ...GLASS_PANEL, padding: "10px 10px 6px" }}>
               {/* Day headers: short DOW + number in a circle (today is highlighted). */}
               <div
                 style={{

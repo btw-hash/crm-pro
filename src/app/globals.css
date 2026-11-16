@@ -2049,3 +2049,168 @@ button.kanban__card-title:hover {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ── Phone layouts ─────────────────────────────────────────────────────────
+   Layout lives in inline styles, so the phone overrides are opt-in classes:
+   r-stack   a multi-column grid becomes one column
+   r-grid-2  a row of small tiles becomes two columns
+   r-table   a grid-row table scrolls sideways instead of crushing its cells
+   r-full    a flex child takes the whole row
+   r-col     a flex row becomes a column of full-width blocks
+   r-wrap    a flex row is allowed to wrap
+   r-hide    secondary detail that is dropped on a phone */
+@media (max-width: 768px) {
+  .r-stack {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .r-stack > * {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    min-width: 0;
+  }
+  .r-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .r-grid-2 > * {
+    grid-column: auto !important;
+    min-width: 0;
+  }
+  .r-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .r-table > * {
+    min-width: 640px;
+  }
+  .r-full {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .r-role-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .r-col {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .r-col > * {
+    flex: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: static !important;
+  }
+  .r-wrap {
+    flex-wrap: wrap !important;
+  }
+  .r-hide {
+    display: none !important;
+  }
+  /* The closed drawer left its collapse handle peeking over the left edge. */
+  .app-sidebar:not(.is-open) {
+    visibility: hidden;
+  }
+}
+
+/* ── Motion ────────────────────────────────────────────────────────────────
+   Blocks of a screen arrive one after another, bars and columns grow to their
+   value, rows of a table follow. Everything is off under reduced motion. */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes growX {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes growY {
+  from {
+    transform: scaleY(0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scr > * > * {
+    animation: riseIn 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .scr > * > *:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  .scr > * > *:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .scr > * > *:nth-child(4) {
+    animation-delay: 180ms;
+  }
+  .scr > * > *:nth-child(5) {
+    animation-delay: 240ms;
+  }
+  .scr > * > *:nth-child(n + 6) {
+    animation-delay: 300ms;
+  }
+  .r-table > * {
+    animation: riseIn 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(240ms + var(--row, 0) * 35ms);
+  }
+  .r-table > *:nth-child(2) {
+    --row: 1;
+  }
+  .r-table > *:nth-child(3) {
+    --row: 2;
+  }
+  .r-table > *:nth-child(4) {
+    --row: 3;
+  }
+  .r-table > *:nth-child(5) {
+    --row: 4;
+  }
+  .r-table > *:nth-child(6) {
+    --row: 5;
+  }
+  .r-table > *:nth-child(7) {
+    --row: 6;
+  }
+  .r-table > *:nth-child(8) {
+    --row: 7;
+  }
+  .r-table > *:nth-child(n + 9) {
+    --row: 8;
+  }
+  .kanban__card {
+    animation: riseIn 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(200ms + var(--row, 0) * 60ms);
+  }
+  .kanban__card:nth-child(2) {
+    --row: 1;
+  }
+  .kanban__card:nth-child(3) {
+    --row: 2;
+  }
+  .kanban__card:nth-child(4) {
+    --row: 3;
+  }
+  .kanban__card:nth-child(n + 5) {
+    --row: 4;
+  }
+  .mo-bar {
+    transform-origin: left center;
+    animation: growX 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+  }
+  .mo-col {
+    transform-origin: center bottom;
+    animation: growY 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+  }
+  button,
+  a {
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      filter 0.15s ease,
+      background-color 0.15s ease;
+  }
+  button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}

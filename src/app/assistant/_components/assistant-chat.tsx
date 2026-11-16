@@ -208,7 +208,7 @@ export function AssistantChat() {
         onNew={startNew}
       />
 
-      <div style={{ flex: 1, maxWidth: 840, minWidth: 0 }}>
+      <div className="r-full" style={{ flex: 1, maxWidth: 840, minWidth: 0 }}>
         {turns.length > 0 ? (
           <div
             style={{

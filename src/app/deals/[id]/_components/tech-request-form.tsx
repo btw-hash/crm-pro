@@ -818,6 +818,7 @@ export function TechRequestForm({
       {/* type selector — 3×1fr grid with icons */}
       <div style={OVERLINE}>REQUEST TYPE</div>
       <div
+        className="r-stack"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(3,1fr)",

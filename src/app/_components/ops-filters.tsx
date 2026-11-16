@@ -1,5 +1,6 @@
 "use client";
 
+import { CountUp } from "./count-up";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export interface OpsFilterChip {
@@ -152,7 +153,7 @@ export function OpsFilters({
                     lineHeight: 1,
                   }}
                 >
-                  {m.value}
+                  <CountUp value={m.value} />
                 </div>
                 <div
                   style={{

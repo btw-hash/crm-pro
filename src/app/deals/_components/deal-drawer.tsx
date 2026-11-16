@@ -472,6 +472,7 @@ export function DealDrawer() {
               }}
             >
               <div
+                className="r-stack"
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
