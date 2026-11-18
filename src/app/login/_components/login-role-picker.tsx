@@ -165,7 +165,10 @@ export function LoginRolePicker({ error }: { error: boolean }) {
 
         <div style={{ font: "700 22px Arial", letterSpacing: "-.4px" }}>Sign in</div>
         <div style={{ font: "400 13px Arial", color: "#9a9ea8", margin: "6px 0 22px" }}>
-          Sales department · demo access
+          Sales department · demo access ·{" "}
+          <a href="https://btwstudio.dev/work/crm-pro" style={{ color: "inherit" }}>
+            by BTW Studio
+          </a>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "11px" }}>
