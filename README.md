@@ -130,3 +130,7 @@ npm run dev                # http://localhost:3000
 - [docs/LLM_SETUP.md](docs/LLM_SETUP.md) — turning on a real LLM provider.
 - [docs/DEPLOY.md](docs/DEPLOY.md) — Docker Compose deploy runbook (demo → pre-prod → prod).
 - [CONTRIBUTING.md](CONTRIBUTING.md) — branches, commits, PR workflow.
+
+## License
+
+The code is published for reference. All rights reserved: reading it is welcome, reusing it needs written permission.
